@@ -16,7 +16,7 @@ struct MovieCardView: View {
                 HStack {
                     ExtractedView()
                     Spacer()
-                    
+                    Text("asfasf")
                     Spacer()
                     ExtractedView()
                 }
@@ -28,7 +28,7 @@ struct MovieCardView: View {
     }
 }
 
- 
+  
 
 #Preview {
     MovieCardView()
