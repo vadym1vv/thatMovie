@@ -28,7 +28,7 @@ struct MovieCardView: View {
     }
 }
 
-
+ 
 
 #Preview {
     MovieCardView()
