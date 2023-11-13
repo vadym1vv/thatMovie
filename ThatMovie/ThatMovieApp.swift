@@ -10,6 +10,9 @@ import SwiftData
 
 @main
 struct ThatMovieApp: App {
+    
+    @StateObject var viewRouter = ViewRouter()
+    
     var sharedModelContainer: ModelContainer = {
         let schema = Schema([
             MovieItem.self,
@@ -25,7 +28,7 @@ struct ThatMovieApp: App {
 
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            ContentView(viewRouter: viewRouter)
         }
         .modelContainer(sharedModelContainer)
     }

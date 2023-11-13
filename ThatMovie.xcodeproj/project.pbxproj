@@ -7,6 +7,12 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		930AF29A2AF67AD300E6F1E4 /* RestApiService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 930AF2992AF67AD300E6F1E4 /* RestApiService.swift */; };
+		930AF29C2AF67B8700E6F1E4 /* MovieApiPopular.swift in Sources */ = {isa = PBXBuildFile; fileRef = 930AF29B2AF67B8700E6F1E4 /* MovieApiPopular.swift */; };
+		930AF29F2AF67BD500E6F1E4 /* MovieApiError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 930AF29E2AF67BD500E6F1E4 /* MovieApiError.swift */; };
+		930AF2A12AF6978900E6F1E4 /* RestApiMovieVM.swift in Sources */ = {isa = PBXBuildFile; fileRef = 930AF2A02AF6978900E6F1E4 /* RestApiMovieVM.swift */; };
+		930AF7272AFCE03800E3C40D /* MovieCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 930AF7262AFCE03800E3C40D /* MovieCardView.swift */; };
+		930AF7292AFD2B7900E3C40D /* ViewRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 930AF7282AFD2B7900E3C40D /* ViewRouter.swift */; };
 		93120A1F2ADABEE300F876F1 /* ThatMovieApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93120A1E2ADABEE300F876F1 /* ThatMovieApp.swift */; };
 		93120A212ADABEE300F876F1 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93120A202ADABEE300F876F1 /* ContentView.swift */; };
 		93120A232ADABEE300F876F1 /* MovieItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93120A222ADABEE300F876F1 /* MovieItem.swift */; };
@@ -15,11 +21,22 @@
 		93120A342ADB008100F876F1 /* AddMovieItemView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93120A332ADB008100F876F1 /* AddMovieItemView.swift */; };
 		93120A362ADB009700F876F1 /* MoviePageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93120A352ADB009700F876F1 /* MoviePageView.swift */; };
 		932141522ADD75B200D74AF7 /* UpdateMovieItemView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 932141512ADD75B200D74AF7 /* UpdateMovieItemView.swift */; };
-		93E11E8C2AE7C07F0033F193 /* MovieCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93E11E8B2AE7C07F0033F193 /* MovieCardView.swift */; };
-		93E11E8E2AE7C2E70033F193 /* MovieFilmView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93E11E8D2AE7C2E70033F193 /* MovieFilmView.swift */; };
+		93A2A2132AFA373C00BFAF6B /* GenericApiProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93A2A2122AFA373C00BFAF6B /* GenericApiProtocol.swift */; };
+		93A2A2162AFA422400BFAF6B /* GenericApiImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93A2A2152AFA422400BFAF6B /* GenericApiImpl.swift */; };
+		93A2A2182AFA7EBD00BFAF6B /* ApiUrls.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93A2A2172AFA7EBD00BFAF6B /* ApiUrls.swift */; };
+		93BBFC142AEAB41B00760ABE /* ImagePicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93BBFC132AEAB41B00760ABE /* ImagePicker.swift */; };
+		93E11E8C2AE7C07F0033F193 /* MovieFilmCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93E11E8B2AE7C07F0033F193 /* MovieFilmCardView.swift */; };
+		93E989FC2AEA5C1200634B04 /* PhotoFromCameraController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93E989FB2AEA5C1200634B04 /* PhotoFromCameraController.swift */; };
+		93E989FE2AEA629800634B04 /* ImagePickerTypeEnum.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93E989FD2AEA629800634B04 /* ImagePickerTypeEnum.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		930AF2992AF67AD300E6F1E4 /* RestApiService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RestApiService.swift; sourceTree = "<group>"; };
+		930AF29B2AF67B8700E6F1E4 /* MovieApiPopular.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MovieApiPopular.swift; sourceTree = "<group>"; };
+		930AF29E2AF67BD500E6F1E4 /* MovieApiError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MovieApiError.swift; sourceTree = "<group>"; };
+		930AF2A02AF6978900E6F1E4 /* RestApiMovieVM.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RestApiMovieVM.swift; sourceTree = "<group>"; };
+		930AF7262AFCE03800E3C40D /* MovieCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MovieCardView.swift; sourceTree = "<group>"; };
+		930AF7282AFD2B7900E3C40D /* ViewRouter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewRouter.swift; sourceTree = "<group>"; };
 		93120A1B2ADABEE300F876F1 /* ThatMovie.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ThatMovie.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		93120A1E2ADABEE300F876F1 /* ThatMovieApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThatMovieApp.swift; sourceTree = "<group>"; };
 		93120A202ADABEE300F876F1 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -31,8 +48,13 @@
 		93120A332ADB008100F876F1 /* AddMovieItemView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddMovieItemView.swift; sourceTree = "<group>"; };
 		93120A352ADB009700F876F1 /* MoviePageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoviePageView.swift; sourceTree = "<group>"; };
 		932141512ADD75B200D74AF7 /* UpdateMovieItemView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateMovieItemView.swift; sourceTree = "<group>"; };
-		93E11E8B2AE7C07F0033F193 /* MovieCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MovieCardView.swift; sourceTree = "<group>"; };
-		93E11E8D2AE7C2E70033F193 /* MovieFilmView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MovieFilmView.swift; sourceTree = "<group>"; };
+		93A2A2122AFA373C00BFAF6B /* GenericApiProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GenericApiProtocol.swift; sourceTree = "<group>"; };
+		93A2A2152AFA422400BFAF6B /* GenericApiImpl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GenericApiImpl.swift; sourceTree = "<group>"; };
+		93A2A2172AFA7EBD00BFAF6B /* ApiUrls.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ApiUrls.swift; sourceTree = "<group>"; };
+		93BBFC132AEAB41B00760ABE /* ImagePicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImagePicker.swift; sourceTree = "<group>"; };
+		93E11E8B2AE7C07F0033F193 /* MovieFilmCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MovieFilmCardView.swift; sourceTree = "<group>"; };
+		93E989FB2AEA5C1200634B04 /* PhotoFromCameraController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoFromCameraController.swift; sourceTree = "<group>"; };
+		93E989FD2AEA629800634B04 /* ImagePickerTypeEnum.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImagePickerTypeEnum.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -46,6 +68,25 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		930AF2982AF6781200E6F1E4 /* Api */ = {
+			isa = PBXGroup;
+			children = (
+				93A2A2142AFA420900BFAF6B /* GenericApi */,
+				930AF2992AF67AD300E6F1E4 /* RestApiService.swift */,
+				93A2A2172AFA7EBD00BFAF6B /* ApiUrls.swift */,
+			);
+			path = Api;
+			sourceTree = "<group>";
+		};
+		930AF29D2AF67BB000E6F1E4 /* RestModel */ = {
+			isa = PBXGroup;
+			children = (
+				930AF29B2AF67B8700E6F1E4 /* MovieApiPopular.swift */,
+				930AF29E2AF67BD500E6F1E4 /* MovieApiError.swift */,
+			);
+			path = RestModel;
+			sourceTree = "<group>";
+		};
 		93120A122ADABEE300F876F1 = {
 			isa = PBXGroup;
 			children = (
@@ -65,6 +106,7 @@
 		93120A1D2ADABEE300F876F1 /* ThatMovie */ = {
 			isa = PBXGroup;
 			children = (
+				930AF2982AF6781200E6F1E4 /* Api */,
 				93120A302ADB002300F876F1 /* View */,
 				93120A312ADB002D00F876F1 /* Model */,
 				93120A322ADB003300F876F1 /* ViewModel */,
@@ -92,8 +134,8 @@
 				93120A332ADB008100F876F1 /* AddMovieItemView.swift */,
 				93120A352ADB009700F876F1 /* MoviePageView.swift */,
 				932141512ADD75B200D74AF7 /* UpdateMovieItemView.swift */,
-				93E11E8B2AE7C07F0033F193 /* MovieCardView.swift */,
-				93E11E8D2AE7C2E70033F193 /* MovieFilmView.swift */,
+				93E11E8B2AE7C07F0033F193 /* MovieFilmCardView.swift */,
+				930AF7262AFCE03800E3C40D /* MovieCardView.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -101,7 +143,9 @@
 		93120A312ADB002D00F876F1 /* Model */ = {
 			isa = PBXGroup;
 			children = (
+				930AF29D2AF67BB000E6F1E4 /* RestModel */,
 				93120A222ADABEE300F876F1 /* MovieItem.swift */,
+				93E989FD2AEA629800634B04 /* ImagePickerTypeEnum.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -109,8 +153,21 @@
 		93120A322ADB003300F876F1 /* ViewModel */ = {
 			isa = PBXGroup;
 			children = (
+				93E989FB2AEA5C1200634B04 /* PhotoFromCameraController.swift */,
+				93BBFC132AEAB41B00760ABE /* ImagePicker.swift */,
+				930AF2A02AF6978900E6F1E4 /* RestApiMovieVM.swift */,
+				930AF7282AFD2B7900E3C40D /* ViewRouter.swift */,
 			);
 			path = ViewModel;
+			sourceTree = "<group>";
+		};
+		93A2A2142AFA420900BFAF6B /* GenericApi */ = {
+			isa = PBXGroup;
+			children = (
+				93A2A2122AFA373C00BFAF6B /* GenericApiProtocol.swift */,
+				93A2A2152AFA422400BFAF6B /* GenericApiImpl.swift */,
+			);
+			path = GenericApi;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -183,13 +240,24 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				930AF29A2AF67AD300E6F1E4 /* RestApiService.swift in Sources */,
 				93120A212ADABEE300F876F1 /* ContentView.swift in Sources */,
-				93E11E8E2AE7C2E70033F193 /* MovieFilmView.swift in Sources */,
+				930AF2A12AF6978900E6F1E4 /* RestApiMovieVM.swift in Sources */,
+				93A2A2182AFA7EBD00BFAF6B /* ApiUrls.swift in Sources */,
+				930AF29C2AF67B8700E6F1E4 /* MovieApiPopular.swift in Sources */,
 				93120A232ADABEE300F876F1 /* MovieItem.swift in Sources */,
+				93E989FC2AEA5C1200634B04 /* PhotoFromCameraController.swift in Sources */,
 				93120A342ADB008100F876F1 /* AddMovieItemView.swift in Sources */,
 				93120A362ADB009700F876F1 /* MoviePageView.swift in Sources */,
+				93E989FE2AEA629800634B04 /* ImagePickerTypeEnum.swift in Sources */,
+				93A2A2132AFA373C00BFAF6B /* GenericApiProtocol.swift in Sources */,
+				930AF7292AFD2B7900E3C40D /* ViewRouter.swift in Sources */,
+				93BBFC142AEAB41B00760ABE /* ImagePicker.swift in Sources */,
 				932141522ADD75B200D74AF7 /* UpdateMovieItemView.swift in Sources */,
-				93E11E8C2AE7C07F0033F193 /* MovieCardView.swift in Sources */,
+				930AF7272AFCE03800E3C40D /* MovieCardView.swift in Sources */,
+				93E11E8C2AE7C07F0033F193 /* MovieFilmCardView.swift in Sources */,
+				930AF29F2AF67BD500E6F1E4 /* MovieApiError.swift in Sources */,
+				93A2A2162AFA422400BFAF6B /* GenericApiImpl.swift in Sources */,
 				93120A1F2ADABEE300F876F1 /* ThatMovieApp.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -329,11 +397,12 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = ThatMovie/Info.plist;
+				INFOPLIST_KEY_NSCameraUsageDescription = "This app requires access to your camera";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = UIInterfaceOrientationPortrait;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -360,11 +429,12 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = ThatMovie/Info.plist;
+				INFOPLIST_KEY_NSCameraUsageDescription = "This app requires access to your camera";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = UIInterfaceOrientationPortrait;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",

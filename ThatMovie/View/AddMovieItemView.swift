@@ -9,6 +9,8 @@ import SwiftUI
 import SwiftData
 import PhotosUI
 
+
+
 struct AddMovieItemView: View {
     @Environment(\.modelContext) private var modelContext
     
@@ -20,10 +22,43 @@ struct AddMovieItemView: View {
     @State private var recomendTorewatch: Bool = false
     @State private var source: String? = ""
     @State private var genres: Genres = Genres.UNKNOWN
-    @State private var selectedPhoto: PhotosPickerItem?
+//    @State private var selectedPhoto: PhotosPickerItem?
+    
+    @State private var showChoosePictureDialog: Bool = false
+    @State private var showImagePickerSheet: Bool = false
+    @State private var sourceType: ImagePickerType = .photoLibrary
+    @State private var image: UIImage?
+    
+    
+    
     
     var body: some View {
         VStack {
+            
+            
+            Image(uiImage: image ?? UIImage(named:"noImage")!)
+                    .resizable()
+                    .scaledToFit()
+//                    .frame(maxWidth: 300, maxHeight: 300)
+                
+                Button("Choose Picture") {
+                    self.showChoosePictureDialog = true
+                }
+                .padding()
+                .confirmationDialog("Select Photo", isPresented: $showChoosePictureDialog) {
+                    Button("Photo Library") {
+                        self.showImagePickerSheet = true
+                        self.sourceType = .photoLibrary
+                    }
+                    
+                    Button("Camera") {
+                        self.showImagePickerSheet = true
+                        self.sourceType = .camera
+                    }
+                }
+                .buttonStyle(.borderedProminent)
+                .foregroundStyle(.black)
+            
             
             HStack(alignment: .center) {
                 Text("Select personal rating")
@@ -48,54 +83,61 @@ struct AddMovieItemView: View {
                 Text(genres.title)
             }
             
-            Section {
-                            
-                            if let selectedPhotoData = banner,
-                               let uiImage = UIImage(data: selectedPhotoData) {
-                                Image(uiImage: uiImage)
-                                    .resizable()
-                                    .scaledToFill()
-                                    .frame(maxWidth: .infinity, maxHeight: 300)
-                            }
-                            
-                            PhotosPicker(selection: $selectedPhoto,
-                                         matching: .images,
-                                         photoLibrary: .shared()) {
-                                Label("Add Image", systemImage: "photo")
-                            }
-                            
-                if banner?.isEmpty != nil {
-                                
-                                Button(role: .destructive) {
-                                    withAnimation {
-                                        selectedPhoto = nil
-                                        banner = nil
-//                                        item.image = nil
-                                    }
-                                } label: {
-                                    Label("Remove Image", systemImage: "xmark")
-                                        .foregroundStyle(.red)
-                                }
-                            }
-             
-                        }
+//            Section {
+//                            
+//                            if let selectedPhotoData = banner,
+//                               let uiImage = UIImage(data: selectedPhotoData) {
+//                                Image(uiImage: uiImage)
+//                                    .resizable()
+//                                    .scaledToFill()
+//                                    .frame(maxWidth: .infinity, maxHeight: 300)
+//                            }
+//                            
+//                            PhotosPicker(selection: $selectedPhoto,
+//                                         matching: .images,
+//                                         photoLibrary: .shared()) {
+//                                Label("Add Image", systemImage: "photo")
+//                            }
+//                            
+//                if banner?.isEmpty != nil {
+//                                
+//                                Button(role: .destructive) {
+//                                    withAnimation {
+//                                        selectedPhoto = nil
+//                                        banner = nil
+////                                        item.image = nil
+//                                    }
+//                                } label: {
+//                                    Label("Remove Image", systemImage: "xmark")
+//                                        .foregroundStyle(.red)
+//                                }
+//                            }
+//             
+//                        }
             
-            Button(action: {
-                let movieItem = MovieItem(movieName: movieName, banner: banner, personalRating: personalRating, dateOfViewing: dateOfViewing, dateToWatchAgain: dateToWatchAgain, recomendTorewatch: recomendTorewatch, source: source, genres: genres)
-                
-                    modelContext.insert(movieItem)
-                
-                
-            }, label: {
-                /*@START_MENU_TOKEN@*/Text("Button")/*@END_MENU_TOKEN@*/
-            })
+//            Button(action: {
+//                let movieItem = MovieItem(movieName: movieName, banner: banner, personalRating: personalRating, dateOfViewing: dateOfViewing, dateToWatchAgain: dateToWatchAgain, recomendTorewatch: recomendTorewatch, source: source, genres: genres)
+//                
+//                    modelContext.insert(movieItem)
+//                
+//                
+//            }, label: {
+//                /*@START_MENU_TOKEN@*/Text("Button")/*@END_MENU_TOKEN@*/
+//            })
             
         }
-        .task(id: selectedPhoto) {
-            if let data = try? await selectedPhoto?.loadTransferable(type: Data.self) {
-                banner = data
+        .sheet(isPresented: $showImagePickerSheet) {
+            if(sourceType == .camera) {
+                PhotoFromCameraController(image: $image)
+            } else {
+                ImagePicker(image: $image)
             }
         }
+//        .task(id: selectedPhoto) {
+//            if let data = try? await selectedPhoto?.loadTransferable(type: Data.self) {
+//                banner = data
+//            }
+//        }
     }
 }
 

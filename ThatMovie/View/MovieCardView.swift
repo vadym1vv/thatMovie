@@ -2,51 +2,59 @@
 //  MovieCardView.swift
 //  ThatMovie
 //
-//  Created by Vadym Vasylaki on 24.10.2023.
+//  Created by Vadym Vasylaki on 09.11.2023.
 //
 
 import SwiftUI
 
 struct MovieCardView: View {
+    
+    @State var posterPath: Result
+    
     var body: some View {
-        VStack {
-            VStack(spacing: 0) {
-                Rectangle()
-                    .frame(width: .infinity, height: 20)
+        ZStack {
+//            AsyncImage(url: URL(string: "https://hws.dev/img/cupcakes@3x.jpg")) { image in
+            AsyncImage(url: URL(string: "\(RestApiService.baseImageUrl)\(posterPath.posterPath)")) { image in
+                image
+                    .resizable()
+                    .scaledToFit()
+            } placeholder: {
+                ProgressView()
+            }
+            VStack {
                 HStack {
-                    ExtractedView()
                     Spacer()
-                    Text("asfasf")
+                    HStack {
+                        Text("movie name")
+                            .padding([.leading, .trailing], 5)
+                            .background(Color(UIColor.systemGray6))
+                            .clipShape(.rect(cornerRadius: 10))
+                    }
                     Spacer()
-                    ExtractedView()
+                    Image(systemName: "star")
+                        .padding()
                 }
-                Rectangle()
-                    .frame(width: .infinity, height: 20)
-                    .padding(0)
+                Spacer()
+                HStack {
+                            HStack {
+                                Image(systemName: "eye")
+                                Text("1886k")
+                            }
+                            .padding([.leading, .trailing], 5)
+                            .background(Color(UIColor.systemGray6))
+                            .clipShape(.rect(cornerRadius: 10))
+                       
+                    Text("Rating: 6.7")
+                        .padding([.leading, .trailing], 5)
+                        .background(Color(UIColor.systemGray6))
+                        .clipShape(.rect(cornerRadius: 10))
+                }
+                
             }
         }
     }
 }
 
-  
-
-#Preview {
-    MovieCardView()
-}
-
-struct ExtractedView: View {
-    var body: some View {
-        VStack {
-            Group {
-                ForEach(0..<10) { _ in
-                    RoundedRectangle(cornerRadius: 10)
-                        .frame(width: 25, height: 25)
-                        .padding(6)
-                        .foregroundStyle(Color.white)
-                        .background(Color.black)
-                }
-            }
-        }
-        .background(.black)
-    }
-}
+//#Preview {
+//    MovieCardView()
+//}
