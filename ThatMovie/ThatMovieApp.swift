@@ -28,7 +28,8 @@ struct ThatMovieApp: App {
 
     var body: some Scene {
         WindowGroup {
-            ContentView(viewRouter: viewRouter)
+//            ContentView(viewRouter: viewRouter)
+            ContentView()
         }
         .modelContainer(sharedModelContainer)
     }

@@ -14,7 +14,7 @@ struct MovieCardView: View {
     var body: some View {
         ZStack {
 //            AsyncImage(url: URL(string: "https://hws.dev/img/cupcakes@3x.jpg")) { image in
-            AsyncImage(url: URL(string: "\(RestApiService.baseImageUrl)\(posterPath.posterPath)")) { image in
+            AsyncImage(url: URL(string: "\(ApiUrls.baseImageUrl)\(posterPath.posterPath)")) { image in
                 image
                     .resizable()
                     .scaledToFit()

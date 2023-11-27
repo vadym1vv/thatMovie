@@ -8,298 +8,335 @@
 import SwiftUI
 import SwiftData
 
+enum DisplayMode {
+    
+    case single, double, triple
+    
+    var displayModeIcon: String {
+        switch self {
+        case .single:
+            return "circlebadge.fill"
+        case .double:
+            return "circle.grid.2x1.fill"
+        case .triple:
+            return "circle.grid.3x3.fill"
+        }
+    }
+    
+}
+
 struct ContentView: View {
-    @Environment(\.modelContext) private var modelContext
-    @StateObject var restApiMovieVM = RestApiMovieVM()
-    @StateObject var viewRouter: ViewRouter
     
-    @Query private var movies: [MovieItem]
+    @State var expand: Bool = false//menu is up
+    @State var showSearchField: Bool = false
+    @State var isSelectLanguageOn: Bool = false
+    @State var isNightTheme: Bool = false
+    @State var currentDisplayMode: DisplayMode = .triple
+    @State var movies: MovieRest?
+    @State var page: Int = 1
     
-    @State var showPopUp = false
+    @AppStorage("isMovieOptionsOn") var isMovieOptionsOn: Bool = false
+    @AppStorage("selectedLanguage") var selectedLanguage: Language = .en
+    @StateObject var restApiMovieVm: RestApiMovieVM = RestApiMovieVM()
     
-    @State var selectDeleteM = 0
-    @State var expand: Bool = false
+    private var additionalOptionsPresent: Bool = false
+    
+    
+    
+    
+   
     var body: some View {
         
         
-//            GeometryReader { geometry in
-//                VStack {
-//                    Spacer()
-//                    switch viewRouter.currentPage {
-//                    case .home:
-//                        Text("Home")
-//                    case .liked:
-//                        Text("liked")
-//                    case .records:
-//                        Text("records")
-//                    case .user:
-//                        Text("user")
-//                    }
-//                    Spacer()
-//                    ZStack {
-//                        HStack {
-//                            TabBarIcon(viewRouter: viewRouter, assignedPage: .home, width: geometry.size.width/5, height: geometry.size.height/28, systemIconeName: "homekit", tabName: "Home")
-//                            TabBarIcon(viewRouter: viewRouter, assignedPage: .liked, width: geometry.size.width/5, height: geometry.size.height/28, systemIconeName: "heart", tabName: "Liked")
-//
-//                            TabBarIcon(viewRouter: viewRouter, assignedPage: .records, width: geometry.size.width/5, height: geometry.size.height/28, systemIconeName: "waveform", tabName: "records")
-//                            TabBarIcon(viewRouter: viewRouter, assignedPage: .user, width: geometry.size.width/5, height: geometry.size.height/28, systemIconeName: "person.crop.circle", tabName: "Account")
-//                        }
-//                        .frame(width: geometry.size.width, height: geometry.size.height/8)
-//                        .background(.gray)
-//                    .shadow(radius: 2)
-//                        ZStack {
-//                                Circle()
-//                                    .foregroundStyle(.white)
-//                                    .frame(width: geometry.size.width/7, height: geometry.size.width/7)
-//                                    .shadow(radius: 4)
-//                                Image(systemName: "plus.circle.fill")
-//                                    .resizable()
-//                                    .aspectRatio(contentMode: .fit)
-//                                    .frame(width: geometry.size.width/7-6, height: geometry.size.width/7-6)
-//                                    .foregroundStyle(.purple)
-//    //                        Picker("Select personal rating", selection: $selectDeleteM) {
-//    //                            ForEach(1...10, id: \.self) {rating in
-//    //                                    Text("\(rating)")
-//    //
-//    //                                            .rotationEffect(Angle(degrees: 90))
-//    //                            }
-//    //                        }
-//    //                        .pickerStyle(.wheel)
-//    //                        .rotationEffect(Angle(degrees: -90))
-//    //
-//    //                        .clipped()
-//                            
-//                        }
-//                        .offset(y: -geometry.size.height/8/2)
-//                    }
-//                    
-//                    
-//                    
-//                    
-//                }
-//                .ignoresSafeArea()
-//            }
-//        NavigationStack {
-            ScrollView {
-                VStack {
-//                    ForEach(movies) { item in
-//    //                    Text(item.movieName)
-//
-//    //                    NavigationLink {2
-//    //                        Text("Item at \(item.timestamp, format: Date.FormatStyle(date: .numeric, time: .standard))")
-//    //                    } label: {
-//    //                        Text(item.timestamp, format: Date.FormatStyle(date: .numeric, time: .standard))
-//    //                    }
-//                        NavigationLink {
-//                            UpdateMovieItemView(movieItem: item)
-//                        } label: {
-//                            Text(item.movieName)
-//                        }
-//
-//
-//                    }
-//                    .onDelete(perform: deleteItems)
+//        ZStack {
+        ScrollView {
+            if showSearchField {
+                SearchFieldView(showSearchField: $showSearchField)
+                    .padding()
+            } else {
+                MovieSection(restApiMovieVm: restApiMovieVm, page: $page, selectedLanguage: $selectedLanguage)
                     
-//                    ForEach(restApiMovieVM.movieApiPopular?.results ?? []) { movie in
-//                        Text(movie.title)
-//                        let _ = print(movie.title)
-//                        MovieCardView(posterPath: movie)
-//                    }
-                    
-                }
-                .task {
-//                    await restApiMovieVM.initApi()
-                }
+                    .padding()
                 
-                
-                
-                
-                
-            }
-            .overlay(alignment: .bottom) {
-//                NavigationLink {
-//                                        AddMovieItemView()
-//                                    } label: {
-//                                        Label("add item", systemImage: "film")
-//                                    }
-//                                    .opacity(1)
-//                                    Button {
-//                //                        addItem()
-////                                        AddEditMovieItem(movieItemToUpdate: Binding.constant(nil))
-//                                    } label: {
-//                                        Label("add item", systemImage: "film")
-//                                    }
-//                                    .foregroundStyle(.black)
-//                ZStack {
-//                    Button {
-//                            
-//                    } label: {
-//                        Label("add item", systemImage: "film")
-//                    }
-//                    .foregroundStyle(.black)
-                
-                ZStack(alignment: .top) {
-                    Circle()
-                        .trim(from: 0.5, to: self.expand ? 1 : 0.5)
-                        .fill(Color.mint)
-                        .frame(width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.width)
-//
-                    
-                    ZStack {
-                        Button(action: {
+                if(additionalOptionsPresent) {
+                    VStack {
+                        AdditionalOptinsView {
                             
-                            
-                        }, label: {
-                            VStack(spacing: 10){
-                                Image(systemName: "star")
-                                    .font(.title)
-                                    .foregroundStyle(.blue)
-                                Text("Favourite")
-                                    .fontWeight(.bold)
-                                    .foregroundStyle(.white)
-                            }
-                        }).offset(x: -100, y: 75)
-                        
-                        
-                        Button(action: {
-                            
-                            
-                        }, label: {
-                            VStack(spacing: 10){
-                                Image(systemName: "paperplane")
-                                    .font(.title)
-                                    .foregroundStyle(.blue)
-                                Text("Favourite")
-                                    .fontWeight(.bold)
-                                    .foregroundStyle(.white)
-                            }
-                        })
-                        .offset(y: 30)
-                        
-                        Button(action: {
-                            
-                            
-                        }, label: {
-                            VStack(spacing: 10){
-                                Image(systemName: "tray.2")
-                                    .font(.title)
-                                    .foregroundStyle(.blue)
-                                Text("Favourite")
-                                    .fontWeight(.bold)
-                                    .foregroundStyle(.white)
-                            }
-                        })
-                        .offset(x: 100, y: 75)
+                        }
                     }
-                    .opacity(self.expand ? 1 : 0)
+                    .frame(width: .infinity, height: 100, alignment: .center)
+                    Button(action: /*@START_MENU_TOKEN@*/{}/*@END_MENU_TOKEN@*/, label: {
+                        Image(systemName: "chevron.compact.down")
+                    })
                 }
-                
-//
-                
-    //                    .rotationEffect(.degrees(280))
-                    
-//                }
-                
-            }.offset(y: UIScreen.main.bounds.width / 1.6)
-        Button(action: {
-            withAnimation {
-                self.expand.toggle()
             }
-        }, label: {
-            Text("Toggle")
-                .font(.largeTitle)
-        })
-        .foregroundStyle(.red)
-            
-//            .toolbar {
-//                ToolbarItem(placement: .bottomBar) {
-//                    Spacer()
-//                    NavigationLink {
-//                        AddMovieItemView()
-//                    } label: {
-//                        Label("add item", systemImage: "film")
-//                    }
-////                    Button {
-//////                        addItem()
-////                        AddEditMovieItem(movieItemToUpdate: Binding.constant(nil))
-////                    } label: {
-////                        Label("add item", systemImage: "film")
-////                    }
-//
-//                }
-//                
+                HStack{}
+                    .frame(
+                                maxWidth: .infinity,
+                                maxHeight: .infinity
+                            )
+            ForEach(restApiMovieVm.movieRest?.results ?? []) { movie in
+                //                        HStack {
+                //                            Text(movie.title)
+                //                        }.frame(width: 250, height: 200)
+                //                            .border(.red)
+                Text(movie.title)
+            }
+            }
+        .background(ignoresSafeAreaEdges: .bottom)
 //        }
-            
-            
-            
-            
-//            .onAppear {
-//
-//            }
-            
-            
-//            .toolbar {
-//                ToolbarItem(placement: .navigationBarTrailing) {
-//                    EditButton()
-//                }
-//                ToolbarItem {
-//                    Button(action: addItem) {
-//                        Label("Add Item", systemImage: "plus")
-//                    }
-//                }
-//            }
-            
-        }
-        
-        
-        
-        
+//        .frame(
+//                    maxWidth: .infinity,
+//                    maxHeight: .infinity
+//                )
+        .overlay(alignment: .bottom) {
+            HStack {
+                ZStack(alignment: .bottomTrailing) {
+                    HStack {
+                        Spacer()
+                        
+                        VStack{}
+                            .overlay {
+                                ZStack {
+                                    ZStack {
+                                        ZStack{
+                                            Button(action: {
+                                                withAnimation {
+                                                    self.expand.toggle()
+                                                    self.isSelectLanguageOn = false
+                                                }
+                                                
+                                            }, label: {
+                                                Image(systemName: "arrow.up.left.circle")
+                                                    .resizable()
+                                                    .scaledToFit()
+                                                    .rotationEffect(.degrees(self.expand ? 180 : 0))
+                                                    
+                                            })
+                                            .padding(10)
+                                            .tint(.red)
+                                            .zIndex(1)
+                                            .frame(width: 60, height: 60)
+                                            Circle()
+                                                .fill(Color(UIColor.systemGray6))
+                                                .opacity(0.4)
+                                            Circle()
+                                                .fill(Color(UIColor.systemGray6)
+                                                    .opacity(0.8))
+                                                .frame(width: self.expand ? isSelectLanguageOn ? UIScreen.main.bounds.width + 150 : UIScreen.main.bounds.width + 140 : 0,
+                                                       height: self.expand ? isSelectLanguageOn ? UIScreen.main.bounds.width + 150 : UIScreen.main.bounds.width + 140 : 0)
+                                        }
+                                        
+                                        .offset(x: -50, y: -50)
+                                    .zIndex(1)
+                                        
+                                    }
+                                    if self.expand {
+                                        Group {
+                                            if(self.isSelectLanguageOn) {
+                                                
+                                                Group{
+                                                    LanguageButton(language: Language.en, languageToSet: $selectedLanguage, isSelectLanguageOn: $isSelectLanguageOn)
+                                                        .offset(x: -70, y: -160)
+                                                    
+                                                    LanguageButton(language: Language.es, languageToSet: $selectedLanguage, isSelectLanguageOn: $isSelectLanguageOn)
+                                                    .offset(x: -140, y:  -100)
+                                                    
+                                                    LanguageButton(language: Language.hi, languageToSet: $selectedLanguage, isSelectLanguageOn: $isSelectLanguageOn)
+                                                    .offset(x: -130, y: -20)
+                                                    
+                                                    
+                                                }
+                                                Group {
+                                                    LanguageButton(language: Language.de, languageToSet: $selectedLanguage, isSelectLanguageOn: $isSelectLanguageOn)
+                                                        .offset(x: -90, y: -250)
+                                                    
+                                                    LanguageButton(language: Language.fr, languageToSet: $selectedLanguage, isSelectLanguageOn: $isSelectLanguageOn)
+                                                        .offset(x: -190, y: -190)
+                                                        
+                                                    LanguageButton(language: Language.pl, languageToSet: $selectedLanguage, isSelectLanguageOn: $isSelectLanguageOn)
+                                                    .offset(x: -250, y: -110)
+                                                    
+                                                    LanguageButton(language: Language.ua, languageToSet: $selectedLanguage, isSelectLanguageOn: $isSelectLanguageOn)
+                                                    .offset(x: -240, y: -20)
+                                                    
+                                                }
+                                                
+                                            } else {
+                                                
+                                                Group {
+                                                    if(!self.showSearchField) {
+                                                        Button(action: {
+                                                            withAnimation {
+                                                                self.showSearchField.toggle()
+                                                                self.expand.toggle()
+                                                            }
+                                                        }, label: {
+                                                            Image(systemName: "magnifyingglass")
+                                                                .foregroundStyle(.black)
+                                                        })
+                                                        .offset(x: -50, y: -195)
+                                                    }
+                                                    
+                                                    Button(action: {
+        //                                                withAnimation {
+        //                                                    self.showSearchField.toggle()
+        //                                                    self.expand.toggle()
+        //                                                }
+                                                        self.isSelectLanguageOn.toggle()
+                                                    }, label: {
+                                                        VStack(alignment: .center) {
+                                                            
+                                                            Button(action: {
+                                                                withAnimation {
+                                                                    self.isSelectLanguageOn.toggle()
+                                                                }
+                                                            }, label: {
+                                                                Text("\(self.selectedLanguage.languageName.iso_639_1.capitalized)")
+                                                                    .padding(3)
+                                                                    .overlay {
+                                                                        RoundedRectangle(cornerRadius: 5)
+                                                                            .stroke()
+                                                                    }
+    //                                                                .padding(0)
+                                                            })
+    //                                                        Text("Selected language")
+    //                                                            .padding(0)
+                                                        }
+                                                        })
+                                                        .offset(x: -150, y:  -130)
+                                                    
+                                                        
+                                                        //                                            ButtonMenu()
+                                                    
+                                                    Button {
+                                                        if(self.currentDisplayMode == .single) {
+                                                            self.currentDisplayMode = .double
+                                                        } else if(self.currentDisplayMode == .double) {
+                                                            self.currentDisplayMode = .triple
+                                                        } else {
+                                                            self.currentDisplayMode = .single
+                                                        }
+                                                    } label: {
+                                                        Image(systemName: self.currentDisplayMode.displayModeIcon)
+                                                    }
+                                                    .offset(x: -160, y:  -30)
+
+                                                }
+                                                .foregroundStyle(.black)
+                                                
+                                                Group {
+                                                    Button {
+                                                        
+                                                    } label: {
+                                                        Image(systemName: "person.circle")
+                                                    }
+                                                    .offset(x: -90, y: -250)
+
+                                                    Button {
+                                                        withAnimation {
+                                                            self.isNightTheme.toggle()
+                                                        }
+                                                    } label: {
+                                                        Image(systemName: self.isNightTheme ? "moon" : "sun.min")
+                                                    }
+                                                    .offset(x: -190, y: -190)
+                                                    
+                                                    
+                                                    Button {
+                                                        
+                                                    } label: {
+                                                        Image(systemName: "questionmark.circle")
+                                                    }
+                                                    .offset(x: -250, y: -110)
+                                                    
+                                                    Button {
+                                                        
+                                                    } label: {
+                                                        Image(systemName: "person.crop.square.fill.and.at.rectangle")
+                                                            .font(.system(size: 25))
+                                                    }
+                                                    .offset(x: -255, y: -20)
+                                                }
+                                                .foregroundStyle(.black)
+                                                
+                                            }
+                                        
+                                        }
+                                        .foregroundStyle(.black)
+                                        
+                                    }
+            //                        ButtonMenu().offset(x: -200, y: -10)
+                                }
+                            }
+//                            .padding(.trailing, 5)
+                        
+                        
+                        
+                    }
+                    
+                }
+//                .frame(maxWidth: .infinity)
+                
+            }
+            .border(.red)
+    }
     }
 
-//    private func addItem() {
-//        withAnimation {
-//            let newItem = Item(timestamp: Date())
-//            modelContext.insert(newItem)
-//        }
-//    }
-
-//    private func deleteItems(offsets: IndexSet) {
-//        withAnimation {
-//            for index in offsets {
-//                modelContext.delete(movies[index])
-//            }
-//        }
-//    }
+}
+//#Preview {
+//    ContentView( movies: MovieApiPopular.init(page: 1, results: [], totalPages: 1, totalResults: 1))
+//        .modelContainer(for: MovieItem.self, inMemory: true)
 //}
 
-//struct TabBarIcon: View {
-//    
-//    @StateObject var viewRouter: ViewRouter
-//    let assignedPage: Page
-//    
-//    let width, height: CGFloat
-//    let systemIconeName, tabName: String
-//    var body: some View {
-//        VStack {
-//            Image(systemName: systemIconeName)
-//                .resizable()
-//                .aspectRatio(contentMode: .fit)
-//                .frame(width: width, height: height)
-//                .padding(.top, 10)
-//            Text(tabName)
-//                .font(.footnote)
-//            Spacer()
-//            
-//        }
-//        .padding(.horizontal, -5)
-//        .onTapGesture{
-//            viewRouter.currentPage = assignedPage
-//        }
-//        .foregroundStyle(viewRouter.currentPage == assignedPage ? Color(UIColor.systemGray6) : .gray)
-//    }
-//}
+struct CustomButton: View {
+    var body: some View {
+        Button(action: {}, label: {
+            /*@START_MENU_TOKEN@*/Text("Button")/*@END_MENU_TOKEN@*/
+        })
+        .buttonStyle(.borderedProminent)
+        .tint(.red)
+    }
+}
 
-#Preview {
-    ContentView(viewRouter: ViewRouter())
-        .modelContainer(for: MovieItem.self, inMemory: true)
+
+struct CustomButtonB: View {
+    var body: some View {
+        Button(action: /*@START_MENU_TOKEN@*/{}/*@END_MENU_TOKEN@*/, label: {
+            /*@START_MENU_TOKEN@*/Text("Button")/*@END_MENU_TOKEN@*/
+        })
+        .buttonStyle(.borderedProminent)
+        .tint(.blue)
+    }
+}
+
+struct ButtonMenu: View {
+    var body: some View {
+        Button(action: {
+            
+        }, label: {
+            VStack(spacing: 10){
+                Image(systemName: "star")
+                    .font(.title)
+                    .foregroundStyle(.blue)
+                Text("Favourite")
+                    .fontWeight(.bold)
+                    .foregroundStyle(.white)
+            }
+        })
+    }
+}
+
+struct LanguageButton: View {
+    var language: Language
+    @Binding var languageToSet: Language
+    @Binding var isSelectLanguageOn: Bool
+    
+    var body: some View {
+        Button(language.languageName.name) {
+            languageToSet = language
+            isSelectLanguageOn = false
+        }
+        .buttonStyle(.bordered)
+    }
 }

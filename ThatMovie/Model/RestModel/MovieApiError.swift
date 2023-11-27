@@ -20,7 +20,7 @@ enum MovieApiError: Error {
         case let .jsonParsingFailure(description): return "failed to parse JSON \(description)"
         case let .requestFailed(description): return "Request failed \(description)"
         case let .invalidStatusCode(statusCode): return "Invalid status code: \(statusCode)"
-        case let .unknownError(error): return "Unknown error: \(error.localizedDescription)"
+        case let .unknownError(error): return "Unknown error: \(error)"
         }
     }
 }

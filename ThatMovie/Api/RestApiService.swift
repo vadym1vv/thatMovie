@@ -9,8 +9,8 @@ import Foundation
 
 class RestApiService {
     
-    private let baseUrl = "https://api.themoviedb.org"
-    static let baseImageUrl = "https://image.tmdb.org/t/p/original"
+//    let baseUrl = "https://api.themoviedb.org"
+    
     
     let headers = [
       "accept": "application/json",
@@ -18,10 +18,10 @@ class RestApiService {
     ]
     
     
-    func fetchMoviesByPopularity() async throws -> MovieApiPopular? {
+    func fetchMoviesByPopularity() async throws -> MovieRest? {
         
 
-        let request = NSMutableURLRequest(url: NSURL(string: "\(baseUrl)/3/movie/popular?language=en-US&page=1")! as URL,
+        let request = NSMutableURLRequest(url: NSURL(string: "\(ApiUrls.baseUrl)/3/movie/popular?language=en-US&page=1")! as URL,
                                                 cachePolicy: .useProtocolCachePolicy,
                                             timeoutInterval: 10.0)
         request.httpMethod = "GET"
@@ -38,7 +38,7 @@ class RestApiService {
                 return nil
             }
             
-            let popularMovies = try JSONDecoder().decode(MovieApiPopular.self, from: data)
+            let popularMovies = try JSONDecoder().decode(MovieRest.self, from: data)
             
             return popularMovies
         

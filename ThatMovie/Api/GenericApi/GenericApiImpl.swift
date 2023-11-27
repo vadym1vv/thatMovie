@@ -21,8 +21,8 @@ final class GenericApiImpl: GenericApiProtocol {
     }
     
     func fetch<T: Codable> (type: T.Type, with request: URLRequest) async throws -> T {
+        print(request.url)
         let (data, response) = try await session.data(for: request)
-        print("------------------data")
         print(data)
         guard let httpResponse = response as? HTTPURLResponse else {
             throw MovieApiError.requestFailed(description: "")

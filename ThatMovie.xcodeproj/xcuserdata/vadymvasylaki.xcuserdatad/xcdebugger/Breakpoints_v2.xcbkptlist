@@ -164,5 +164,133 @@
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "EBE7B0E3-8914-4612-A049-06F27B955D0B"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "ThatMovie/Api/ApiUrls.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "26"
+            endingLineNumber = "26"
+            landmarkName = "moviesUrl(url:page:language:)"
+            landmarkType = "7">
+            <Locations>
+               <Location
+                  uuid = "EBE7B0E3-8914-4612-A049-06F27B955D0B - 8898f2a5fd239688"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "static ThatMovie.ApiUrls.popularMoviesUrl(url: Swift.String, page: Swift.Int) -&gt; Foundation.URLRequest"
+                  moduleName = "ThatMovie"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/vadymvasylaki/Documents/IOSProjects/ThatMovie/ThatMovie/Api/ApiUrls.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "26"
+                  endingLineNumber = "26"
+                  offsetFromSymbolStart = "820">
+               </Location>
+               <Location
+                  uuid = "EBE7B0E3-8914-4612-A049-06F27B955D0B - 8898f2a5fd239688"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "static ThatMovie.ApiUrls.popularMoviesUrl(url: Swift.String, page: Swift.Int) -&gt; Foundation.URLRequest"
+                  moduleName = "ThatMovie"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/vadymvasylaki/Documents/IOSProjects/ThatMovie/ThatMovie/Api/ApiUrls.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "26"
+                  endingLineNumber = "26"
+                  offsetFromSymbolStart = "476">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "2220C688-28E1-4441-AD31-BAC133C807AD"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "ThatMovie/ViewModel/RestApiMovieVM.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "24"
+            endingLineNumber = "24"
+            landmarkName = "restBaseMovieApi(url:selectedLanguage:page:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "7C30006F-D6C4-4959-9F01-CA484A9CE583"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "ThatMovie/ContentView.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "80"
+            endingLineNumber = "80"
+            landmarkName = "body"
+            landmarkType = "24">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "DF078C41-193E-4BFE-AF38-F47E452A1D0E"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "ThatMovie/Api/GenericApi/GenericApiImpl.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "32"
+            endingLineNumber = "32"
+            landmarkName = "fetch(type:with:)"
+            landmarkType = "7">
+            <Locations>
+               <Location
+                  uuid = "DF078C41-193E-4BFE-AF38-F47E452A1D0E - 711eba2e4b2fcdf3"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(3) suspend resume partial function for ThatMovie.GenericApiImpl.fetch&lt;&#x3c4;_0_0 where &#x3c4;_0_0: Swift.Decodable, &#x3c4;_0_0: Swift.Encodable&gt;(type: &#x3c4;_0_0.Type, with: Foundation.URLRequest) async throws -&gt; &#x3c4;_0_0"
+                  moduleName = "ThatMovie"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/vadymvasylaki/Documents/IOSProjects/ThatMovie/ThatMovie/Api/GenericApi/GenericApiImpl.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "32"
+                  endingLineNumber = "32"
+                  offsetFromSymbolStart = "1276">
+               </Location>
+               <Location
+                  uuid = "DF078C41-193E-4BFE-AF38-F47E452A1D0E - 711eba2e4b2fcdf3"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "(3) suspend resume partial function for ThatMovie.GenericApiImpl.fetch&lt;&#x3c4;_0_0 where &#x3c4;_0_0: Swift.Decodable, &#x3c4;_0_0: Swift.Encodable&gt;(type: &#x3c4;_0_0.Type, with: Foundation.URLRequest) async throws -&gt; &#x3c4;_0_0"
+                  moduleName = "ThatMovie"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/vadymvasylaki/Documents/IOSProjects/ThatMovie/ThatMovie/Api/GenericApi/GenericApiImpl.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "32"
+                  endingLineNumber = "32"
+                  offsetFromSymbolStart = "1440">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
    </Breakpoints>
 </Bucket>
