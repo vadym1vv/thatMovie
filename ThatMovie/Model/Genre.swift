@@ -12,7 +12,7 @@ struct Genre: Codable {
 }
 
 // MARK: - Genre
-struct MovieGenre: Codable, Identifiable, Equatable {
+struct MovieGenre: Codable, Identifiable, Equatable, Hashable {
     let id: Int
     let name: String
 }

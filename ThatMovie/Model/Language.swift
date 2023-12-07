@@ -37,4 +37,23 @@ enum Language: String, Identifiable, CaseIterable {
        }
    }
     
+    var urlLanguageRepresentation: String {
+        switch self {
+        case .en:
+            return "language=en&"
+        case .es:
+            return "language=es&"
+        case .hi:
+            return "language=hi&"
+        case .de:
+            return "language=de&"
+        case .fr:
+            return "language=fr&"
+        case .pl:
+            return "language=pl&"
+        case .ua:
+            return "language=ua&"
+        }
+    }
+    
 }

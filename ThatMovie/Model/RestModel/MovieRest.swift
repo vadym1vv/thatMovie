@@ -56,9 +56,9 @@ import Foundation
 
 
 
-class MovieRest: Codable {
+struct MovieRest: Codable {
     let page: Int
-    let results: [Result]
+    var results: [Result]
     let totalPages, totalResults: Int
 
     enum CodingKeys: String, CodingKey {
@@ -66,10 +66,20 @@ class MovieRest: Codable {
         case totalPages = "total_pages"
         case totalResults = "total_results"
     }
+    
+//    init(from decoder: Decoder) throws {
+//        let container = try decoder.container(keyedBy: CodingKeys.self)
+//        self.page = try container.decode(Int.self, forKey: .page)
+//        self.results = try container.decode([Result].self, forKey: .results)
+//        self.totalPages = try container.decode(Int.self, forKey: .totalPages)
+//        self.totalResults = try container.decode(Int.self, forKey: .totalResults)
+//    }
+//    
+//    init(){}
 }
 
 // MARK: - Result
-class Result: Codable, Identifiable {
+struct Result: Codable, Identifiable {
     let adult: Bool
     let backdropPath: String?
     let genreIDS: [Int]
@@ -77,7 +87,7 @@ class Result: Codable, Identifiable {
 //    let originalLanguage: OriginalLanguage
     let originalTitle, overview: String
     let popularity: Double
-    let posterPath, releaseDate, title: String
+    let posterPath, releaseDate, title: String?
     let video: Bool
     let voteAverage: Double
     let voteCount: Int

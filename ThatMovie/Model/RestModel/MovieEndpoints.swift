@@ -13,7 +13,7 @@ enum MovieEndpoints: CaseIterable, Identifiable {
 //    case trending, topRated, genre, movieReviews(_ movieId: Int), upcoming, popular
     case trending, topRated, genre, upcoming, popular
     
-    private var path: String {
+    var path: String {
         switch self {
         case .trending:
                 return "/3/trending/movie/day"
@@ -47,7 +47,7 @@ enum MovieEndpoints: CaseIterable, Identifiable {
         }
     }
     
-    var fullPath: String {
-        ApiUrls.baseUrl + path
-    }
+//    var fullPath: String {
+//        ApiUrls.baseUrl + path
+//    }
 }

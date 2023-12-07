@@ -32,8 +32,10 @@ struct ContentView: View {
     @State var isSelectLanguageOn: Bool = false
     @State var isNightTheme: Bool = false
     @State var currentDisplayMode: DisplayMode = .triple
-    @State var movies: MovieRest?
     @State var page: Int = 1
+    @State var cardGridColumns: Int = 3
+    @State var displayAllGenres: Bool = false
+    
     
     @AppStorage("isMovieOptionsOn") var isMovieOptionsOn: Bool = false
     @AppStorage("selectedLanguage") var selectedLanguage: Language = .en
@@ -44,51 +46,85 @@ struct ContentView: View {
     
     
     
-   
+    
     var body: some View {
         
         
-//        ZStack {
+        //        ZStack {
         ScrollView {
             if showSearchField {
-                SearchFieldView(showSearchField: $showSearchField)
+                SearchFieldView(restApiMovieVm: restApiMovieVm, showSearchField: $showSearchField, selectedLanguage: selectedLanguage)
                     .padding()
             } else {
-                MovieSection(restApiMovieVm: restApiMovieVm, page: $page, selectedLanguage: $selectedLanguage)
-                    
+                MovieSection(restApiMovieVm: restApiMovieVm,  displayAllGenres: $displayAllGenres, page: $page, selectedLanguage: $selectedLanguage)
                     .padding()
                 
-                if(additionalOptionsPresent) {
-                    VStack {
-                        AdditionalOptinsView {
-                            
+//                if(additionalOptionsPresent) {
+//                    VStack {
+//                        AdditionalOptinsView {
+//                            
+//                        }
+//                    }
+//                    .frame(width: .infinity, height: 100, alignment: .center)
+//                    Button(action: /*@START_MENU_TOKEN@*/{}/*@END_MENU_TOKEN@*/, label: {
+//                        Image(systemName: "chevron.compact.down")
+//                    })
+//                }
+            }
+            HStack{}
+                .frame(
+                    maxWidth: .infinity,
+                    maxHeight: .infinity
+                )
+            if(self.displayAllGenres) {
+                let _ = print(restApiMovieVm.movieByGenreRest)
+//                VStack {
+                    ForEach(restApiMovieVm.movieByGenreRest.sorted(by: {$0.key.name > $1.key.name}), id: \.key) { genreName, movies in
+                        VStack(alignment: .leading) {
+                            Text(genreName.name)
+                            ScrollView(.horizontal) {
+                                LazyHStack {
+                                    ForEach(movies.results) { movie in
+                                        MovieCardView(posterPath: movie.posterPath ?? "")
+//                                        RoundedRectangle(cornerRadius: 10)
+//                                            .frame(width: 150, height: 150)
+                                            
+                                    }
+                                }
+                                .frame(height: 300)
+                            }
+                            .scrollIndicators(.never)
+                        }
+                        
+                    }
+//                }
+            } else {
+                LazyVGrid(columns: Array(repeating: .init(.flexible()), count: cardGridColumns), alignment: .center) {
+                    if(restApiMovieVm.filteredMovieRest != nil) {
+                        ForEach(restApiMovieVm.filteredMovieRest!.results) { movie in
+                            MovieCardView(posterPath: movie.posterPath ?? "")
+                        }
+                    } else {
+                        ForEach(restApiMovieVm.movieRest?.results ?? []) { movie in
+                            //                        HStack {
+                            //                            Text(movie.title)
+                            //                        }.frame(width: 250, height: 200)
+                            //                            .border(.red)
+                            //                Text(movie.title)
+                            MovieCardView(posterPath: movie.posterPath ?? "")
                         }
                     }
-                    .frame(width: .infinity, height: 100, alignment: .center)
-                    Button(action: /*@START_MENU_TOKEN@*/{}/*@END_MENU_TOKEN@*/, label: {
-                        Image(systemName: "chevron.compact.down")
-                    })
                 }
             }
-                HStack{}
-                    .frame(
-                                maxWidth: .infinity,
-                                maxHeight: .infinity
-                            )
-            ForEach(restApiMovieVm.movieRest?.results ?? []) { movie in
-                //                        HStack {
-                //                            Text(movie.title)
-                //                        }.frame(width: 250, height: 200)
-                //                            .border(.red)
-                Text(movie.title)
-            }
-            }
+            
+            
+        }
         .background(ignoresSafeAreaEdges: .bottom)
-//        }
-//        .frame(
-//                    maxWidth: .infinity,
-//                    maxHeight: .infinity
-//                )
+        //        }
+        //        .frame(
+        //                    maxWidth: .infinity,
+        //                    maxHeight: .infinity
+        //                )
         .overlay(alignment: .bottom) {
             HStack {
                 ZStack(alignment: .bottomTrailing) {
@@ -111,7 +147,7 @@ struct ContentView: View {
                                                     .resizable()
                                                     .scaledToFit()
                                                     .rotationEffect(.degrees(self.expand ? 180 : 0))
-                                                    
+                                                
                                             })
                                             .padding(10)
                                             .tint(.red)
@@ -128,7 +164,7 @@ struct ContentView: View {
                                         }
                                         
                                         .offset(x: -50, y: -50)
-                                    .zIndex(1)
+                                        .zIndex(1)
                                         
                                     }
                                     if self.expand {
@@ -140,10 +176,10 @@ struct ContentView: View {
                                                         .offset(x: -70, y: -160)
                                                     
                                                     LanguageButton(language: Language.es, languageToSet: $selectedLanguage, isSelectLanguageOn: $isSelectLanguageOn)
-                                                    .offset(x: -140, y:  -100)
+                                                        .offset(x: -140, y:  -100)
                                                     
                                                     LanguageButton(language: Language.hi, languageToSet: $selectedLanguage, isSelectLanguageOn: $isSelectLanguageOn)
-                                                    .offset(x: -130, y: -20)
+                                                        .offset(x: -130, y: -20)
                                                     
                                                     
                                                 }
@@ -153,12 +189,12 @@ struct ContentView: View {
                                                     
                                                     LanguageButton(language: Language.fr, languageToSet: $selectedLanguage, isSelectLanguageOn: $isSelectLanguageOn)
                                                         .offset(x: -190, y: -190)
-                                                        
+                                                    
                                                     LanguageButton(language: Language.pl, languageToSet: $selectedLanguage, isSelectLanguageOn: $isSelectLanguageOn)
-                                                    .offset(x: -250, y: -110)
+                                                        .offset(x: -250, y: -110)
                                                     
                                                     LanguageButton(language: Language.ua, languageToSet: $selectedLanguage, isSelectLanguageOn: $isSelectLanguageOn)
-                                                    .offset(x: -240, y: -20)
+                                                        .offset(x: -240, y: -20)
                                                     
                                                 }
                                                 
@@ -179,10 +215,10 @@ struct ContentView: View {
                                                     }
                                                     
                                                     Button(action: {
-        //                                                withAnimation {
-        //                                                    self.showSearchField.toggle()
-        //                                                    self.expand.toggle()
-        //                                                }
+                                                        //                                                withAnimation {
+                                                        //                                                    self.showSearchField.toggle()
+                                                        //                                                    self.expand.toggle()
+                                                        //                                                }
                                                         self.isSelectLanguageOn.toggle()
                                                     }, label: {
                                                         VStack(alignment: .center) {
@@ -198,30 +234,33 @@ struct ContentView: View {
                                                                         RoundedRectangle(cornerRadius: 5)
                                                                             .stroke()
                                                                     }
-    //                                                                .padding(0)
+                                                                //                                                                .padding(0)
                                                             })
-    //                                                        Text("Selected language")
-    //                                                            .padding(0)
+                                                            //                                                        Text("Selected language")
+                                                            //                                                            .padding(0)
                                                         }
-                                                        })
-                                                        .offset(x: -150, y:  -130)
+                                                    })
+                                                    .offset(x: -150, y:  -130)
                                                     
-                                                        
-                                                        //                                            ButtonMenu()
+                                                    
+                                                    //                                            ButtonMenu()
                                                     
                                                     Button {
                                                         if(self.currentDisplayMode == .single) {
                                                             self.currentDisplayMode = .double
+                                                            self.cardGridColumns = 2
                                                         } else if(self.currentDisplayMode == .double) {
                                                             self.currentDisplayMode = .triple
+                                                            self.cardGridColumns = 3
                                                         } else {
                                                             self.currentDisplayMode = .single
+                                                            self.cardGridColumns = 1
                                                         }
                                                     } label: {
                                                         Image(systemName: self.currentDisplayMode.displayModeIcon)
                                                     }
                                                     .offset(x: -160, y:  -30)
-
+                                                    
                                                 }
                                                 .foregroundStyle(.black)
                                                 
@@ -232,7 +271,7 @@ struct ContentView: View {
                                                         Image(systemName: "person.circle")
                                                     }
                                                     .offset(x: -90, y: -250)
-
+                                                    
                                                     Button {
                                                         withAnimation {
                                                             self.isNightTheme.toggle()
@@ -261,32 +300,31 @@ struct ContentView: View {
                                                 .foregroundStyle(.black)
                                                 
                                             }
-                                        
+                                            
                                         }
                                         .foregroundStyle(.black)
                                         
                                     }
-            //                        ButtonMenu().offset(x: -200, y: -10)
+                                    //                        ButtonMenu().offset(x: -200, y: -10)
                                 }
                             }
-//                            .padding(.trailing, 5)
+                        //                            .padding(.trailing, 5)
                         
                         
                         
                     }
                     
                 }
-//                .frame(maxWidth: .infinity)
+                //                .frame(maxWidth: .infinity)
                 
             }
             .border(.red)
+        }
     }
-    }
-
+    
 }
 //#Preview {
-//    ContentView( movies: MovieApiPopular.init(page: 1, results: [], totalPages: 1, totalResults: 1))
-//        .modelContainer(for: MovieItem.self, inMemory: true)
+//    ContentView(expand: false, showSearchField: false, isSelectLanguageOn: false, isNightTheme: false, currentDisplayMode: .triple, movies: <#T##MovieRest?#>, page: <#T##Int#>, cardGridColumns: <#T##Int#>, selectedMovieSection: <#T##MovieEndpoints#>, isMovieOptionsOn: <#T##Bool#>, selectedLanguage: <#T##Language#>, restApiMovieVm: <#T##RestApiMovieVM#>, additionalOptionsPresent: <#T##Bool#>)
 //}
 
 struct CustomButton: View {
