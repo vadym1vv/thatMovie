@@ -11,6 +11,7 @@ import SwiftData
 @main
 struct ThatMovieApp: App {
     
+    @StateObject var router = Router()
     @StateObject var viewRouter = ViewRouter()
     
     var sharedModelContainer: ModelContainer = {
@@ -30,6 +31,7 @@ struct ThatMovieApp: App {
         WindowGroup {
 //            ContentView(viewRouter: viewRouter)
             ContentView()
+                .environmentObject(router)
         }
         .modelContainer(sharedModelContainer)
     }

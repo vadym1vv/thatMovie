@@ -23,7 +23,9 @@ struct SearchFieldView: View {
     
     
     
+    
     var selectedLanguage: Language
+    private let currentYear = Calendar(identifier: .gregorian).dateComponents([.year], from: .now).year!
     
     var body: some View {
         
@@ -64,6 +66,10 @@ struct SearchFieldView: View {
                     withAnimation {
                         self.showAdditionalSearchCriteria.toggle()
                     }
+                    
+                    if (self.showAdditionalSearchCriteria == false) {
+                        self.restApiMovieVm.filteredMovieRest = nil
+                    }
                 }, label: {
                     Image.resizableSystemImage(systemName: "slider.horizontal.2.square.badge.arrow.down")
                         .rotationEffect(.degrees(self.showAdditionalSearchCriteria ? 180 : 0))
@@ -74,6 +80,9 @@ struct SearchFieldView: View {
                 Button(action: {
                     withAnimation {
                         self.showSearchField.toggle()
+                    }
+                    if (self.showSearchField == false) {
+                        self.restApiMovieVm.filteredMovieRest = nil
                     }
                 }, label: {
                     Image.resizableSystemImage(systemName: "xmark.circle")
@@ -89,7 +98,14 @@ struct SearchFieldView: View {
                             Text(searchCriteriaDto.searchStr!)
                             Spacer()
                             Button {
-                                requestByCriteriaIfNotNull()
+//                                requestByCriteriaIfNotNull()
+                                if(searchCriteriaDto.searchStr == nil && (searchCriteriaDto.selectedGenres.count > 0 || /*searchCriteriaDto.includeAdult != nil ||*/ searchCriteriaDto.releaseYear != nil || searchCriteriaDto.sortBy != nil)) {
+                                            Task {
+                                                await restApiMovieVm.restBaseMovieApi(url: ApiUrls.moviesBySearchCriteria(searchCriterias: searchCriteriaDto, page: UrlPage(page: 1), language: .en))
+                                            }
+                                        } else {
+                                
+                                        }
                             } label: {
                                 Image(systemName: "eraser")
                             }
@@ -98,15 +114,27 @@ struct SearchFieldView: View {
                         
                     }
                     HStack {
-                        DatePicker("Release year", selection: Binding (
-                            get: {
-                                searchCriteriaDto.releaseYear ?? Date()
-                            },
-                            set: {
-                                searchCriteriaDto.releaseYear = $0
+//                        DatePicker("Release year", selection: Binding (
+//                            get: {
+//                                searchCriteriaDto.releaseYear ?? Int()
+//                            },
+//                            set: {
+//                                searchCriteriaDto.releaseYear = $0
+//                            }
+//                        ), displayedComponents: .date)
+//                        .datePickerStyle(.compact)
+                        Text("Release year")
+                        Spacer()
+                        Picker("Release year", selection: Binding(get: {
+                            searchCriteriaDto.releaseYear ?? currentYear
+                        }, set: {
+                            searchCriteriaDto.releaseYear = $0
+                        })) {
+                            ForEach(1960...currentYear + 20, id: \.self) { year in
+                                Text(String(year))
                             }
-                        ), displayedComponents: .date)
-                        .datePickerStyle(.compact)
+                        }
+                        .pickerStyle(.menu)
                         if (searchCriteriaDto.releaseYear != nil) {
                             ResetButton(toReset: $searchCriteriaDto.releaseYear)
                         }
@@ -115,17 +143,17 @@ struct SearchFieldView: View {
                     
                     
                     
-                    HStack {
-                        Toggle("Include adult", isOn: Binding (get: {
-                            searchCriteriaDto.includeAdult ?? false
-                        }, set: {
-                            searchCriteriaDto.includeAdult = $0
-                        }))
-                        .toggleStyle(SwitchToggleStyle())
-                        if (searchCriteriaDto.includeAdult != nil) {
-                            ResetButton(toReset: $searchCriteriaDto.includeAdult)
-                        }
-                    }
+//                    HStack {
+//                        Toggle("Include adult", isOn: Binding (get: {
+//                            searchCriteriaDto.includeAdult ?? false
+//                        }, set: {
+//                            searchCriteriaDto.includeAdult = $0
+//                        }))
+//                        .toggleStyle(SwitchToggleStyle())
+//                        if (searchCriteriaDto.includeAdult != nil) {
+//                            ResetButton(toReset: $searchCriteriaDto.includeAdult)
+//                        }
+//                    }
                     
                     HStack {
                         Text("Sort by")
@@ -183,6 +211,7 @@ struct SearchFieldView: View {
 //                                    }
 //                                } else {
                                     Task {
+                                        restApiMovieVm.filteredMovieRest = nil
                                         await restApiMovieVm.restBaseMovieApi(url: ApiUrls.moviesBySearchCriteria(searchCriterias: searchCriteriaDto, page: UrlPage(page: 1), language: .en))
                                     }
 //                                }
@@ -191,15 +220,20 @@ struct SearchFieldView: View {
                                     .frame(maxWidth: 200)
                             }
                             .buttonStyle(.borderedProminent)
+                            .border(.red)
+                            .padding(0)
                             
                             Button {
                                 restApiMovieVm.filterByCriteria(searchCriteriaDto: searchCriteriaDto)
                             } label: {
                                 Label("Filter", systemImage: "magnifyingglass")
                                     .frame(maxWidth: 200)
+                                
                             }
-                            .buttonStyle(.borderedProminent)
+                            .padding(0)
+
                         }
+                        .padding(10)
                     }
                     
                 }
@@ -211,15 +245,15 @@ struct SearchFieldView: View {
         }
     }
     
-    func requestByCriteriaIfNotNull() {
-        if(searchCriteriaDto.searchStr == nil && (searchCriteriaDto.selectedGenres.count > 0 || searchCriteriaDto.includeAdult != nil || searchCriteriaDto.releaseYear != nil || searchCriteriaDto.sortBy != nil)) {
-            Task {
-                await restApiMovieVm.restBaseMovieApi(url: ApiUrls.moviesBySearchCriteria(searchCriterias: searchCriteriaDto, page: UrlPage(page: 1), language: .en))
-            }
-        } else {
-            
-        }
-    }
+//    func requestByCriteriaIfNotNull() {
+//        if(searchCriteriaDto.searchStr == nil && (searchCriteriaDto.selectedGenres.count > 0 || searchCriteriaDto.includeAdult != nil || searchCriteriaDto.releaseYear != nil || searchCriteriaDto.sortBy != nil)) {
+//            Task {
+//                await restApiMovieVm.restBaseMovieApi(url: ApiUrls.moviesBySearchCriteria(searchCriterias: searchCriteriaDto, page: UrlPage(page: 1), language: .en))
+//            }
+//        } else {
+//            
+//        }
+//    }
 }
 
 struct ResetButton <T>: View {

@@ -55,17 +55,25 @@ class ApiUrls {
         request.allHTTPHeaderFields = headers
         return request as URLRequest
     }
+    
+    static func movieDetails(movieId: Int, language: Language) -> URLRequest {
+        let request = NSMutableURLRequest(url: NSURL(string: "\(baseUrl)/3/movie/\(movieId)?language=\(language.rawValue)")! as URL,
+                                          cachePolicy: .useProtocolCachePolicy,
+                                          timeoutInterval: 10.0)
+        print(request)
+        request.httpMethod = "GET"
+        request.allHTTPHeaderFields = headers
+        return request as URLRequest
+    }
 
 //https://api.themoviedb.org/3/discover/movie?include_adult=true&include_video=false&language=en-US&page=1&sort_by=revenue.asc&with_genres=28&year=2020
     static func moviesBySearchCriteria(searchCriterias: SearchCriteriaDto, page: UrlPage, language: Language) -> URLRequest {
         
         var searchMoviesByCriteriasUrl = "/3/discover/movie?"
-//        var sortByOption: String = ""
-//        var releaseYear = ""
-        
-        if let includeAdult = searchCriterias.includeAdult {
-            searchMoviesByCriteriasUrl += SearchCriteriaEnum.includeAdult(isAdult: includeAdult).urlRepresentation
-        }
+
+//        if let includeAdult = searchCriterias.includeAdult {
+//            searchMoviesByCriteriasUrl += SearchCriteriaEnum.includeAdult(isAdult: includeAdult).urlRepresentation
+//        }
         
         if let sortBy = searchCriterias.sortBy {
             searchMoviesByCriteriasUrl += SearchCriteriaEnum.sortBy(sortBy: sortBy).urlRepresentation
@@ -76,13 +84,8 @@ class ApiUrls {
         }
         
         if let releaseYear = searchCriterias.releaseYear {
-            let dateFormatter = DateFormatter()
-            dateFormatter.dateFormat = "yyyy"
-            let year = dateFormatter.string(from: releaseYear)
-            
-            searchMoviesByCriteriasUrl += SearchCriteriaEnum.primaryReleaseYear(releaseYear: year).urlRepresentation
+            searchMoviesByCriteriasUrl += SearchCriteriaEnum.primaryReleaseYear(releaseYear: String(releaseYear)).urlRepresentation
         }
-        
         
         let request = NSMutableURLRequest(url: NSURL(string: "\(baseUrl)\(searchMoviesByCriteriasUrl)\(language.urlLanguageRepresentation)\(page.getUrlPage)")! as URL,
                                           cachePolicy: .useProtocolCachePolicy,

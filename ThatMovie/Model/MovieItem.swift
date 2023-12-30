@@ -8,94 +8,35 @@
 import Foundation
 import SwiftData
 
-enum Genres: Int, Codable, CaseIterable, Identifiable{
-    case ANIMATION
-    case ADVENTURE
-    case BIOGRAPHY
-    case COMEDY
-    case CRIME
-    case DRAMA
-    case DOCUMENTARY
-    case FANTASY
-    case HISTORICAL
-    case HORROR
-    case MUSICAL
-    case MYSTERY
-    case ROMANCE
-    case SCIENCEFICTION
-    case THRILLER
-    case WAR
-    case WESTERN
-    case UNKNOWN
-    var id: Self {self}
-}
-
-extension Genres {
-    var title: String {
-        switch self {
-        case .ANIMATION:
-            "Animation"
-        case .ADVENTURE:
-            "Adventure"
-        case .BIOGRAPHY:
-            "Biography"
-        case .COMEDY:
-            "Comedy"
-        case .CRIME:
-            "Crime"
-        case .DRAMA:
-            "Drama"
-        case .DOCUMENTARY:
-            "Documentary"
-        case .FANTASY:
-            "Fantasy"
-        case .HISTORICAL:
-            "Historical"
-        case .HORROR:
-            "Horror"
-        case .MUSICAL:
-            "Musical"
-        case .MYSTERY:
-            "Mystery"
-        case .ROMANCE:
-            "Romance"
-        case .SCIENCEFICTION:
-            "Science Fiction"
-        case .THRILLER:
-            "Thriller"
-        case .WAR:
-            "War"
-        case .WESTERN:
-            "Western"
-        case .UNKNOWN:
-            "unknown"
-        }
-    }
-}
-
 @Model
 final class MovieItem {
-    var movieName: String = ""
+    var id: Int?
+    var genreIDS: [Int]?
+    var title: String?
+    var posterPath: String?
+    var releaseDate: Date?
+    var personalRating: Int?
+    var personalDateOfViewing: Date?
+    var personalDateToWatch: Date?
+    var personalLastWatchedDate: Date?
+    var personalIsPlanedToWatch: Bool = false
+    var personalAddedDate: Date?
+    var personalIsFavourite: Bool = false
     
-    @Attribute(.externalStorage)
-    var banner: Data?
-    
-    var personalRating: Int = 0
-    var dateOfViewing: Date = Date.now
-    var dateToWatchAgain: Date?
-    var recomendTorewatch: Bool = false
-    var source: String?
-    var genres: Genres = Genres.UNKNOWN
-
-    init(movieName: String, banner: Data? = nil, personalRating: Int, dateOfViewing: Date, dateToWatchAgain: Date? = nil, recomendTorewatch: Bool, source: String? = nil, genres: Genres) {
-        self.movieName = movieName
-        self.banner = banner
+    init(id: Int? = nil, genreIDS: [Int]? = nil, title: String? = nil, posterPath: String? = nil, releaseDate: Date? = nil, personalRating: Int? = nil, personalDateOfViewing: Date? = nil, personalDateToWatch: Date? = nil, personalLastWatchedDate: Date? = nil, personalIsPlanedToWatch: Bool = false, personaladdedDate: Date? = nil, personalIsFavourite: Bool = false) {
+        self.id = id
+        self.genreIDS = genreIDS
+        self.title = title
+        self.posterPath = posterPath
+        self.releaseDate = releaseDate
         self.personalRating = personalRating
-        self.dateOfViewing = dateOfViewing
-        self.dateToWatchAgain = dateToWatchAgain
-        self.recomendTorewatch = recomendTorewatch
-        self.source = source
-        self.genres = genres
+        self.personalDateOfViewing = personalDateOfViewing
+        self.personalDateToWatch = personalDateToWatch
+        self.personalLastWatchedDate = personalLastWatchedDate
+        self.personalIsPlanedToWatch = personalIsPlanedToWatch
+        self.personalAddedDate = personaladdedDate
+        self.personalIsFavourite = personalIsFavourite
     }
-
+    
+    
 }

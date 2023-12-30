@@ -12,14 +12,14 @@ enum SearchCriteriaEnum {
     
    
     
-    case byName(byName: String), includeAdult(isAdult: Bool), primaryReleaseYear(releaseYear: String), sortBy(sortBy: SortByCriteriaEnum), withGenres(genres: [MovieGenre])/*, withKeywords(keywords: String)*//*, withPeople(people: String)*/
+    case byName(byName: String), /*includeAdult(isAdult: Bool),*/ primaryReleaseYear(releaseYear: String), sortBy(sortBy: SortByCriteriaEnum), withGenres(genres: [MovieGenre])/*, withKeywords(keywords: String)*//*, withPeople(people: String)*/
     
     public var urlRepresentation: String {
         switch self {
         case .byName(let byName):
             return "query=\(byName)&"
-        case .includeAdult(let isAdult):
-            return "include_adult=\(isAdult)&"
+//        case .includeAdult(let isAdult):
+//            return "include_adult=\(isAdult)&"
         case .primaryReleaseYear(let releaseYear):
             return "year=\(releaseYear)&"
         case .sortBy(let sortBy):

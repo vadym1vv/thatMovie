@@ -11,6 +11,7 @@ import Foundation
 class RestApiMovieVM: ObservableObject {
     
     @Published var movieRest: MovieRest?
+    @Published var details: Details?
     @Published var filteredMovieRest: MovieRest?
     @Published var movieByGenreRest: [MovieGenre : MovieRest] = [:]
     @Published var movieGenre: Genre?
@@ -34,6 +35,14 @@ class RestApiMovieVM: ObservableObject {
         } catch {
             print("ERROR: \(error)")
         }
+    }
+    
+    func movieDetails(url: URLRequest) async {
+            do {
+                self.details = try await clientGenericApi.fetch(type: Details.self, with: url)
+            } catch {
+                print("ERROR: \(error)")
+            }
     }
     
     
@@ -72,79 +81,42 @@ class RestApiMovieVM: ObservableObject {
         }
     }
     
+    
     func filterByCriteria(searchCriteriaDto: SearchCriteriaDto) {
+
         var filteredResults: [Result] = []
-        //        movieRest?.results.filter{ searchCriteriaDto.includeAdult ?? $0.adult == searchCriteriaDto.includeAdult
-        //            if let includeAdult = searchCriteriaDto.includeAdult {
-        //                $0.includeAdult == includeAdult
-        //            }
-        
-        //        }
-        
+
         if (movieRest != nil){
-            for result in movieRest!.results {
+
+                filteredResults = movieRest!.results
                 
                 if let searchStr = searchCriteriaDto.searchStr {
-                    if let title = result.title {
-                        if(title.contains(searchStr)) {
-                            filteredResults.append(result)
-//                            continue
-                        }
-                    }
-                    
+                        filteredResults = filteredResults.filter{$0.title != nil && $0.title!.contains(searchStr)}
                 }
                 
                 if let releaseYear = searchCriteriaDto.releaseYear {
-                    if(result.releaseDate != nil && DateFormatter().date(from: result.releaseDate!) == releaseYear) {
-                        filteredResults.append(result)
-//                        continue
+                    filteredResults.forEach { date in
+                        print(date.releaseDate!)
                     }
-                    
+                    filteredResults = filteredResults.filter{$0.releaseDate != nil && $0.releaseDate!.contains(String(releaseYear))}
                 }
-                
-                if let includeAdult = searchCriteriaDto.includeAdult {
-                    if(result.adult == includeAdult) {
-                        filteredResults.append(result)
-//                        continue
-                    }
-                }
-
+            
                 if (searchCriteriaDto.selectedGenres.count > 0) {
-//                    if(searchCriteriaDto.selectedGenres.map{$0.id}.contains(result.genreIDS)) {
-//                        filteredResults.append(result)
-////                        continue
-//                    }
-//                       
-
-                    
-                    
-                    if(searchCriteriaDto.selectedGenres.map{$0.id}.contains { id in
-                        result.genreIDS.contains(id)
-                    }) {
-                        filteredResults.append(result)
-//                        continue
-                    }
+                    filteredResults = filteredResults.filter{$0.genreIDS != nil && $0.genreIDS!.contains { id in
+                        searchCriteriaDto.selectedGenres.map{$0.id}.contains(id)
+                    }}
                 }
+            
+            if let sortBy = searchCriteriaDto.sortBy {
+                filteredResults = sortBy.sortByCriteria(results: filteredResults)
             }
+            
             if (filteredResults.isEmpty) {
-                filteredMovieRest = nil
+                filteredMovieRest = MovieRest(page: 1, results: [], totalPages: 1, totalResults: 1)
             } else {
                 filteredMovieRest = MovieRest(page: 1, results: filteredResults, totalPages: 1, totalResults: 1)
             }
-            
-//            filteredMovieRest?.results = filteredResults
         }
-        
-        
-        //    func movieWithSearchCriteria(url: URLRequest, selectedLanguage: Language) async {
-        //        Task {
-        //            do {
-        //                self.movieRest = try await clientGenericApi.fetch(type: MovieRest.self, with: url)
-        //            } catch {
-        //                print("error: \(error)")
-        //            }
-        //        }
-        //    }
-        //    func searchMovieByCriteria
+
     }
 }
