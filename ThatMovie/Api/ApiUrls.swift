@@ -57,7 +57,7 @@ class ApiUrls {
     }
     
     static func movieDetails(movieId: Int, language: Language) -> URLRequest {
-        let request = NSMutableURLRequest(url: NSURL(string: "\(baseUrl)/3/movie/\(movieId)?language=\(language.rawValue)")! as URL,
+        let request = NSMutableURLRequest(url: NSURL(string: "\(baseUrl)/3/movie/\(movieId)?language=\(language.rawValue)&append_to_response=videos")! as URL,
                                           cachePolicy: .useProtocolCachePolicy,
                                           timeoutInterval: 10.0)
         print(request)

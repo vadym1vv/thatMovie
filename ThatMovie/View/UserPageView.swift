@@ -8,6 +8,7 @@
 import SwiftUI
 import SwiftData
 import TipKit
+import YouTubePlayerKit
 //enum CurrentPageCategory {
 //    case favourites, planedToWatch, none
 //
@@ -57,7 +58,7 @@ struct UserPageView: View {
     @ObservedObject var restApiMovieVm: RestApiMovieVM
     @ObservedObject var notificationVM: NotificationVM
     @StateObject private var userPageViewModel: UserPageViewModel = UserPageViewModel()
-    @AppStorage("isDoubleWithOptionsSquareWasShown") var isDoubleWithOptionsSquareWasShown: Bool = false
+    
     
     
     @State private var searchQuery: String = ""
@@ -66,7 +67,7 @@ struct UserPageView: View {
     //    @State private var currentPageCategory: CurrentPageCategory = .planedToWatch
     @State private var showUpdateDialog: Bool = false
     @State private var dropSearchPageCategory: Bool = false
-    @State private var movieItemToUpdate: MovieItem?
+    @StateObject var movieItemToUpdate: MovieItemToUpdateInfo = MovieItemToUpdateInfo()
     @State private var showNotificationSheet: Bool = false
     @State private var notificationDescription: String?
     
@@ -74,13 +75,23 @@ struct UserPageView: View {
     @State private var allowAutoRewatchListNotifications: Bool = false
     @State private var silentNotificationForPlanedToWatchNotification: Bool = false
     
-    @Binding var cardGridColumns: Int
+    
+    //    @AppStorage("cardGridColumns") var savedDardGridColumns: Int = 1
+    //    @AppStorage("currentDisplayMode") var savedCurrentDisplayMode: DisplayMode = .singleWithOptionsSquare
+    
+    //    @State private var cardGridColumns: Int = 1
+//    @State private var currentDisplayMode: DisplayMode = .singleWithOptionsSquare
+    @AppStorage("userPageCurrentDisplayMode") var savedCurrentDisplayMode: String = "singleWithOptionsSquare"
+    
     @Binding var expand: Bool
     @Binding var showSearchField: Bool
-    @Binding var currentDisplayMode: DisplayMode
+    
+    
+    
+    
     
     var rewatchNotificationTip = RewatchNotificationTip()
-//    let notificationVM = NotificationVM()
+    //    let notificationVM = NotificationVM()
     
     
     let selectedLanguage: Language
@@ -88,6 +99,10 @@ struct UserPageView: View {
     var filteredItems: [MovieItem] {
         let sortedBy = selectedSortOption.sortBy(movieItems: allMovies)
         return movieCategory.filterByPageCategory(movieItems: sortedBy)
+    }
+    
+    var currentDisplayMode: DisplayMode {
+        return DisplayMode.currentDisplayModyByString(str: savedCurrentDisplayMode)
     }
     
     var body: some View {
@@ -98,75 +113,80 @@ struct UserPageView: View {
             }
             .padding()
             if showSearchField {
-                HStack {
-                    TextField("Search", text: $searchQuery)
-                        .padding(.leading, 10)
-                        .padding(6)
-                        .background {
-                            RoundedRectangle(cornerRadius: 20)
-                                .fill(Color(UIColor.systemGray6))
-                        }
-                        .overlay(alignment: .trailing) {
-                            Button(action: {
-                                userPageViewModel.filterBy(movieItems: dropSearchPageCategory ? allMovies : filteredItems, searchQuery: searchQuery)
-                            }, label: {
-                                
-                                Image.resizableSystemImage(systemName: "magnifyingglass")
-                                    .foregroundStyle(.black)
-                                    .padding(7)
-                                //                                    .background(Color(UIColor.systemGray6))
-                                    .background {
-                                        Circle().fill(Color(UIColor.systemGray6))
-                                    }
-                                
-                            })
-                        }
-                    Menu {
-                        Picker("", selection: $selectedSortOption) {
-                            ForEach(SortOption.allCases,
-                                    id: \.rawValue) { option in
-                                Text(option.description)
-                                    .tag(option)
+                VStack {
+                    HStack {
+                        TextField("Search", text: $searchQuery)
+                            .padding(.leading, 10)
+                            .padding(6)
+                            .background {
+                                RoundedRectangle(cornerRadius: 20)
+                                    .fill(Color(UIColor.systemGray6))
                             }
-                        }
-                        .labelsHidden()
-                        
-                    } label: {
-                        Image(systemName: "ellipsis")
-                            .symbolVariant(.circle)
-                            .padding(0)
+                            .overlay(alignment: .trailing) {
+                                Button(action: {
+                                    userPageViewModel.filterBy(movieItems: dropSearchPageCategory ? allMovies : filteredItems, searchQuery: searchQuery)
+                                }, label: {
+                                    
+                                    Image.resizableSystemImage(systemName: "magnifyingglass")
+                                        .foregroundStyle(.black)
+                                        .padding(7)
+                                    //                                    .background(Color(UIColor.systemGray6))
+                                        .background {
+                                            Circle().fill(Color(UIColor.systemGray6))
+                                        }
+                                    
+                                })
+                            }
+                        Button(action: {
+                            withAnimation {
+                                self.showSearchField.toggle()
+                            }
+                            self.userPageViewModel.filteredResults = nil
+                            if (self.showSearchField == false) {
+                                self.restApiMovieVm.filteredMovieRest = nil
+                            }
+                        }, label: {
+                            Image.resizableSystemImage(systemName: "xmark.circle")
+                                .foregroundStyle(.black)
+                            
+                        })
                     }
-                    Button(action: {
-                        withAnimation {
-                            self.showSearchField.toggle()
+                    .frame(height: 30)
+                    
+                    HStack {
+                        HStack {
+                            Text("Sort by:")
+                                Picker("", selection: $selectedSortOption) {
+                                    ForEach(SortOption.allCases,
+                                            id: \.rawValue) { option in
+                                        Text(option.description)
+                                            .tag(option)
+                                    }
+                                }
+                                .labelsHidden()
                         }
-                        self.userPageViewModel.filteredResults = nil
-                        if (self.showSearchField == false) {
-                            self.restApiMovieVm.filteredMovieRest = nil
-                        }
-                    }, label: {
-                        Image.resizableSystemImage(systemName: "xmark.circle")
-                            .foregroundStyle(.black)
-                        
-                    })
+                        Spacer()
+                    }
                 }
-                .frame(height: 30)
                 .padding(10)
             }
-            LazyVGrid(columns: Array(repeating: .init(.flexible()), count: cardGridColumns), alignment: .center) {
+            LazyVGrid(columns: Array(repeating: .init(.flexible()), count: currentDisplayMode.cardGridColumns), alignment: .center) {
                 
                 if (allMovies.isEmpty || (userPageViewModel.filteredResults != nil && userPageViewModel.filteredResults!.isEmpty)) {
                     Text("Nothing to display")
                 } else {
                     
                     ForEach(userPageViewModel.filteredResults != nil ? userPageViewModel.filteredResults! : filteredItems) { movie in
+                        //                        if let id = movie.id {
+                        //                        let _ = print(movie.id)
                         NavigationLink {
                             MoviePageView(restApiMovieVm: restApiMovieVm, notificationVM: notificationVM, movieId: movie.id!)
                         } label: {
-                            currentDisplayMode.movieCardView(movie: movie, showUpdateDialog: $showUpdateDialog, movieItemToUpdate: $movieItemToUpdate, notificationVM: notificationVM)
+                            currentDisplayMode.movieCardView(movie: movie, showUpdateDialog: $showUpdateDialog, movieItemToUpdate: movieItemToUpdate, notificationVM: notificationVM)
                             //                            MovieCardView(posterPath: movie.posterPath ?? "")
                             //                            Text("asf")
                         }
+                        //                        }
                     }
                 }
             }
@@ -189,7 +209,6 @@ struct UserPageView: View {
                                             Button(action: {
                                                 withAnimation {
                                                     self.expand.toggle()
-                                                    
                                                 }
                                                 
                                             }, label: {
@@ -241,9 +260,9 @@ struct UserPageView: View {
                                             .offset(x: -160, y:  -130)
                                             
                                             Button {
-                                                if (!isDoubleWithOptionsSquareWasShown) {
-                                                    self.currentDisplayMode = .singleWithOptionsSquare
-                                                }
+                                                //                                                if (!isDoubleWithOptionsSquareWasShown) {
+                                                //                                                    self.currentDisplayMode = .singleWithOptionsSquare
+                                                //                                                }
                                                 self.movieCategory = .watched
                                             } label: {
                                                 Label("Watched", systemImage: "calendar.badge.clock")
@@ -267,17 +286,13 @@ struct UserPageView: View {
                                             
                                             Button {
                                                 if(self.currentDisplayMode == .single) {
-                                                    self.currentDisplayMode = .double
-                                                    self.cardGridColumns = 2
+                                                    self.savedCurrentDisplayMode = DisplayMode.double.rawValue
                                                 } else if(self.currentDisplayMode == .double) {
-                                                    self.currentDisplayMode = .triple
-                                                    self.cardGridColumns = 3
+                                                    self.savedCurrentDisplayMode = DisplayMode.triple.rawValue
                                                 } else if(self.currentDisplayMode == .triple) {
-                                                    self.currentDisplayMode = .singleWithOptionsSquare
-                                                    self.cardGridColumns = 1
+                                                    self.savedCurrentDisplayMode = DisplayMode.singleWithOptionsSquare.rawValue
                                                 } else {
-                                                    self.currentDisplayMode = .single
-                                                    self.cardGridColumns = 1
+                                                    self.savedCurrentDisplayMode = DisplayMode.single.rawValue
                                                 }
                                             } label: {
                                                 Image(systemName: self.currentDisplayMode.displayModeIcon)
@@ -297,74 +312,84 @@ struct UserPageView: View {
                 }
             }
         }
-        .sheet(isPresented: $showUpdateDialog, content: {
-            NavigationStack {
-                List {
-                    Section("Notification description") {
-                        TextField(notificationVM.movieItem?.title ?? "Set description", text: Binding(get: {
-                            self.notificationDescription ?? movieItemToUpdate?.title ?? ""
-                        }, set: {
-                            self.notificationDescription = $0
-                        }))
-                    }
-                        Section("Notificaiton properties") {
-                            Toggle("Silent notificaiton", isOn: $silentNotificationForPlanedToWatchNotification)
-                            VStack {
-                                HStack {
-                                    
-                                        
-                                        Button("this evening") {
-                                            
-                                        }
-                                        .buttonStyle(.borderedProminent)
-                                        
-                                        Button("Tomorrow") {
-                                            
-                                        }
-                                        .buttonStyle(.borderedProminent)
-                                        
-                                        Button("next month") {
-                                            
-                                        }
-                                        .buttonStyle(.borderedProminent)
-                                        
-                                    }
-                                Text("Or")
-                                DatePicker("", selection: Binding(get: {
-                                    notificationVM.movieItem?.personalDateToWatch ?? .now
-                                }, set: {
-                                    notificationVM.movieItem?.personalDateToWatch = $0
-                                }), in: Date()...)
-                                }
-                            }
-                                
-                    HStack {
-                        Button {
-                            
-                        } label: {
-                            Text("Save")
-                                .frame(maxWidth: .infinity)
-                        }
-                        .buttonStyle(.borderedProminent)
-                        
-                        Button {
-                            
-                        } label: {
-                            Text("Cancel")
-                                .frame(maxWidth: .infinity)
-                                .background(Color(UIColor.systemRed))
-                        }
-                        .buttonStyle(.borderedProminent)
-                    }
-
-                    
-                }
-            }
-            .presentationDetents([.medium])
-
-            
-        }
-        )
+        //        .sheet(isPresented: $showUpdateDialog, content: {
+        //            NavigationStack {
+        //
+        ////                Text(movieItemToUpdate?.title)
+        //                List {
+        //                    Section("Notification description") {
+        //                        TextField(movieItemToUpdate.movieItem?.title ?? "Set description", text: Binding(get: {
+        //                            self.notificationDescription ?? movieItemToUpdate.movieItem?.title ?? ""
+        //                        }, set: {
+        //                            self.notificationDescription = $0
+        //                        }))
+        //                    }
+        //                        Section("Notificaiton properties") {
+        //                            Toggle("Silent notificaiton", isOn: $silentNotificationForPlanedToWatchNotification)
+        //                            VStack {
+        //                                HStack {
+        //
+        //
+        //                                        Button("This evening") {
+        //
+        //                                        }
+        //                                        .buttonStyle(.borderedProminent)
+        //
+        //                                        Button("Tomorrow") {
+        //
+        //                                        }
+        //                                        .buttonStyle(.borderedProminent)
+        //
+        //                                        Button("next month") {
+        //
+        //                                        }
+        //                                        .buttonStyle(.borderedProminent)
+        //
+        //                                    }
+        //                                Text("Or")
+        //                                DatePicker("", selection: Binding(get: {
+        //                                    notificationVM.movieItem?.personalDateToWatch ?? .now
+        //                                }, set: {
+        //                                    notificationVM.movieItem?.personalDateToWatch = $0
+        //                                }), in: Date()...)
+        //                                }
+        //                            }
+        //
+        //                    HStack {
+        //                        Button {
+        //
+        //                        } label: {
+        //                            Text("Save")
+        //                                .frame(maxWidth: .infinity)
+        //                        }
+        //                        .buttonStyle(.borderedProminent)
+        //
+        //                        Button {
+        //
+        //                        } label: {
+        //                            Text("Cancel")
+        //                                .frame(maxWidth: .infinity)
+        //                                .background(Color(UIColor.systemRed))
+        //                        }
+        //                        .buttonStyle(.borderedProminent)
+        //                    }
+        //
+        //
+        //                }
+        //            }
+        //            .presentationDetents([.medium])
+        
+        
+        //        }
+        //        )
+        .sheet(isPresented: $showUpdateDialog, onDismiss: {
+            self.movieItemToUpdate.movieItem = nil
+        }, content: {
+            SetWatchNotificationView(notificationVM: notificationVM, id: movieItemToUpdate.movieItem?.id, title: self.movieItemToUpdate.movieItem?.title)
+                .presentationDetents([.medium])
+        })
+        
+        
         .sheet(isPresented: $showNotificationSheet, content: {
             NavigationStack {
                 List {
@@ -376,11 +401,11 @@ struct UserPageView: View {
                     .popoverTip(rewatchNotificationTip)
                     
                     
-//                    if (tipKitVisible) {
-//                        RewatchNotificationTip()
-//                    }
+                    //                    if (tipKitVisible) {
+                    //                        RewatchNotificationTip()
+                    //                    }
                     
-//                        .popoverTip(RewatchNotificationTip())
+                    //                        .popoverTip(RewatchNotificationTip())
                     
                     Section("Notification settings") {
                         Toggle("Allow rewatch notifications", isOn: $allowAutoRewatchListNotifications)
@@ -414,8 +439,8 @@ struct UserPageView: View {
                         }
                     }
                 }
-            
-        }
+                
+            }
             .presentationDetents([.fraction(0.6)])
         })
         .onAppear {

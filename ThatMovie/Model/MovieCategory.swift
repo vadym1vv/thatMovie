@@ -32,7 +32,7 @@ extension MovieCategory {
         case .favourites:
             return movieItems.filter({$0.personalIsFavourite})
         case .planedToWatch:
-            return movieItems.filter({$0.personalIsPlanedToWatch || $0.personalDateOfViewing != nil})
+            return movieItems.filter({$0.personalIsPlanedToWatch || $0.personalDateToWatch != nil})
         case .none:
             return movieItems
         }

@@ -11,8 +11,8 @@ struct MovieSection: View {
     
     @ObservedObject var restApiMovieVm: RestApiMovieVM
     
-    @State var selectedMovieSection: MovieEndpoints  = .trending
-    @State var selectedMovieGenre: MovieGenre?
+    @State private var selectedMovieSection: MovieEndpoints  = .trending
+    @State private var selectedMovieGenre: MovieGenre?
     @Binding var displayAllGenres: Bool
     
     
@@ -30,12 +30,17 @@ struct MovieSection: View {
                 HStack {
                     ForEach(MovieEndpoints.allCases) { item in
                         Button(action: {
+                            if (displayAllGenres) {
+                                self.displayAllGenres = false
+                            }
                             selectedMovieSection = item
                             if (item == .genre) {
                                 Task {
                                     await restApiMovieVm.restMovieGenreListApi(url: item.path, selectedLanguage: selectedLanguage)
                                 }
                             } else {
+//                                let _ = print("----=====>>>>>>>>>>>")
+//                                let _ = print(selectedMovieGenre?.name)
                                 Task {
                                     //                                    await restApiMovieVm.restBaseMovieApi(url: item.path, selectedLanguage: selectedLanguage, page: 1)
                                     await restApiMovieVm.restBaseMovieApi(url: ApiUrls.moviesUrl(url: item.path, page: 1, language: selectedLanguage))
@@ -63,7 +68,10 @@ struct MovieSection: View {
                                     withAnimation {
                                         self.selectedMovieGenre = movieGenre
                                     }
-                                    let _ = print("movieGenreId: \(selectedMovieGenre!.id)")
+//                                    let _ = print("movieGenreId: \(selectedMovieGenre!.id)")
+                                    if (displayAllGenres) {
+                                        self.displayAllGenres = false
+                                    }
                                     let str = "/3/discover/movie?with_genres=\(movieGenre.id)"
                                     Task {
                                         await restApiMovieVm.genreRestBaseMovieApi(url: str)
@@ -96,7 +104,11 @@ struct MovieSection: View {
             }
         }
         .task {
-            await restApiMovieVm.restBaseMovieApi(url: ApiUrls.moviesUrl(url: MovieEndpoints.popular.path, page: 1, language: selectedLanguage))
+//            if (selectedMovieGenreVm.selectedMovieGenre == nil) {
+//                let _ = print("0000>>>>>>>>>!!!!!")
+//                let _ = print(selectedMovieGenreVm.selectedMovieGenre)
+//            await restApiMovieVm.restBaseMovieApi(url: ApiUrls.moviesUrl(url: MovieEndpoints.trending.path, page: 1, language: selectedLanguage))
+//            }
         }
         
         
@@ -107,6 +119,6 @@ struct MovieSection: View {
     }
 }
 
-#Preview {
-    MovieSection(restApiMovieVm: .init(), displayAllGenres: .constant(false), page: .constant(1), selectedLanguage: .constant(.de))
-}
+//#Preview {
+//    MovieSection(restApiMovieVm: .init(), selectedMovieGenre: .constant(.none), displayAllGenres: .constant(false), page: .constant(1), selectedLanguage: .constant(.de))
+//}

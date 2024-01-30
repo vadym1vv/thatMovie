@@ -7,44 +7,9 @@
 
 import SwiftUI
 import SwiftData
+import YouTubePlayerKit
 
-enum DisplayMode {
-    
-    case single, double, triple, singleWithOptionsSquare
-    
-    var displayModeIcon: String {
-        switch self {
-        case .single:
-            return "circlebadge.fill"
-        case .double:
-            return "circle.grid.2x1.fill"
-        case .triple:
-            return "circle.grid.3x3.fill"
-        case .singleWithOptionsSquare:
-            return "square.fill.text.grid.1x2"
-        }
-    }
-    
-//    func movieCardView(movie: MovieItem) -> some View{
-//        switch self {
-//        case .single, .double, .triple:
-//            return AnyView(MovieCardView(posterPath: movie.posterPath ?? ""))
-//        case .doubleWithOptionsSquare:
-//            return AnyView(ToWatchOptionsCardView(movieItem: movie))
-//        }
-//    }
-    
-    @ViewBuilder
-    func movieCardView(movie: MovieItem, showUpdateDialog: Binding<Bool>, movieItemToUpdate: Binding<MovieItem?>, notificationVM: NotificationVM) -> some View{
-        switch self {
-        case .single, .double, .triple:
-             MovieCardView(posterPath: movie.posterPath ?? "")
-        case .singleWithOptionsSquare:
-            ToWatchOptionsCardView(notificationVM: notificationVM, movieItem: movie, movieItemToUpdate: movieItemToUpdate, showUpdateDialog: showUpdateDialog)
-        }
-    }
-    
-}
+
 
 struct ContentView: View {
     
@@ -52,23 +17,31 @@ struct ContentView: View {
     @State var showSearchField: Bool = false
     @State var isSelectLanguageOn: Bool = false
     @State var isNightTheme: Bool = false
-    @State var currentDisplayMode: DisplayMode = .triple
+//    @State var currentDisplayMode: DisplayMode = .triple
+//    @State var currentDisplayMode: DisplayMode = .triple
     @State var page: Int = 1
-    @State var cardGridColumns: Int = 3
     @State var displayAllGenres: Bool = false
+//    @State var selectedMovieGenre: MovieGenre?
     
     @AppStorage("isMovieOptionsOn") var isMovieOptionsOn: Bool = false
     @AppStorage("selectedLanguage") var selectedLanguage: Language = .en
+    @AppStorage("contentViewCurrentDisplayMode") var savedCurrentDisplayMode: String = "triple"
     @StateObject var restApiMovieVm: RestApiMovieVM = RestApiMovieVM()
     @EnvironmentObject var router: Router
     @StateObject var notificationVM: NotificationVM = NotificationVM()
     
+    
     private var additionalOptionsPresent: Bool = false
+//    private let pageLimit = 20
     
+//    var currentDisplayMode: DisplayMode {
+//        return DisplayMode.currentDisplayModyByString(str: savedCurrentDisplayMode)
+//    }
     
-    
-    
-    
+    var currentDisplayMode: DisplayMode {
+        return DisplayMode.currentDisplayModyByString(str: savedCurrentDisplayMode)
+    }
+//
     var body: some View {
         
         
@@ -79,7 +52,7 @@ struct ContentView: View {
                     SearchFieldView(restApiMovieVm: restApiMovieVm, showSearchField: $showSearchField, selectedLanguage: selectedLanguage)
                         .padding()
                 } else {
-                    MovieSection(restApiMovieVm: restApiMovieVm,  displayAllGenres: $displayAllGenres, page: $page, selectedLanguage: $selectedLanguage)
+                    MovieSection(restApiMovieVm: restApiMovieVm, displayAllGenres: $displayAllGenres, page: $page, selectedLanguage: $selectedLanguage)
                         .padding()
                     
                     //                if(additionalOptionsPresent) {
@@ -95,16 +68,23 @@ struct ContentView: View {
                     //                }
                 }
                 if(self.displayAllGenres) {
-                    let _ = print(restApiMovieVm.movieByGenreRest)
                     //                VStack {
                     ForEach(restApiMovieVm.movieByGenreRest.sorted(by: {$0.key.name > $1.key.name}), id: \.key) { genreName, movies in
                         VStack(alignment: .leading) {
+                            Text(genreName.name)
+                                .font(.title2)
+                                .padding(.leading, 3)
                             ScrollView(.horizontal) {
                                 LazyHStack {
                                     ForEach(movies.results) { movie in
                                         NavigationLink(value: movie) {
-                                            MovieCardView(posterPath: movie.posterPath ?? "")
+                                            AsyncImageView(posterPath: movie.posterPath)
                                         }
+//                                        .onAppear {
+//                                            if (movie == movies.results.last && restApiMovieVm.currentNetworkCallState == .finished) {
+//                                                let _ = print("THIS IS THE LAST MOVIE)))00000----->>>")
+//                                            }
+//                                        }
 //                                        MovieCardView(posterPath: movie.posterPath ?? "")
                                         //                                        RoundedRectangle(cornerRadius: 10)
                                         //                                            .frame(width: 150, height: 150)
@@ -119,7 +99,7 @@ struct ContentView: View {
                     }
                     //                }
                 } else {
-                    LazyVGrid(columns: Array(repeating: .init(.flexible()), count: cardGridColumns), alignment: .center) {
+                    LazyVGrid(columns: Array(repeating: .init(.flexible()), count: currentDisplayMode.cardGridColumns), alignment: .center) {
                         
                         if(restApiMovieVm.filteredMovieRest != nil) {
                             if(restApiMovieVm.filteredMovieRest!.results.isEmpty) {
@@ -128,7 +108,7 @@ struct ContentView: View {
                             } else {
                                 ForEach(restApiMovieVm.filteredMovieRest!.results) { movie in
                                     NavigationLink(value: movie) {
-                                        MovieCardView(posterPath: movie.posterPath ?? "")
+                                        AsyncImageView(posterPath: movie.posterPath)
                                     }
                                 }
                             }
@@ -141,8 +121,18 @@ struct ContentView: View {
                                     //                            .border(.red)
                                     //                Text(movie.title)
                                     NavigationLink(value: movie) {
-                                        MovieCardView(posterPath: movie.posterPath ?? "")
+                                        AsyncImageView(posterPath: movie.posterPath)
                                     }
+                                    .onAppear {
+                                        if (movie.id == movieRest.results.last!.id && restApiMovieVm.currentNetworkCallState == .finished) {
+                                            let _ = print("THIS IS THE LAST MOVIE)))00000----->>>")
+                                        } else {
+                                            let _ = print("LOAding====>>>><<<<<<<+=============")
+                                        }
+                                    }
+                                    
+                                    
+                                    
                                 }
                             }
                         }
@@ -151,7 +141,9 @@ struct ContentView: View {
                 
                 
             }
-            .background(ignoresSafeAreaEdges: .bottom)
+            .padding([.leading, .trailing], 3)
+//            .background(ignoresSafeAreaEdges: .bottom)
+            
             //        }
             //        .frame(
             //                    maxWidth: .infinity,
@@ -260,14 +252,11 @@ struct ContentView: View {
 
                                                         Button {
                                                             if(self.currentDisplayMode == .single) {
-                                                                self.currentDisplayMode = .double
-                                                                self.cardGridColumns = 2
+                                                                self.savedCurrentDisplayMode = DisplayMode.double.rawValue
                                                             } else if(self.currentDisplayMode == .double) {
-                                                                self.currentDisplayMode = .triple
-                                                                self.cardGridColumns = 3
+                                                                self.savedCurrentDisplayMode = DisplayMode.triple.rawValue
                                                             } else {
-                                                                self.currentDisplayMode = .single
-                                                                self.cardGridColumns = 1
+                                                                self.savedCurrentDisplayMode = DisplayMode.single.rawValue
                                                             }
                                                         } label: {
                                                             Image(systemName: self.currentDisplayMode.displayModeIcon)
@@ -286,7 +275,7 @@ struct ContentView: View {
 //                                                        .offset(x: -90, y: -250)
                                                         
                                                         NavigationLink(destination: {
-                                                            UserPageView(restApiMovieVm: restApiMovieVm, notificationVM: notificationVM, cardGridColumns: $cardGridColumns, expand: $expand, showSearchField: $showSearchField, currentDisplayMode: $currentDisplayMode, selectedLanguage: selectedLanguage)
+                                                            UserPageView(restApiMovieVm: restApiMovieVm, notificationVM: notificationVM, expand: $expand, showSearchField: $showSearchField,  selectedLanguage: selectedLanguage)
                                                         }, label: {
                                                             Image(systemName: "person.circle")
                                                         })
@@ -340,13 +329,24 @@ struct ContentView: View {
                 }
                 .border(.red)
             }
+            
             //MARK: - Navigation
             
             .navigationDestination(for: Result.self) { result in
                 MoviePageView(restApiMovieVm: restApiMovieVm, notificationVM: notificationVM, movieId: result.id)
             }
+            .onDisappear {
+                expand = false
+            }
 //            .navigationDestination(for: MovieItem.self) { result in
 //                MoviePageView(restApiMovieVm: restApiMovieVm, movieId: result.id!)
+//            }
+        }
+        .task {
+//            if (selectedMovieGenreVm.selectedMovieGenre == nil) {
+//                let _ = print("0000>>>>>>>>>!!!!!")
+//                let _ = print(selectedMovieGenreVm.selectedMovieGenre)
+            await restApiMovieVm.restBaseMovieApi(url: ApiUrls.moviesUrl(url: MovieEndpoints.trending.path, page: 1, language: selectedLanguage))
 //            }
         }
     }

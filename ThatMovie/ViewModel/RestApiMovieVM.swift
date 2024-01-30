@@ -16,28 +16,27 @@ class RestApiMovieVM: ObservableObject {
     @Published var movieByGenreRest: [MovieGenre : MovieRest] = [:]
     @Published var movieGenre: Genre?
     
+    @Published private(set) var currentNetworkCallState: CurrentLoadingState?
+    @Published var currentPage: Int = 1
+    @Published var currentURLRequest:  URLRequest?
+    
     
     //    @Published var selectedLanguage: Languages = .en
-    
-    
-    private let restApiService = RestApiService()
     private let clientGenericApi = GenericApiImpl()
     
     func restBaseMovieApi(url: URLRequest) async {
-        //        var computedUrl = url/* + selectedLanguage.rawValue*/
+        defer {currentNetworkCallState = .finished}
+        self.currentURLRequest = url
         do {
             self.movieRest = try await clientGenericApi.fetch(type: MovieRest.self, with: url)
-            //            movieRest?.results.forEach{ result in
-            //                print(result.title)
-            //            }
-            //            print("--++++---")
-            //            print(url)
         } catch {
             print("ERROR: \(error)")
         }
     }
     
     func movieDetails(url: URLRequest) async {
+//        defer {currentNetworkCallState = .finished}
+//        currentNetworkCallState = .loading
             do {
                 self.details = try await clientGenericApi.fetch(type: Details.self, with: url)
             } catch {
@@ -47,6 +46,8 @@ class RestApiMovieVM: ObservableObject {
     
     
     func genreRestBaseMovieApi(url: String) async {
+//        defer {currentNetworkCallState = .finished}
+//        currentNetworkCallState = .loading
         //        var computedUrl = url/* + selectedLanguage.rawValue*/
         do {
             self.movieRest = try await clientGenericApi.fetch(type: MovieRest.self, with: ApiUrls.moviesUrl(url: url))
@@ -61,6 +62,8 @@ class RestApiMovieVM: ObservableObject {
     }
     
     func restMovieGenreListApi(url: String, selectedLanguage: Language) async {
+//        defer {currentNetworkCallState = .finished}
+//        currentNetworkCallState = .loading
         do {
             self.movieGenre = try await clientGenericApi.fetch(type: Genre.self, with: ApiUrls.moviesUrl(url: url, language: selectedLanguage))
         } catch {
@@ -69,6 +72,8 @@ class RestApiMovieVM: ObservableObject {
     }
     
     func movieByGenreApi() {
+//        defer {currentNetworkCallState = .finished}
+//        currentNetworkCallState = .loading
         movieGenre?.genres.forEach { genre in
             Task {
                 do {
@@ -83,7 +88,6 @@ class RestApiMovieVM: ObservableObject {
     
     
     func filterByCriteria(searchCriteriaDto: SearchCriteriaDto) {
-
         var filteredResults: [Result] = []
 
         if (movieRest != nil){
@@ -118,5 +122,13 @@ class RestApiMovieVM: ObservableObject {
             }
         }
 
+    }
+}
+
+extension RestApiMovieVM {
+    enum CurrentLoadingState {
+        case fetching
+        case loading
+        case finished
     }
 }

@@ -10,7 +10,9 @@ import UserNotifications
 
 class NotificationVM: ObservableObject {
     
-    @Published var movieItem: MovieItem?
+//    @Published var movieItem: MovieItem?
+    
+    
     
    
     func ascPermission() {

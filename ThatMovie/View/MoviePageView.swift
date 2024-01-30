@@ -7,6 +7,7 @@
 
 import SwiftUI
 import SwiftData
+import YouTubePlayerKit
 
 struct MoviePageView: View {
     
@@ -18,12 +19,30 @@ struct MoviePageView: View {
     
     @State private var showFullSizeImage: Bool = false
     @State private var showWatchNotificationProperties: Bool = false
+    @State private var showAllVideos: Bool = false
+
     let movieId: Int
     //    let title, posterPath, releaseDate, overview: String?
     //    let voteAverage: Double?
     //    let movieGenres: [Int]?
     var currentMovieFromDb: MovieItem? {
         dbMovies.first(where: {$0.id == restApiMovieVm.details?.id})
+    }
+    
+    @StateObject
+    private var youTubePlayerTest = YouTubePlayer(
+        source: .url("https://www.youtube.com/watch?v=Vkk_498GcRk")
+    )
+    
+    var filteredResults: [VideosResults] {
+        if let results = restApiMovieVm.details?.videos?.results {
+            let youTubeVideos = results.filter{$0.site == "YouTube"}
+            var videosWithTrailerFirst = youTubeVideos.filter{$0.type == "Trailer"}
+            let other = youTubeVideos.filter{$0.type != "Trailer"}
+            videosWithTrailerFirst.append(contentsOf: other)
+            return videosWithTrailerFirst
+        }
+        return []
     }
     
     
@@ -42,27 +61,40 @@ struct MoviePageView: View {
         ZStack(alignment: .center) {
             
             GeometryReader { geometry in
-                AsyncImage(url: URL(string: "\(ApiUrls.baseImageUrl)\(restApiMovieVm.details?.posterPath ?? defaultImage())")) { image in
-                    image
-                        .resizable()
-                        .scaledToFill()
-                    //                        .aspectRatio(contentMode: .fill)
-                        .mask(
-                            LinearGradient(
-                                gradient: Gradient(stops: [
-                                    Gradient.Stop(color: .clear, location: 0),
-                                    Gradient.Stop(color: .black, location: 0.5),
-                                    Gradient.Stop(color: .clear, location: 1)
-                                ]),
-                                startPoint: .top,
-                                endPoint: .bottom
-                            )
-                        )
-                } placeholder: {
-                    ProgressView()
-                }
+                //                AsyncImage(url: URL(string: "\(ApiUrls.baseImageUrl)\(restApiMovieVm.details?.posterPath ?? defaultImage())")) { image in
+                //                    image
+                //                        .resizable()
+                //                        .scaledToFill()
+                //                    //                        .aspectRatio(contentMode: .fill)
+                //                        .mask(
+                //                            LinearGradient(
+                //                                gradient: Gradient(stops: [
+                //                                    Gradient.Stop(color: .clear, location: 0),
+                //                                    Gradient.Stop(color: .black, location: 0.5),
+                //                                    Gradient.Stop(color: .clear, location: 1)
+                //                                ]),
+                //                                startPoint: .top,
+                //                                endPoint: .bottom
+                //                            )
+                //                        )
+                //                } placeholder: {
+                //                    ProgressView()
+                //                }
                 //                .zIndex(1)
-                .frame(height: showFullSizeImage ?  geometry.size.height : (geometry.size.height + 200) / 2)
+                
+                AsyncImageView(posterPath: restApiMovieVm.details?.posterPath)
+                    .mask(
+                        LinearGradient(
+                            gradient: Gradient(stops: [
+                                Gradient.Stop(color: .clear, location: 0),
+                                Gradient.Stop(color: .black, location: 0.5),
+                                Gradient.Stop(color: .clear, location: 1)
+                            ]),
+                            startPoint: .top,
+                            endPoint: .bottom
+                        )
+                    )
+                    .frame(height: showFullSizeImage ?  geometry.size.height : (geometry.size.height + 200) / 2)
                 //                .onTapGesture {
                 //                    showFullSizeImage.toggle()
                 //                    let _ = print(showFullSizeImage)
@@ -84,9 +116,6 @@ struct MoviePageView: View {
                                 Text(restApiMovieVm.details?.title ?? "")
                                     .font(.largeTitle)
                             }
-                            
-                            
-                            
                             
                             HStack {
                                 
@@ -186,9 +215,57 @@ struct MoviePageView: View {
                             Text(restApiMovieVm.details?.overview ?? "")
                                 .multilineTextAlignment(.leading)
                                 .fixedSize(horizontal: false, vertical: true)
+
+                            if (showAllVideos){
+                                ScrollView {
+                                    VStack {
+                                        ForEach(filteredResults, id: \.id) { res in
+                                            
+                                                Button(
+                                                    action: {
+                                                        self.youTubePlayerTest.source = .url("https://www.youtube.com/watch?v=\(res.key.unwrap)")
+                                                    },
+                                                    label: {
+                                                        YouTubePlayerView(
+                                                            .init(
+                                                                source: .url("https://www.youtube.com/watch?v=\(res.key.unwrap)")
+                                                            )
+                                                        )
+                                                        .frame(width: geometry.size.width, height: geometry.size.height / 3)
+                                                        .border(.black, width: 1)
+                                                    }
+                                                )
+                                        }
+   
+                                    }
+                                    .padding()
+                                }
+                            } else {
+                                if let video = filteredResults.first {
+                                    YouTubePlayerView(
+                                        .init(
+                                            source: .url("https://www.youtube.com/watch?v=\(video.key.unwrap)")
+                                        )
+                                    )
+                                    .frame(width: geometry.size.width, height: 200)
+                                    .border(.black, width: 1)
+                                }
+                            }
+                            Spacer()
+                            if (restApiMovieVm.details?.videos?.results != nil && (restApiMovieVm.details?.videos?.results.count)! > 1) {
+                                Button {
+                                    showAllVideos.toggle()
+                                } label: {
+                                    Image(systemName: showAllVideos ? "chevron.up" : "chevron.down")
+                                        .frame(width: geometry.size.width, height: 40)
+                                        .padding(20)
+                                        .background(.black)
+                                        
+                                        
+                                }
+                            }
                         }
-                        Spacer()
-                        
+//                        Spacer()
                     }
                     .frame(minHeight: geometry.size.height / 2)
                     
@@ -228,6 +305,6 @@ struct MoviePageView: View {
         return ""
     }
 }
-//#Preview {
-//    MoviePageView(restApiMovieVm: .init(), notificationVM: .init(), movieId: 1)
-//}
+#Preview {
+    MoviePageView(restApiMovieVm: .init(), notificationVM: .init(), movieId: 1)
+}

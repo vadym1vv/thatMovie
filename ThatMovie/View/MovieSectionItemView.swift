@@ -17,7 +17,7 @@ struct MovieSectionItemView: View {
             .background(
                 RoundedRectangle(cornerRadius: 10)
                     .fill(Color( UIColor.systemGray5))
-                    .opacity(isSelected ? 1 : 0.4)
+                    .opacity(isSelected ? 1 : 0)
             )
     }
 }

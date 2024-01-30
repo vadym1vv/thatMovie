@@ -31,10 +31,7 @@ final class GenericApiImpl: GenericApiProtocol {
         guard httpResponse.statusCode == 200 else {
             throw MovieApiError.invalidStatusCode(statusCode: httpResponse.statusCode)
         }
-        
-        
             let decoder = JSONDecoder()
             return try decoder.decode(type, from: data)
-        
     }
 }
