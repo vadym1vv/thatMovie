@@ -13,9 +13,10 @@ struct MovieSectionItemView: View {
     var body: some View {
         Text(movieItemName)
             .foregroundStyle(.black)
-            .padding(2.5)
+            .padding([.leading, .trailing], 6)
+            .padding([.top, .bottom], 1)
             .background(
-                RoundedRectangle(cornerRadius: 10)
+                RoundedRectangle(cornerRadius:7)
                     .fill(Color( UIColor.systemGray5))
                     .opacity(isSelected ? 1 : 0)
             )
@@ -23,5 +24,5 @@ struct MovieSectionItemView: View {
 }
 
 #Preview {
-    MovieSectionItemView(movieItemName: "random", isSelected: false)
+    MovieSectionItemView(movieItemName: "random", isSelected: true)
 }

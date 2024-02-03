@@ -11,7 +11,7 @@ struct MovieSection: View {
     
     @ObservedObject var restApiMovieVm: RestApiMovieVM
     
-    @State private var selectedMovieSection: MovieEndpoints  = .trending
+    @State private var selectedMovieSection: GroupedByCategoryMovieEnum  = .trending
     @State private var selectedMovieGenre: MovieGenre?
     @Binding var displayAllGenres: Bool
     
@@ -28,22 +28,28 @@ struct MovieSection: View {
         VStack {
             ScrollView(.horizontal) {
                 HStack {
-                    ForEach(MovieEndpoints.allCases) { item in
+                    ForEach(GroupedByCategoryMovieEnum.allCases) { item in
                         Button(action: {
                             if (displayAllGenres) {
                                 self.displayAllGenres = false
                             }
+                            
                             selectedMovieSection = item
+                            
                             if (item == .genre) {
                                 Task {
-                                    await restApiMovieVm.restMovieGenreListApi(url: item.path, selectedLanguage: selectedLanguage)
+                                    await restApiMovieVm.restMovieGenreListApi(urlRequest: item.paginatedPath(page: UrlPage(page: 1), language: .en))
                                 }
                             } else {
+                                restApiMovieVm.currentMovieGenreEndpoint = nil
+                                restApiMovieVm.currentMovieCategoryEndpoint = item
+                                
 //                                let _ = print("----=====>>>>>>>>>>>")
 //                                let _ = print(selectedMovieGenre?.name)
                                 Task {
                                     //                                    await restApiMovieVm.restBaseMovieApi(url: item.path, selectedLanguage: selectedLanguage, page: 1)
-                                    await restApiMovieVm.restBaseMovieApi(url: ApiUrls.moviesUrl(url: item.path, page: 1, language: selectedLanguage))
+                                    await restApiMovieVm.restBaseMovieApi(url: item.paginatedPath(page: UrlPage(page: 1), language: .en))
+//                                    await restApiMovieVm.restBaseMovieApi(url: ApiUrls.moviesUrl(url: item.path, page: 1, language: selectedLanguage))
                                 }
                             }
                         }, label: {
@@ -65,6 +71,8 @@ struct MovieSection: View {
                                 Button(action: {
                                     let _ = print("----++++--------")
                                     let _ = print(movieGenre.name)
+                                    restApiMovieVm.currentMovieCategoryEndpoint = nil
+                                    restApiMovieVm.currentMovieGenreEndpoint = movieGenre
                                     withAnimation {
                                         self.selectedMovieGenre = movieGenre
                                     }
@@ -72,9 +80,9 @@ struct MovieSection: View {
                                     if (displayAllGenres) {
                                         self.displayAllGenres = false
                                     }
-                                    let str = "/3/discover/movie?with_genres=\(movieGenre.id)"
+//                                    let str = "/3/discover/movie?with_genres=\(movieGenre.id)"
                                     Task {
-                                        await restApiMovieVm.genreRestBaseMovieApi(url: str)
+                                        await restApiMovieVm.genreRestBaseMovieApi(url: MovieEndpoints.discoverByGenre(genreId: movieGenre.id, page: UrlPage(page: 1), language: .en).urlRequest)
                                     }
                                 }, label: {
                                     MovieSectionItemView(movieItemName: movieGenre.name, isSelected: self.selectedMovieGenre == movieGenre)
@@ -114,7 +122,7 @@ struct MovieSection: View {
         
     }
     
-    private func selectedMovie(selectedItem: MovieEndpoints, item: MovieEndpoints) -> Bool {
+    private func selectedMovie(selectedItem: GroupedByCategoryMovieEnum, item: GroupedByCategoryMovieEnum) -> Bool {
         return selectedItem == item
     }
 }

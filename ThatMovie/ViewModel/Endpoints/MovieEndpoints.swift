@@ -2,52 +2,57 @@
 //  MovieEndpoints.swift
 //  ThatMovie
 //
-//  Created by Vadym Vasylaki on 16.11.2023.
+//  Created by Vadym Vasylaki on 30.01.2024.
 //
 
 import Foundation
 
-enum MovieEndpoints: CaseIterable, Identifiable {
-    var id: Self {self}
+enum MovieEndpoints {
+    case discoverByGenre(genreId: Int, page: UrlPage, language: Language), movieDetails(movieId: Int, language: Language), moviesBySearchCriteria(searchCriterias: SearchCriteriaDto, page: UrlPage, language: Language),
+         moviesByMovieName(searchCriterias: SearchCriteriaDto, page: UrlPage, language: Language)
     
-//    case trending, topRated, genre, movieReviews(_ movieId: Int), upcoming, popular
-    case trending, topRated, genre, upcoming, popular
-    
-    var path: String {
+    public var urlRequest: String {
         switch self {
-        case .trending:
-                return "/3/trending/movie/day"
-        case .popular:
-            return "/3/movie/popular"
-        case .topRated:
-            return "/3/movie/top_rated"
-        case .genre:
-            return "/3/genre/movie/list"
-//        case .movieReviews:
-//            return "/3/movie/\(movieId)/reviews?language=en-US&page=1"
-        case .upcoming:
-            return "/3/movie/upcoming"
+        case .discoverByGenre(let genreId, let page, let language):
+            return "\(StaticEndpoints.baseMovieUrl)/3/discover/movie?with_genres=\(genreId)&\(language.urlLanguageRepresentation)\(page.getUrlPage)"
+        case .movieDetails(let movieId, let language):
+            return "\(StaticEndpoints.baseMovieUrl)/3/movie/\(movieId)?language=\(language.rawValue)&append_to_response=videos"
+        case .moviesBySearchCriteria(let searchCriterias, let page, let language):
+            var searchMoviesByCriteriasUrl = "/3/discover/movie?"
+            
+            //        if let includeAdult = searchCriterias.includeAdult {
+            //            searchMoviesByCriteriasUrl += SearchCriteriaEnum.includeAdult(isAdult: includeAdult).urlRepresentation
+            //        }
+            
+            if let sortBy = searchCriterias.sortBy {
+                searchMoviesByCriteriasUrl += SearchCriteriaEnum.sortBy(sortBy: sortBy).urlRepresentation
+            }
+            
+            if(searchCriterias.selectedGenres.count > 0) {
+                searchMoviesByCriteriasUrl += SearchCriteriaEnum.withGenres(genres: searchCriterias.selectedGenres).urlRepresentation
+            }
+//            if let searchStr = searchCriterias.searchStr {
+//                searchMoviesByNameUrl += SearchCriteriaEnum.byName(byName: searchStr).urlRepresentation
+//            }
+            
+            if let releaseYear = searchCriterias.releaseYear {
+                searchMoviesByCriteriasUrl += SearchCriteriaEnum.primaryReleaseYear(releaseYear: String(releaseYear)).urlRepresentation
+            }
+            return "\(StaticEndpoints.baseMovieUrl)\(searchMoviesByCriteriasUrl)\(language.urlLanguageRepresentation)\(page.getUrlPage)"
+        case .moviesByMovieName(let searchCriterias, let page, let language):
+            var searchUrl = ""
+            var searchMoviesByNameUrl = "/3/search/movie?"
+            if let searchStr = searchCriterias.searchStr {
+                searchMoviesByNameUrl += SearchCriteriaEnum.byName(byName: searchStr).urlRepresentation
+            }
+            if let releaseYear = searchCriterias.releaseYear {
+                searchMoviesByNameUrl += SearchCriteriaEnum.primaryReleaseYear(releaseYear: "\(releaseYear)").urlRepresentation
+            }
+            searchUrl += searchMoviesByNameUrl
+            return "\(StaticEndpoints.baseMovieUrl)\(searchUrl)\(language.urlLanguageRepresentation)\(page.getUrlPage)"
+            
         }
+        
     }
     
-    public var movieSection: String {
-        switch self {
-        case .trending:
-            return "Trending"
-        case .topRated:
-            return "Top rated"
-        case .genre:
-            return "Genres"
-//        case .movieReviews:
-//            return "By Review"
-        case .upcoming:
-            return "Upcoming"
-        case .popular:
-            return "Popular"
-        }
-    }
-    
-//    var fullPath: String {
-//        ApiUrls.baseUrl + path
-//    }
 }

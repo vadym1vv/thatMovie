@@ -17,11 +17,11 @@ struct ContentView: View {
     @State var showSearchField: Bool = false
     @State var isSelectLanguageOn: Bool = false
     @State var isNightTheme: Bool = false
-//    @State var currentDisplayMode: DisplayMode = .triple
-//    @State var currentDisplayMode: DisplayMode = .triple
+    //    @State var currentDisplayMode: DisplayMode = .triple
+    //    @State var currentDisplayMode: DisplayMode = .triple
     @State var page: Int = 1
     @State var displayAllGenres: Bool = false
-//    @State var selectedMovieGenre: MovieGenre?
+    //    @State var selectedMovieGenre: MovieGenre?
     
     @AppStorage("isMovieOptionsOn") var isMovieOptionsOn: Bool = false
     @AppStorage("selectedLanguage") var selectedLanguage: Language = .en
@@ -32,16 +32,16 @@ struct ContentView: View {
     
     
     private var additionalOptionsPresent: Bool = false
-//    private let pageLimit = 20
+    //    private let pageLimit = 20
     
-//    var currentDisplayMode: DisplayMode {
-//        return DisplayMode.currentDisplayModyByString(str: savedCurrentDisplayMode)
-//    }
+    //    var currentDisplayMode: DisplayMode {
+    //        return DisplayMode.currentDisplayModyByString(str: savedCurrentDisplayMode)
+    //    }
     
     var currentDisplayMode: DisplayMode {
         return DisplayMode.currentDisplayModyByString(str: savedCurrentDisplayMode)
     }
-//
+    //
     var body: some View {
         
         
@@ -69,9 +69,9 @@ struct ContentView: View {
                 }
                 if(self.displayAllGenres) {
                     //                VStack {
-                    ForEach(restApiMovieVm.movieByGenreRest.sorted(by: {$0.key.name > $1.key.name}), id: \.key) { genreName, movies in
+                    ForEach(restApiMovieVm.movieByGenreRest.sorted(by: {$0.key.name > $1.key.name}), id: \.key) { movieGenre, movies in
                         VStack(alignment: .leading) {
-                            Text(genreName.name)
+                            Text(movieGenre.name)
                                 .font(.title2)
                                 .padding(.leading, 3)
                             ScrollView(.horizontal) {
@@ -80,12 +80,21 @@ struct ContentView: View {
                                         NavigationLink(value: movie) {
                                             AsyncImageView(posterPath: movie.posterPath)
                                         }
-//                                        .onAppear {
-//                                            if (movie == movies.results.last && restApiMovieVm.currentNetworkCallState == .finished) {
-//                                                let _ = print("THIS IS THE LAST MOVIE)))00000----->>>")
-//                                            }
-//                                        }
-//                                        MovieCardView(posterPath: movie.posterPath ?? "")
+                                        .onAppear {
+                                            if (movie.id == movies.results.last!.id && restApiMovieVm.currentNetworkCallState == .finished) {
+                                                Task {
+                                                    await restApiMovieVm.loadNextMovieByGenreInGenreList(currentGenre: movieGenre)
+                                                }
+                                            } else {
+                                                let _ = print("LOAding====>>>><<<<<<<+=============")
+                                            }
+                                        }
+                                        //                                        .onAppear {
+                                        //                                            if (movie == movies.results.last && restApiMovieVm.currentNetworkCallState == .finished) {
+                                        //                                                let _ = print("THIS IS THE LAST MOVIE)))00000----->>>")
+                                        //                                            }
+                                        //                                        }
+                                        //                                        MovieCardView(posterPath: movie.posterPath ?? "")
                                         //                                        RoundedRectangle(cornerRadius: 10)
                                         //                                            .frame(width: 150, height: 150)
                                         
@@ -110,11 +119,22 @@ struct ContentView: View {
                                     NavigationLink(value: movie) {
                                         AsyncImageView(posterPath: movie.posterPath)
                                     }
+                                    .onAppear {
+                                        if (movie.id == restApiMovieVm.filteredMovieRest!.results.last!.id && restApiMovieVm.currentNetworkCallState == .finished) {
+                                            let _ = print("THIS IS THE LAST MOVIE)))00000----->>>")
+                                            Task {
+                                                await restApiMovieVm.loadNextMoviesBySearchCriteria()
+                                            }
+                                        } else {
+                                            let _ = print("LOAding search results====>>>><<<<<<<+=============")
+                                        }
+                                    }
                                 }
                             }
                         } else {
                             if let movieRest = restApiMovieVm.movieRest {
                                 ForEach(movieRest.results) { movie in
+//                                    let _ = print(restApiMovieVm.currentMovieCategoryEndpoint)
                                     //                        HStack {
                                     //                            Text(movie.title)
                                     //                        }.frame(width: 250, height: 200)
@@ -124,25 +144,44 @@ struct ContentView: View {
                                         AsyncImageView(posterPath: movie.posterPath)
                                     }
                                     .onAppear {
-                                        if (movie.id == movieRest.results.last!.id && restApiMovieVm.currentNetworkCallState == .finished) {
-                                            let _ = print("THIS IS THE LAST MOVIE)))00000----->>>")
+                                        if (movie.id == restApiMovieVm.movieRest!.results.last!.id && restApiMovieVm.currentNetworkCallState == .finished) {
+//                                            let _ = print("THIS IS THE LAST MOVIE)))00000----->>>")
+                                            if (restApiMovieVm.currentMovieGenreEndpoint != nil) {
+                                                Task {
+                                                    await restApiMovieVm.loadNextMovieBySingleGenre()
+                                                }
+                                            } else {
+                                                Task {
+                                                    await restApiMovieVm.loadNextMovieByCurrentMovieCategoryEndpoint()
+                                                }
+                                            }
+                                            
                                         } else {
-                                            let _ = print("LOAding====>>>><<<<<<<+=============")
+//                                            let _ = print("LOAding search results====>>>><<<<<<<+=============")
                                         }
                                     }
-                                    
-                                    
-                                    
                                 }
                             }
                         }
                     }
                 }
                 
+//                Button {
+//                    
+//                } label: {
+//                    Image(systemName: "chevron.down")
+//                        .frame(maxWidth: .infinity)
+//                        .frame(height: 40)
+//                        .padding(20)
+//                        .background(.black)
+//                        .onAppear {
+//                            let _ = print("this is the end 11111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111")
+//                        }
+//                }
                 
             }
             .padding([.leading, .trailing], 3)
-//            .background(ignoresSafeAreaEdges: .bottom)
+            //            .background(ignoresSafeAreaEdges: .bottom)
             
             //        }
             //        .frame(
@@ -249,7 +288,7 @@ struct ContentView: View {
                                                                 }
                                                         })
                                                         .offset(x: -150, y:  -130)
-
+                                                        
                                                         Button {
                                                             if(self.currentDisplayMode == .single) {
                                                                 self.savedCurrentDisplayMode = DisplayMode.double.rawValue
@@ -267,12 +306,12 @@ struct ContentView: View {
                                                     .foregroundStyle(.black)
                                                     
                                                     Group {
-//                                                        Button {
-//                                                            
-//                                                        } label: {
-//                                                            Image(systemName: "person.circle")
-//                                                        }
-//                                                        .offset(x: -90, y: -250)
+                                                        //                                                        Button {
+                                                        //
+                                                        //                                                        } label: {
+                                                        //                                                            Image(systemName: "person.circle")
+                                                        //                                                        }
+                                                        //                                                        .offset(x: -90, y: -250)
                                                         
                                                         NavigationLink(destination: {
                                                             UserPageView(restApiMovieVm: restApiMovieVm, notificationVM: notificationVM, expand: $expand, showSearchField: $showSearchField,  selectedLanguage: selectedLanguage)
@@ -338,16 +377,17 @@ struct ContentView: View {
             .onDisappear {
                 expand = false
             }
-//            .navigationDestination(for: MovieItem.self) { result in
-//                MoviePageView(restApiMovieVm: restApiMovieVm, movieId: result.id!)
-//            }
+            //            .navigationDestination(for: MovieItem.self) { result in
+            //                MoviePageView(restApiMovieVm: restApiMovieVm, movieId: result.id!)
+            //            }
         }
         .task {
-//            if (selectedMovieGenreVm.selectedMovieGenre == nil) {
-//                let _ = print("0000>>>>>>>>>!!!!!")
-//                let _ = print(selectedMovieGenreVm.selectedMovieGenre)
-            await restApiMovieVm.restBaseMovieApi(url: ApiUrls.moviesUrl(url: MovieEndpoints.trending.path, page: 1, language: selectedLanguage))
-//            }
+            //            if (selectedMovieGenreVm.selectedMovieGenre == nil) {
+            //                let _ = print("0000>>>>>>>>>!!!!!")
+            //                let _ = print(selectedMovieGenreVm.selectedMovieGenre)
+            restApiMovieVm.currentMovieCategoryEndpoint = GroupedByCategoryMovieEnum.trending
+            await restApiMovieVm.restBaseMovieApi(url: GroupedByCategoryMovieEnum.trending.paginatedPath(page: UrlPage(page: 1), language: .en))
+            //            }
         }
     }
     

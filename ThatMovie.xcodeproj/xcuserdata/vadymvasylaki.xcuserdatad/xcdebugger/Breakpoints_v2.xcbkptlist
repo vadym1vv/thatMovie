@@ -176,8 +176,8 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "27"
             endingLineNumber = "27"
-            landmarkName = "moviesUrl(url:page:language:)"
-            landmarkType = "7">
+            landmarkName = "ApiUrls"
+            landmarkType = "3">
             <Locations>
                <Location
                   uuid = "EBE7B0E3-8914-4612-A049-06F27B955D0B - 8898f2a5fd239688"
@@ -272,8 +272,8 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "109"
             endingLineNumber = "109"
-            landmarkName = "moviesByMovieName(searchCriterias:page:language:)"
-            landmarkType = "7">
+            landmarkName = "ApiUrls"
+            landmarkType = "3">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -302,10 +302,10 @@
             filePath = "ThatMovie/ViewModel/RestApiMovieVM.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "119"
-            endingLineNumber = "119"
-            landmarkName = "filterByCriteria(searchCriteriaDto:)"
-            landmarkType = "7">
+            startingLineNumber = "211"
+            endingLineNumber = "211"
+            landmarkName = "RestApiMovieVM"
+            landmarkType = "3">
             <Locations>
                <Location
                   uuid = "9FD56860-8D98-4180-BFE0-24BB1757EBB1 - e0c36a1e369aa2c6"
@@ -350,10 +350,10 @@
             filePath = "ThatMovie/ViewModel/RestApiMovieVM.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "121"
-            endingLineNumber = "121"
-            landmarkName = "filterByCriteria(searchCriteriaDto:)"
-            landmarkType = "7">
+            startingLineNumber = "213"
+            endingLineNumber = "213"
+            landmarkName = "RestApiMovieVM"
+            landmarkType = "3">
             <Locations>
                <Location
                   uuid = "388064F6-77EB-4D84-9F15-00F10494335B - e0c36a1e369aa091"
@@ -398,10 +398,10 @@
             filePath = "ThatMovie/ViewModel/RestApiMovieVM.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "94"
-            endingLineNumber = "94"
-            landmarkName = "filterByCriteria(searchCriteriaDto:)"
-            landmarkType = "7">
+            startingLineNumber = "186"
+            endingLineNumber = "186"
+            landmarkName = "RestApiMovieVM"
+            landmarkType = "3">
             <Locations>
                <Location
                   uuid = "11FE6E33-9E06-495A-AA5E-64BF52D9BA0D - e0c36a1e369abb51"
@@ -446,10 +446,10 @@
             filePath = "ThatMovie/ViewModel/RestApiMovieVM.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "93"
-            endingLineNumber = "93"
-            landmarkName = "filterByCriteria(searchCriteriaDto:)"
-            landmarkType = "7">
+            startingLineNumber = "185"
+            endingLineNumber = "185"
+            landmarkName = "RestApiMovieVM"
+            landmarkType = "3">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -462,10 +462,10 @@
             filePath = "ThatMovie/ViewModel/RestApiMovieVM.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "95"
-            endingLineNumber = "95"
-            landmarkName = "filterByCriteria(searchCriteriaDto:)"
-            landmarkType = "7">
+            startingLineNumber = "187"
+            endingLineNumber = "187"
+            landmarkName = "RestApiMovieVM"
+            landmarkType = "3">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -478,10 +478,10 @@
             filePath = "ThatMovie/ViewModel/RestApiMovieVM.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "97"
-            endingLineNumber = "97"
-            landmarkName = "filterByCriteria(searchCriteriaDto:)"
-            landmarkType = "7">
+            startingLineNumber = "189"
+            endingLineNumber = "189"
+            landmarkName = "RestApiMovieVM"
+            landmarkType = "3">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -494,8 +494,8 @@
             filePath = "ThatMovie/View/SearchFieldView.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "120"
-            endingLineNumber = "120"
+            startingLineNumber = "123"
+            endingLineNumber = "123"
             landmarkName = "body"
             landmarkType = "24">
             <Locations>
@@ -544,8 +544,8 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "74"
             endingLineNumber = "74"
-            landmarkName = "moviesBySearchCriteria(searchCriterias:page:language:)"
-            landmarkType = "7">
+            landmarkName = "ApiUrls"
+            landmarkType = "3">
             <Locations>
                <Location
                   uuid = "D5E62997-AE37-4036-98A8-9E989592D53A - 55f9aceac4bd7717"
@@ -635,8 +635,8 @@
             filePath = "ThatMovie/View/SearchFieldView.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "215"
-            endingLineNumber = "215"
+            startingLineNumber = "219"
+            endingLineNumber = "219"
             landmarkName = "body"
             landmarkType = "24">
             <Locations>
@@ -698,8 +698,8 @@
             filePath = "ThatMovie/View/SearchFieldView.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "134"
-            endingLineNumber = "134"
+            startingLineNumber = "137"
+            endingLineNumber = "137"
             landmarkName = "body"
             landmarkType = "24">
          </BreakpointContent>
@@ -714,10 +714,10 @@
             filePath = "ThatMovie/ViewModel/RestApiMovieVM.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "105"
-            endingLineNumber = "105"
-            landmarkName = "filterByCriteria(searchCriteriaDto:)"
-            landmarkType = "7">
+            startingLineNumber = "197"
+            endingLineNumber = "197"
+            landmarkName = "RestApiMovieVM"
+            landmarkType = "3">
             <Locations>
                <Location
                   uuid = "0AE74CDA-3A56-443B-8836-C35674365C37 - e0c36a1e369aa6c5"
@@ -778,8 +778,8 @@
             filePath = "ThatMovie/ViewModel/RestApiMovieVM.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "31"
-            endingLineNumber = "31"
+            startingLineNumber = "46"
+            endingLineNumber = "46"
             landmarkName = "restBaseMovieApi(url:)"
             landmarkType = "7">
             <Locations>
@@ -860,6 +860,38 @@
             endingLineNumber = "24"
             landmarkName = "fetch(type:with:)"
             landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "8241B6CC-4701-41C0-9255-581A929E25CB"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "ThatMovie/ViewModel/Endpoints/MovieEndpoints.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "46"
+            endingLineNumber = "46"
+            landmarkName = "urlRequest"
+            landmarkType = "24">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "603CA50F-4A25-4772-B420-035B6440CC43"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "ThatMovie/ViewModel/Endpoints/MovieEndpoints.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "45"
+            endingLineNumber = "45"
+            landmarkName = "urlRequest"
+            landmarkType = "24">
          </BreakpointContent>
       </BreakpointProxy>
    </Breakpoints>

@@ -57,9 +57,9 @@ import Foundation
 
 
 struct MovieRest: Codable {
-    let page: Int
+    var page: Int
     var results: [Result]
-    let totalPages, totalResults: Int
+    var totalPages, totalResults: Int
 
     enum CodingKeys: String, CodingKey {
         case page, results
