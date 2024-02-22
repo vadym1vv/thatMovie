@@ -13,7 +13,6 @@ struct MoviePageView: View {
     
     @Query private var dbMovies: [MovieItem]
     @ObservedObject var restApiMovieVm: RestApiMovieVM
-    @ObservedObject var notificationVM: NotificationVM
     var movieDataVM: MovieDataVM = MovieDataVM()
     @Environment(\.modelContext) var modelContext
     @EnvironmentObject var router: Router
@@ -79,84 +78,87 @@ struct MoviePageView: View {
                 ScrollView{
                     Spacer(minLength: geometry.size.height / 2)
                     VStack {
+                       
                         
-                        Text(restApiMovieVm.details?.title ?? "")
-                            .font(.largeTitle)
-                        
-                        HStack {
-                            ScrollView(.horizontal) {
-                                HStack{
-                                    ForEach(restApiMovieVm.details?.genres ?? []) { genre in
-                                        MovieSectionItemView(movieItemName: genre.name, isSelected: true)
-                                    }
-                                }
-                                .padding(.leading, 20)
-                            }
-                            
-                            Spacer()
+                            Text(restApiMovieVm.details?.title ?? "")
+                                .font(.largeTitle)
                             
                             HStack {
-                                Button {
-                                    if let newMovie = movieDataVM.setFavouriteById(movieDb: currentMovieFromDb, id: restApiMovieVm.details?.id, title: restApiMovieVm.details?.title, posterPath: restApiMovieVm.details?.posterPath, releaseDate: restApiMovieVm.details?.releaseDate?.formatToDate)
-                                    {
-                                        modelContext.insert(newMovie)
+                                ScrollView(.horizontal) {
+                                    HStack{
+                                        ForEach(restApiMovieVm.details?.genres ?? []) { genre in
+                                            MovieSectionItemView(movieItemName: genre.name, isSelected: true)
+                                        }
                                     }
-                                } label: {
-                                    Image(systemName: (currentMovieFromDb != nil && currentMovieFromDb!.personalIsFavourite) ? "star.fill" : "star")
+                                    .padding(.leading, 20)
                                 }
-                                .padding( 10)
-                                Divider()
-                                WatchMenuView(shwoWatchNotificationProperties: $showWatchNotificationProperties, id: restApiMovieVm.details?.id, genres: restApiMovieVm.details?.genres.map({$0.id}), title: restApiMovieVm.details?.title, posterPath: restApiMovieVm.details?.posterPath, releaseDate: restApiMovieVm.details?.releaseDate?.formatToDate)
                                 
-                            }
-                            .frame(height: 35)
-                            .foregroundStyle(.black)
-                            .background(
-                                RoundedRectangle(cornerRadius: 10)
-                                    .fill(Color( UIColor.systemGray2))
-                                    .opacity(0.2)
-                            )
-                            .padding(.trailing, 10)
-                        }
-                        
-                        HStack {
-                            VStack(alignment: .leading) {
+                                Spacer()
                                 
                                 HStack {
-                                    Text(restApiMovieVm.details?.status ?? "")
-                                    Divider()
-                                    Text(restApiMovieVm.details?.releaseDate ?? "")
-                                }
-                                .frame(maxHeight: 15)
-                                .padding(5)
-                                .background(
-                                    RoundedRectangle(cornerRadius: 7)
-                                        .strokeBorder(.black.opacity(0.3))
+                                    Button {
+                                        if let newMovie = movieDataVM.setFavouriteById(movieDb: currentMovieFromDb, id: restApiMovieVm.details?.id, title: restApiMovieVm.details?.title, posterPath: restApiMovieVm.details?.posterPath, releaseDate: restApiMovieVm.details?.releaseDate?.formatToDate)
+                                        {
+                                            modelContext.insert(newMovie)
+                                        }
+                                    } label: {
+                                        Image(systemName: (currentMovieFromDb != nil && currentMovieFromDb!.personalIsFavourite) ? "star.fill" : "star")
+                                    }
                                     
+                                    Divider()
+                                    WatchMenuView(shwoWatchNotificationProperties: $showWatchNotificationProperties, id: restApiMovieVm.details?.id, genres: restApiMovieVm.details?.genres.map({$0.id}), title: restApiMovieVm.details?.title, posterPath: restApiMovieVm.details?.posterPath, releaseDate: restApiMovieVm.details?.releaseDate?.formatToDate)
+                                    
+                                }
+                                .frame(height: 35)
+                                .foregroundStyle(Color(UIColor.label))
+                                .padding([.leading, .trailing], 10)
+                                .background(
+                                    RoundedRectangle(cornerRadius: 10)
+                                        .fill(Color("SecondaryBackground"))
+                                        .opacity(0.5)
                                 )
-                                
-                                if let runtime = restApiMovieVm.details?.runtime {
+                                .padding(.trailing, 15)
+                            }
+                            
+                            HStack {
+                                VStack(alignment: .leading) {
+                                    
                                     HStack {
-                                        Text("Duration: ")
-                                        Text("\(Int(runtime / 60)) h")
-                                        Text("\(Int(runtime % 60)) m")
+                                        Text(restApiMovieVm.details?.status ?? "")
+                                        Divider()
+                                        Text(restApiMovieVm.details?.releaseDate ?? "")
+                                    }
+                                    .frame(maxHeight: 15)
+                                    .padding(5)
+                                    .background(
+                                        RoundedRectangle(cornerRadius: 7)
+                                            .strokeBorder(.black.opacity(0.3))
+                                        
+                                    )
+                                    
+                                    if let runtime = restApiMovieVm.details?.runtime {
+                                        HStack {
+                                            Text("Duration: ")
+                                            Text("\(Int(runtime / 60)) h")
+                                            Text("\(Int(runtime % 60)) m")
+                                        }
+                                    }
+                                }
+                                
+                                Spacer()
+                                
+                                HStack {
+                                    if let rating = restApiMovieVm.details?.voteAverage, let voteCount = restApiMovieVm.details?.voteCount {
+                                        Text("R: \(rating.formatted(.number.precision(.fractionLength(0...1))))")
+                                        Text("/\(voteCount.roundedWithAbbreviations)")
                                     }
                                 }
                             }
+                            .padding(7)
                             
-                            Spacer()
-                            
-                            HStack {
-                                if let rating = restApiMovieVm.details?.voteAverage, let voteCount = restApiMovieVm.details?.voteCount {
-                                    Text("R: \(rating.formatted(.number.precision(.fractionLength(0...1))))")
-                                    Text("/\(voteCount.roundedWithAbbreviations)")
-                                }
-                            }
-                        }
-                        .padding(7)
+                            Text(restApiMovieVm.details?.overview ?? "")
+                                .padding([.leading, .trailing], 5)
                         
-                        Text(restApiMovieVm.details?.overview ?? "")
-                            .padding([.leading, .trailing], 5)
                         
                         ScrollView {
                             VStack(alignment: .center) {
@@ -173,7 +175,7 @@ struct MoviePageView: View {
                                                         source: .url("https://www.youtube.com/watch?v=\(res.key.unwrap)")
                                                     )
                                                 )
-                                                .frame(height: 200)
+                                                .frame(height: geometry.size.height / 3)
                                                 .clipShape(RoundedRectangle(cornerRadius: 5))
                                             }
                                         )
@@ -185,7 +187,7 @@ struct MoviePageView: View {
                                                 source: .url("https://www.youtube.com/watch?v=\(video.key.unwrap)")
                                             )
                                         )
-                                        .frame(height: 200)
+                                        .frame(height: geometry.size.height / 3)
                                         .clipShape(RoundedRectangle(cornerRadius: 5))
                                     }
                                 }
@@ -210,14 +212,16 @@ struct MoviePageView: View {
                     .frame(minHeight: geometry.size.height / 2)
                     .background(
                         RoundedRectangle(cornerRadius: 35)
-                            .fill(Color( UIColor.systemGray5))
-                            .opacity(0.3)
+                            .fill(Color("SecondaryBackground"))
+                            .opacity(0.4)
                     )
                 }
                 .scrollIndicators(.never)
             }
         }
         .ignoresSafeArea()
+        .background(Color("PrimaryBackground")
+            .ignoresSafeArea())
         .toolbarBackground(.hidden, for: .navigationBar)
         .task {
             await restApiMovieVm.movieDetails(url: MovieEndpoints.movieDetails(movieId: movieId, language: .en).urlRequest)
@@ -259,7 +263,7 @@ struct MoviePageView: View {
         
         .sheet(isPresented: $showWatchNotificationProperties, content: {
             //            uncoment
-            SetWatchNotificationView(notificationVM: notificationVM,id: restApiMovieVm.details?.id, title: restApiMovieVm.details?.title, posterPath: restApiMovieVm.details?.posterPath, releaseDate: restApiMovieVm.details?.releaseDate?.formatToDate)
+            SetWatchNotificationView(id: restApiMovieVm.details?.id, title: restApiMovieVm.details?.title, posterPath: restApiMovieVm.details?.posterPath, releaseDate: restApiMovieVm.details?.releaseDate?.formatToDate)
                 .presentationDetents([.medium])
             
         }
@@ -299,5 +303,5 @@ extension Int {
 
 
 #Preview {
-    MoviePageView(restApiMovieVm: .init(), notificationVM: .init(), movieId: 1)
+    MoviePageView(restApiMovieVm: .init(), movieId: 1)
 }

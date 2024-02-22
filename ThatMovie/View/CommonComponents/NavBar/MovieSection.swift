@@ -105,6 +105,8 @@ struct MovieSection: View {
                         Image(systemName: self.displayAllGenres ? "chevron.up" : "chevron.down")
                     }
                     .buttonStyle(.borderedProminent)
+                    .tint(Color("SecondaryBackground"))
+                    
                     
                 }
                 

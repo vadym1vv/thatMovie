@@ -113,6 +113,7 @@ class RestApiMovieVM: ObservableObject {
     }
     
     func loadNextMovieByCurrentMovieCategoryEndpoint() async {
+        
 //        var lastMovieInCurrentMovieCategory: Result?
         defer {
             
@@ -125,9 +126,11 @@ class RestApiMovieVM: ObservableObject {
         }
         
         do {
+            currentNetworkCallState = .fetching
             if let currentMovieCategoryEndpoint = self.currentMovieCategoryEndpoint {
                 if let movieRest = movieRest {
                     var currentMovieCategory = try await clientGenericApi.fetch(type: MovieRest.self, with: MutableURLRequest.baseMutableGetURLRequest(url: currentMovieCategoryEndpoint.paginatedPath(page: UrlPage(page: movieRest.page + 1), language: .en)))
+                    print(movieRest.page)
 //                    lastMovieInCurrentMovieCategory = currentMovieCategory.results.popLast()
                     currentMovieCategory.results.insert(contentsOf: movieRest.results, at: 0)
                     self.movieRest = currentMovieCategory

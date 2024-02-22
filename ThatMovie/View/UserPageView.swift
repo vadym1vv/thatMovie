@@ -56,7 +56,6 @@ struct UserPageView: View {
     @Environment(\.dismiss) var dismiss
     
     @ObservedObject var restApiMovieVm: RestApiMovieVM
-    @ObservedObject var notificationVM: NotificationVM
     @StateObject private var userPageViewModel: UserPageViewModel = UserPageViewModel()
     
     
@@ -68,26 +67,29 @@ struct UserPageView: View {
     @State private var showUpdateDialog: Bool = false
     @State private var dropSearchPageCategory: Bool = false
     @StateObject var movieItemToUpdate: MovieItemToUpdateInfo = MovieItemToUpdateInfo()
-    @State private var showNotificationSheet: Bool = false
+//    @State private var showNotificationSheet: Bool = false
     @State private var notificationDescription: String?
     
-    @State private var silentNotificationForReWatchNotifications: Bool = false
-    @State private var allowAutoRewatchListNotifications: Bool = false
+//    @State private var silentNotificationForReWatchNotifications: Bool = false
+//    @State private var allowAutoRewatchListNotifications: Bool = false
     @State private var silentNotificationForPlanedToWatchNotification: Bool = false
+    
     
     
     //    @AppStorage("cardGridColumns") var savedDardGridColumns: Int = 1
     //    @AppStorage("currentDisplayMode") var savedCurrentDisplayMode: DisplayMode = .singleWithOptionsSquare
     
     //    @State private var cardGridColumns: Int = 1
-//    @State private var currentDisplayMode: DisplayMode = .singleWithOptionsSquare
+    //    @State private var currentDisplayMode: DisplayMode = .singleWithOptionsSquare
+    
+    
     @AppStorage("userPageCurrentDisplayMode") var savedCurrentDisplayMode: String = "singleWithOptionsSquare"
     
-    @Binding var expand: Bool
+    @State private var radialMenuIsHidden: Bool = true
     @Binding var showSearchField: Bool
     
     
-    
+    private let notificationVM: NotificationVM = NotificationVM()
     
     
     var rewatchNotificationTip = RewatchNotificationTip()
@@ -112,7 +114,7 @@ struct UserPageView: View {
                     .font(.title)
             }
             .padding()
-            if showSearchField {
+            if true {
                 VStack {
                     HStack {
                         TextField("Search", text: $searchQuery)
@@ -120,7 +122,7 @@ struct UserPageView: View {
                             .padding(6)
                             .background {
                                 RoundedRectangle(cornerRadius: 20)
-                                    .fill(Color(UIColor.systemGray6))
+                                    .fill(Color("SecondaryBackground"))
                             }
                             .overlay(alignment: .trailing) {
                                 Button(action: {
@@ -128,14 +130,10 @@ struct UserPageView: View {
                                 }, label: {
                                     
                                     Image.resizableSystemImage(systemName: "magnifyingglass")
-                                        .foregroundStyle(.black)
                                         .padding(7)
-                                    //                                    .background(Color(UIColor.systemGray6))
-                                        .background {
-                                            Circle().fill(Color(UIColor.systemGray6))
-                                        }
-                                    
                                 })
+                                .background(.additionalBackground)
+                                .clipShape(Circle())
                             }
                         Button(action: {
                             withAnimation {
@@ -147,23 +145,22 @@ struct UserPageView: View {
                             }
                         }, label: {
                             Image.resizableSystemImage(systemName: "xmark.circle")
-                                .foregroundStyle(.black)
-                            
                         })
                     }
+                    .foregroundStyle(Color(UIColor.label))
                     .frame(height: 30)
                     
                     HStack {
                         HStack {
                             Text("Sort by:")
-                                Picker("", selection: $selectedSortOption) {
-                                    ForEach(SortOption.allCases,
-                                            id: \.rawValue) { option in
-                                        Text(option.description)
-                                            .tag(option)
-                                    }
+                            Picker("", selection: $selectedSortOption) {
+                                ForEach(SortOption.allCases,
+                                        id: \.rawValue) { option in
+                                    Text(option.description)
+                                        .tag(option)
                                 }
-                                .labelsHidden()
+                            }
+                            .labelsHidden()
                         }
                         Spacer()
                     }
@@ -180,7 +177,7 @@ struct UserPageView: View {
                         //                        if let id = movie.id {
                         //                        let _ = print(movie.id)
                         NavigationLink {
-                            MoviePageView(restApiMovieVm: restApiMovieVm, notificationVM: notificationVM, movieId: movie.id!)
+                            MoviePageView(restApiMovieVm: restApiMovieVm, movieId: movie.id!)
                         } label: {
                             currentDisplayMode.movieCardView(movie: movie, showUpdateDialog: $showUpdateDialog, movieItemToUpdate: movieItemToUpdate, notificationVM: notificationVM)
                             //                            MovieCardView(posterPath: movie.posterPath ?? "")
@@ -191,267 +188,78 @@ struct UserPageView: View {
                 }
             }
         }
+        .padding([.leading, .trailing], 5)
+        .background(content: {
+            Color("PrimaryBackground")
+                .ignoresSafeArea()
+        })
         
         .padding(.top, showSearchField ? 85 : 35)
         .ignoresSafeArea()
-        .overlay(alignment: .bottom) {
-            HStack {
-                ZStack(alignment: .bottomTrailing) {
-                    HStack {
-                        Spacer()
-                        
-                        VStack{}
-                            .overlay {
-                                ZStack {
-                                    
-                                    ZStack {
-                                        ZStack{
-                                            Button(action: {
-                                                withAnimation {
-                                                    self.expand.toggle()
-                                                }
-                                                
-                                            }, label: {
-                                                Image(systemName: "arrow.up.left.circle")
-                                                    .resizable()
-                                                    .scaledToFit()
-                                                    .rotationEffect(.degrees(self.expand ? 180 : 0))
-                                                
-                                            })
-                                            .padding(10)
-                                            .tint(.red)
-                                            .zIndex(1)
-                                            .frame(width: 60, height: 60)
-                                            Circle()
-                                                .fill(Color(UIColor.systemGray6))
-                                                .opacity(0.4)
-                                            Circle()
-                                                .fill(Color(UIColor.systemGray6)
-                                                    .opacity(0.8))
-                                                .frame(width: self.expand ?  UIScreen.main.bounds.width : 0,
-                                                       height: self.expand ? UIScreen.main.bounds.width : 0 )
-                                        }
-                                        
-                                        .offset(x: -50, y: -50)
-                                        .zIndex(1)
-                                        
-                                    }
-                                    if self.expand {
-                                        Group {
-                                            if(!self.showSearchField) {
-                                                Button(action: {
-                                                    withAnimation {
-                                                        self.showSearchField.toggle()
-                                                        self.expand.toggle()
-                                                    }
-                                                }, label: {
-                                                    Image(systemName: "magnifyingglass")
-                                                        .foregroundStyle(.black)
-                                                })
-                                                .offset(x: -50, y: -195)
-                                            }
-                                            
-                                            Button {
-                                                
-                                                self.movieCategory = .planedToWatch
-                                            } label: {
-                                                Label("Planed to watch", systemImage: "calendar.badge.clock")
-                                            }
-                                            .offset(x: -160, y:  -130)
-                                            
-                                            Button {
-                                                //                                                if (!isDoubleWithOptionsSquareWasShown) {
-                                                //                                                    self.currentDisplayMode = .singleWithOptionsSquare
-                                                //                                                }
-                                                self.movieCategory = .watched
-                                            } label: {
-                                                Label("Watched", systemImage: "calendar.badge.clock")
-                                            }
-                                            .offset(x: -150, y:  -180)
-                                            
-                                            Button {
-                                                self.movieCategory = .favourites
-                                            } label: {
-                                                Label("Favourites", systemImage: "calendar.badge.clock")
-                                            }
-                                            .offset(x: -180, y:  -100)
-                                            
-                                            Button {
-                                                self.showNotificationSheet.toggle()
-                                            } label: {
-                                                Label("Notifications settings", systemImage: showNotificationSheet ? "bell.circle" : "bell")
-                                            }
-                                            .offset(x: -150, y:  -70)
-                                            
-                                            
-                                            Button {
-                                                if(self.currentDisplayMode == .single) {
-                                                    self.savedCurrentDisplayMode = DisplayMode.double.rawValue
-                                                } else if(self.currentDisplayMode == .double) {
-                                                    self.savedCurrentDisplayMode = DisplayMode.triple.rawValue
-                                                } else if(self.currentDisplayMode == .triple) {
-                                                    self.savedCurrentDisplayMode = DisplayMode.singleWithOptionsSquare.rawValue
-                                                } else {
-                                                    self.savedCurrentDisplayMode = DisplayMode.single.rawValue
-                                                }
-                                            } label: {
-                                                Image(systemName: self.currentDisplayMode.displayModeIcon)
-                                            }
-                                            .offset(x: -160, y:  -30)
-                                            
-                                        }
-                                        .foregroundStyle(.black)
-                                    }
-                                    
-                                }
-                                
-                            }
-                        
-                    }
-                    .border(.red)
+        .overlay(alignment: .bottomTrailing) {
+            Button(action: {
+                withAnimation {
+                    self.radialMenuIsHidden.toggle()
                 }
-            }
+            }, label: {
+                ZStack{
+                    
+                    RadialMenuIcon(radialMenuIsHidden: $radialMenuIsHidden)
+                    //                            .background(Color("SecondaryBackground"))
+                }
+            })
+            .tint(Color("DeleteColor"))
+            .frame(width: 60, height: 60)
+            .radialMenu(isHidden: $radialMenuIsHidden, anchorPosition: .bottomRight, distance: 170, autoClose: true, buttons: [
+//                RadialMenuButton(image: showNotificationSheet ? "bell.circle" : "bell", size: 40, action: {
+//                    self.showNotificationSheet.toggle()
+//                }),
+                RadialMenuButton(image: self.currentDisplayMode.displayModeIcon, size: 40, action: {
+                    if(self.currentDisplayMode == .single) {
+                        self.savedCurrentDisplayMode = DisplayMode.double.rawValue
+                    } else if(self.currentDisplayMode == .double) {
+                        self.savedCurrentDisplayMode = DisplayMode.triple.rawValue
+                    } else if(self.currentDisplayMode == .triple) {
+                        self.savedCurrentDisplayMode = DisplayMode.singleWithOptionsSquare.rawValue
+                    } else {
+                        self.savedCurrentDisplayMode = DisplayMode.single.rawValue
+                    }
+                }),
+                RadialMenuButton(image: "magnifyingglass", size: 40, action: {
+                    withAnimation {
+                        self.showSearchField.toggle()
+                        self.radialMenuIsHidden.toggle()
+                    }
+                }),
+                RadialMenuButton(image: "star.fill", size: 40, action: {
+                    self.movieCategory = .favourites
+                }),
+                RadialMenuButton(image: "eye", size: 40, action: {
+                    self.movieCategory = .watched
+                }),
+                RadialMenuButton(image: "calendar.badge.clock", size: 40, action: {
+                    self.movieCategory = .planedToWatch
+                })
+            ])
+            .padding(.trailing, 6)
+            .zIndex(1)
         }
-        //        .sheet(isPresented: $showUpdateDialog, content: {
-        //            NavigationStack {
-        //
-        ////                Text(movieItemToUpdate?.title)
-        //                List {
-        //                    Section("Notification description") {
-        //                        TextField(movieItemToUpdate.movieItem?.title ?? "Set description", text: Binding(get: {
-        //                            self.notificationDescription ?? movieItemToUpdate.movieItem?.title ?? ""
-        //                        }, set: {
-        //                            self.notificationDescription = $0
-        //                        }))
-        //                    }
-        //                        Section("Notificaiton properties") {
-        //                            Toggle("Silent notificaiton", isOn: $silentNotificationForPlanedToWatchNotification)
-        //                            VStack {
-        //                                HStack {
-        //
-        //
-        //                                        Button("This evening") {
-        //
-        //                                        }
-        //                                        .buttonStyle(.borderedProminent)
-        //
-        //                                        Button("Tomorrow") {
-        //
-        //                                        }
-        //                                        .buttonStyle(.borderedProminent)
-        //
-        //                                        Button("next month") {
-        //
-        //                                        }
-        //                                        .buttonStyle(.borderedProminent)
-        //
-        //                                    }
-        //                                Text("Or")
-        //                                DatePicker("", selection: Binding(get: {
-        //                                    notificationVM.movieItem?.personalDateToWatch ?? .now
-        //                                }, set: {
-        //                                    notificationVM.movieItem?.personalDateToWatch = $0
-        //                                }), in: Date()...)
-        //                                }
-        //                            }
-        //
-        //                    HStack {
-        //                        Button {
-        //
-        //                        } label: {
-        //                            Text("Save")
-        //                                .frame(maxWidth: .infinity)
-        //                        }
-        //                        .buttonStyle(.borderedProminent)
-        //
-        //                        Button {
-        //
-        //                        } label: {
-        //                            Text("Cancel")
-        //                                .frame(maxWidth: .infinity)
-        //                                .background(Color(UIColor.systemRed))
-        //                        }
-        //                        .buttonStyle(.borderedProminent)
-        //                    }
-        //
-        //
-        //                }
-        //            }
-        //            .presentationDetents([.medium])
-        
-        
-        //        }
-        //        )
         .sheet(isPresented: $showUpdateDialog, onDismiss: {
             self.movieItemToUpdate.movieItem = nil
         }, content: {
-            SetWatchNotificationView(notificationVM: notificationVM, id: movieItemToUpdate.movieItem?.id, title: self.movieItemToUpdate.movieItem?.title)
+            SetWatchNotificationView(id: movieItemToUpdate.movieItem?.id, title: self.movieItemToUpdate.movieItem?.title)
                 .presentationDetents([.medium])
+            
         })
-        
-        
-        .sheet(isPresented: $showNotificationSheet, content: {
-            NavigationStack {
-                List {
-                    TipView(rewatchNotificationTip, arrowEdge: .bottom)
-                    Button("help"){
-                        RewatchNotificationTip.displayTip.toggle()
-                        print("action")
-                    }
-                    .popoverTip(rewatchNotificationTip)
-                    
-                    
-                    //                    if (tipKitVisible) {
-                    //                        RewatchNotificationTip()
-                    //                    }
-                    
-                    //                        .popoverTip(RewatchNotificationTip())
-                    
-                    Section("Notification settings") {
-                        Toggle("Allow rewatch notifications", isOn: $allowAutoRewatchListNotifications)
-                        Toggle("Allow sound", isOn: $silentNotificationForReWatchNotifications)
-                            .disabled(!allowAutoRewatchListNotifications)
-                        
-                        
-                    }
-                    Section("Reminde to rewatch after:") {
-                        HStack {
-                            Spacer()
-                            Button("remo") {
-                                
-                            }
-                            .buttonStyle(.borderedProminent)
-                            
-                            Spacer()
-                            
-                            Button("remo") {
-                                
-                            }
-                            .buttonStyle(.borderedProminent)
-                            
-                            Spacer()
-                            
-                            Button("remo") {
-                                
-                            }
-                            .buttonStyle(.borderedProminent)
-                            Spacer()
-                        }
-                    }
-                }
-                
-            }
-            .presentationDetents([.fraction(0.6)])
-        })
-        .onAppear {
-            self.expand = false
-        }
-        .task {
-            try? await Tips.configure()
-        }
+//        .sheet(isPresented: $showNotificationSheet, content: {
+//            RemindeToWatchView()
+//        })
     }
 }
 
-//#Preview {
-//    UserPageView(restApiMovieVm: .init(), cardGridColumns: .constant(3), expand: .constant(false), movieItemToUpdate: .init, showSearchField: .constant(false), currentDisplayMode:  .constant(.triple), selectedLanguage: .en)
-//}
+
+
+
+#Preview {
+    UserPageView(restApiMovieVm: .init(), showSearchField: .constant(false), selectedLanguage: .en)
+}

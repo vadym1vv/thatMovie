@@ -25,7 +25,7 @@ struct AsyncImageView: View {
 //                    .resizable()
 ////                    .scaledToFit()
 //            }).aspectRatio(contentMode: .fit)
-            CachedImage(url: "\(ApiUrls.baseImageUrl)\(posterPath!)") { phase in
+            CachedImage(url: "\(ApiUrlsEnum.baseImageUrl)\(posterPath!)") { phase in
                 switch phase {
                 case .empty:
                     ProgressView()

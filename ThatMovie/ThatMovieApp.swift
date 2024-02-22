@@ -10,8 +10,8 @@ import SwiftData
 
 @main
 struct ThatMovieApp: App {
-    
-    @StateObject var router = Router()
+    @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
+    @StateObject var router = Router.shared
     @StateObject var viewRouter = ViewRouter()
     
     var sharedModelContainer: ModelContainer = {

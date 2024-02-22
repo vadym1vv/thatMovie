@@ -37,7 +37,8 @@ struct MovieDataVM {
     
     func setPlanedToWatch(movieDb: MovieItem?, id: Int?, genres: [Int]?, title: String?, posterPath: String?, releaseDate: Date? ) -> MovieItem? {
         if let movie = movieDb {
-            movie.personalIsPlanedToWatch.toggle()
+            movie.personalIsPlanedToWatch = true
+            movie.personalDateToWatch = nil
             return nil
         }
         

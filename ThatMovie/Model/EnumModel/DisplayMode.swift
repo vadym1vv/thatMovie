@@ -67,7 +67,7 @@ enum DisplayMode: String {
         case .single, .double, .triple:
              AsyncImageView(posterPath: movie.posterPath)
         case .singleWithOptionsSquare:
-            MovieCardWatchOptionsView(notificationVM: notificationVM, movieItem: movie, movieItemToUpdate: movieItemToUpdate, showUpdateDialog: showUpdateDialog)
+            MovieCardWatchOptionsView(movieItem: movie, movieItemToUpdate: movieItemToUpdate, showUpdateDialog: showUpdateDialog)
         }
     }
     

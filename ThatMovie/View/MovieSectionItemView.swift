@@ -12,17 +12,22 @@ struct MovieSectionItemView: View {
     var isSelected: Bool
     var body: some View {
         Text(movieItemName)
-            .foregroundStyle(.black)
+            .foregroundStyle(Color(UIColor.label))
             .padding([.leading, .trailing], 6)
             .padding([.top, .bottom], 1)
             .background(
-                RoundedRectangle(cornerRadius:7)
-                    .fill(Color( UIColor.systemGray5))
-                    .opacity(isSelected ? 1 : 0)
-            )
+                UnevenRoundedRectangle(cornerRadii: .init(topLeading: 7, bottomLeading: isSelected ? 0 : 7, bottomTrailing: isSelected ? 0 : 7, topTrailing: 7), style: .continuous)
+//                    .fill(Color("AdditionalBackground"))
+                    .foregroundStyle(Color( isSelected ?  "AdditionalBackground" : "SecondaryBackground") )
+                    .opacity(isSelected ? 1 : 0.3)
+            ).overlay(alignment: .bottom) {
+                if(isSelected) {
+                    Divider()
+                }
+            }
     }
 }
 
 #Preview {
-    MovieSectionItemView(movieItemName: "random", isSelected: true)
+    MovieSectionItemView(movieItemName: "random", isSelected: false)
 }

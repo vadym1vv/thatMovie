@@ -28,12 +28,13 @@ struct WatchMenuView: View {
     var posterPath: String?
     var releaseDate: Date?
     
+    private let notificationVM = NotificationVM()
     private var currentMovieFromDb: MovieItem? {
         allMovies.first(where: {$0.id == id})
     }
     
     private var currentMenuSystemImage: String {
-        if(currentMovieFromDb?.personalIsPlanedToWatch ?? false) {
+        if(currentMovieFromDb?.personalIsPlanedToWatch ?? false && currentMovieFromDb?.personalDateToWatch == nil) {
             return NotificationTypeEnum.isPlanedToWatch.imageRepresentation
         } else if(currentMovieFromDb?.personalDateToWatch != nil) {
             return NotificationTypeEnum.dateToWatch.imageRepresentation
@@ -49,6 +50,9 @@ struct WatchMenuView: View {
             Button {
                 if let newMovieItem = movieDataVM.setPlanedToWatch(movieDb: currentMovieFromDb, id: id, genres: genres, title: title, posterPath: posterPath, releaseDate: releaseDate) {
                     self.modelContext.insert(newMovieItem)
+                }
+                if let id = currentMovieFromDb?.id {
+                    notificationVM.removePendingNotification(identifier: String(id))
                 }
             } label: {
                 HStack {
@@ -78,6 +82,3 @@ struct WatchMenuView: View {
     }
 }
 
-//#Preview {
-//    WatchMenuView(shwoWatchNotificationProperties: .constant(true), notificationType: .constant(.dateToWatch))
-//}

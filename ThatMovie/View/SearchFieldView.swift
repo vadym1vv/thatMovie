@@ -33,7 +33,7 @@ struct SearchFieldView: View {
             if(!showAdditionalSearchCriteria){
             HStack {
                 
-                    TextField(showAdditionalSearchCriteria ? "Filter(Optional)" : "Search", text: Binding(get: {
+                    TextField("Search", text: Binding(get: {
                         searchCriteriaDto.searchStr ?? ""
                     }, set: {
                         searchCriteriaDto.searchStr = $0
@@ -42,11 +42,11 @@ struct SearchFieldView: View {
                     .padding(6)
                     .background {
                         RoundedRectangle(cornerRadius: 20)
-                            .fill(Color(UIColor.systemGray6))
+                            .fill(Color("SecondaryBackground"))
                     }
                     .overlay(alignment: .trailing) {
                         if (!showAdditionalSearchCriteria){
-                            ZStack {
+//                            ZStack {
                                 Button(action: {
                                     restApiMovieVm.searchCriteriaDto = searchCriteriaDto
                                     Task {
@@ -56,10 +56,12 @@ struct SearchFieldView: View {
                                     //                            Image(systemName: "magnifyingglass")
                                     //                                .foregroundStyle(.black)
                                     Image.resizableSystemImage(systemName: "magnifyingglass")
-                                        .foregroundStyle(.black)
+                                        .foregroundStyle(Color(UIColor.label))
                                         .padding(7)
                                 })
-                            }
+                                .background(.additionalBackground)
+                                .clipShape(Circle())
+//                            }
                         }
                     }
                 
@@ -74,11 +76,12 @@ struct SearchFieldView: View {
                 }, label: {
                     Image.resizableSystemImage(systemName: "slider.horizontal.2.square.badge.arrow.down")
                         .rotationEffect(.degrees(self.showAdditionalSearchCriteria ? 180 : 0))
-                        .foregroundStyle(.black)
+                        .foregroundStyle(Color(UIColor.label))
                     
                     
                 })
                 Button(action: {
+                    restApiMovieVm.currentMovieCategoryEndpoint = GroupedByCategoryMovieEnum.trending
                     withAnimation {
                         self.showSearchField.toggle()
                     }
@@ -87,7 +90,7 @@ struct SearchFieldView: View {
                     }
                 }, label: {
                     Image.resizableSystemImage(systemName: "xmark.circle")
-                        .foregroundStyle(.black)
+                        .foregroundStyle(Color(UIColor.label))
                     
                 })
             }
@@ -128,7 +131,7 @@ struct SearchFieldView: View {
                         //                        .datePickerStyle(.compact)
                         Text("Release year")
                         Spacer()
-                        Picker("Release year", selection: Binding(get: {
+                        Picker("", selection: Binding(get: {
                             searchCriteriaDto.releaseYear ?? currentYear
                         }, set: {
                             searchCriteriaDto.releaseYear = $0
@@ -138,6 +141,8 @@ struct SearchFieldView: View {
                             }
                         }
                         .pickerStyle(.menu)
+                        .labelsHidden()
+                        .tint(Color(UIColor.label).opacity((searchCriteriaDto.releaseYear != nil) ? 1 : 0.4))
                         if (searchCriteriaDto.releaseYear != nil) {
                             ResetButton(toReset: $searchCriteriaDto.releaseYear)
                         }
@@ -161,7 +166,7 @@ struct SearchFieldView: View {
                     HStack {
                         Text("Sort by")
                         Spacer()
-                        Picker("Sort by", selection: Binding(get: {
+                        Picker("", selection: Binding(get: {
                             searchCriteriaDto.sortBy ?? .notSelected
                         }, set: {
                             searchCriteriaDto.sortBy = $0
@@ -171,6 +176,9 @@ struct SearchFieldView: View {
                             }
                         }
                         .pickerStyle(.menu)
+                        .labelsHidden()
+                        .tint(Color(UIColor.label).opacity((searchCriteriaDto.sortBy != nil) ? 1 : 0.4))
+                        
                         if(searchCriteriaDto.sortBy != nil) {
                             ResetButton(toReset: $searchCriteriaDto.sortBy)
                         }
@@ -182,11 +190,13 @@ struct SearchFieldView: View {
                     VStack {
                         HStack{
                             Text("Genres")
+                                .opacity(searchCriteriaDto.selectedGenres.isEmpty ? 0.7 : 1)
                             if(!searchCriteriaDto.selectedGenres.isEmpty) {
                                 Button {
                                     searchCriteriaDto.selectedGenres = []
                                 } label: {
                                     Image(systemName: "eraser")
+                                        .foregroundStyle(Color(UIColor.label))
                                 }
                             }
                         }
@@ -222,9 +232,11 @@ struct SearchFieldView: View {
                             } label: {
                                 Label("Discover", systemImage: "magnifyingglass")
                                     .frame(maxWidth: .infinity, maxHeight: .infinity)
+                                    .foregroundStyle(Color(UIColor.label))
+                                    
                             }
-                            .buttonStyle(.borderedProminent)
-                            .border(.red)
+                            .background(Color("SecondaryBackground").clipShape(RoundedRectangle(cornerRadius: 5)))
+
                             Button(action: {
                                 withAnimation {
                                     self.showAdditionalSearchCriteria.toggle()
@@ -236,11 +248,12 @@ struct SearchFieldView: View {
                             }, label: {
                                 Image.resizableSystemImage(systemName: "slider.horizontal.2.square.badge.arrow.down")
                                     .rotationEffect(.degrees(self.showAdditionalSearchCriteria ? 180 : 0))
-                                    .foregroundStyle(.black)
+                                    .foregroundStyle(Color(UIColor.label))
                                 
                                 
                             })
                             Button(action: {
+                                restApiMovieVm.currentMovieCategoryEndpoint = GroupedByCategoryMovieEnum.trending
                                 withAnimation {
                                     self.showSearchField.toggle()
                                 }
@@ -249,7 +262,7 @@ struct SearchFieldView: View {
                                 }
                             }, label: {
                                 Image.resizableSystemImage(systemName: "xmark.circle")
-                                    .foregroundStyle(.black)
+                                    .foregroundStyle(Color(UIColor.label))
                                 
                             })
                             
@@ -294,6 +307,7 @@ struct ResetButton <T>: View {
             toReset = nil
         } label: {
             Image(systemName: "eraser")
+                .foregroundStyle(Color(UIColor.label))
         }
         
     }

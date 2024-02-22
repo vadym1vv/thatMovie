@@ -7,13 +7,9 @@
 
 import Foundation
 import UserNotifications
+import UIKit
 
-class NotificationVM: ObservableObject {
-    
-//    @Published var movieItem: MovieItem?
-    
-    
-    
+class NotificationVM {
    
     func ascPermission() {
         UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .badge, .sound]) { success, error in
@@ -29,7 +25,12 @@ class NotificationVM: ObservableObject {
         
     }
     
-    func sendNotification(identifier: String = UUID().uuidString, date: Date, type: String, timeInterval: Double = 10, title: String, body: String) {
+    func printSomthing() {
+        print("print on notificaiton trap__________")
+    }
+    
+    func sendNotification(identifier: String, date: Date, type: String, timeInterval: Double = 10, title: String, body: String, allowSound: Bool) {
+        ascPermission()
         var trigger: UNNotificationTrigger?
         if type == "date" {
             let dateComponents = Calendar.current.dateComponents([.day, .month, .year, .hour, .minute], from: date)
@@ -41,13 +42,53 @@ class NotificationVM: ObservableObject {
         let content = UNMutableNotificationContent()
         content.title = title
         content.body = body
-        content.sound = UNNotificationSound.default
-        
+//        content.accessibilityCustomActions = [() -> print("asf")]
+        if (allowSound) {
+            content.sound = UNNotificationSound.default
+        }
+
         let request = UNNotificationRequest(identifier: identifier, content: content, trigger: trigger)
         UNUserNotificationCenter.current().add(request)
     }
     
+//    func setNotificationForAllWatchedMovies(movieItem: [MovieItem], yearsFromNow: Int, title: String) {
+//        movieItem.forEach { movie in
+//            var dateToSet = Date.now
+//            if let calculatedDate = Calendar.current.date(byAdding: .year, value: yearsFromNow, to: Date()) {
+//                if (Date.now < calculatedDate) {
+//                    dateToSet = calculatedDate
+//                }
+//            }
+//            sendNotification(identifier: String(movie.id!), date: dateToSet, type: "date", title: title, body: "Consider to rewatch: \(movie.title)")
+//        }
+//    }
+    
     func removePendingNotification(identifier: String) {
         UNUserNotificationCenter.current().removePendingNotificationRequests(withIdentifiers: [identifier])
     }
+    
+    func removieAllPendingNotifications() {
+        UNUserNotificationCenter.current().removeAllPendingNotificationRequests()
+    }
+}
+
+
+class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCenterDelegate {
+    
+    private var router: Router = Router.shared
+    
+    func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
+        UNUserNotificationCenter.current().delegate = self
+        return true
+    }
+    
+    
+
+    // Implement UNUserNotificationCenterDelegate methods as needed
+    
+    func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse, withCompletionHandler completionHandler: @escaping () -> Void) {        
+        router.reset()
+        router.path.append(Int(response.notification.request.identifier)!)
+            completionHandler()
+        }
 }
