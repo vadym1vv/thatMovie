@@ -24,25 +24,19 @@ struct MovieDataVM {
         if let movie = movieDb {
             movie.personalIsFavourite.toggle()
             return nil
-        }
-        
-//        let dateFormatter = DateFormatter()
-//        dateFormatter.dateFormat = "yyyy-MM-dd"
-//        dateFormatter.timeZone = TimeZone.current
-//        dateFormatter.locale = Locale.current
-//        
+        }      
         return MovieItem(id: id, title: title, posterPath: posterPath, releaseDate: releaseDate, personalIsFavourite: true)
     }
 
     
-    func setPlanedToWatch(movieDb: MovieItem?, id: Int?, genres: [Int]?, title: String?, posterPath: String?, releaseDate: Date? ) -> MovieItem? {
+    func setPlannedToWatch(movieDb: MovieItem?, id: Int?, genres: [Int]?, title: String?, posterPath: String?, releaseDate: Date? ) -> MovieItem? {
         if let movie = movieDb {
-            movie.personalIsPlanedToWatch = true
+            movie.personalIsPlannedToWatch = true
             movie.personalDateToWatch = nil
             return nil
         }
         
-        return MovieItem(id: id, genreIDS: genres, title: title, posterPath: posterPath, releaseDate: releaseDate, personalDateToWatch: nil, personalIsPlanedToWatch: true)
+        return MovieItem(id: id, genreIDS: genres, title: title, posterPath: posterPath, releaseDate: releaseDate, personalDateToWatch: nil, personalIsPlannedToWatch: true)
     }
     
     
@@ -52,7 +46,7 @@ struct MovieDataVM {
             return nil
         }
         
-        return MovieItem(id: id, genreIDS: genres, title: title, posterPath: posterPath, releaseDate: releaseDate, personalDateToWatch: newDateToWatch, personalIsPlanedToWatch: false)
+        return MovieItem(id: id, genreIDS: genres, title: title, posterPath: posterPath, releaseDate: releaseDate, personalDateToWatch: newDateToWatch, personalIsPlannedToWatch: false)
     }
     
     

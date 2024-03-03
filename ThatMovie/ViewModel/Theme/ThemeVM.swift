@@ -19,9 +19,4 @@ class ThemeVM {
         let defaults = UserDefaults.standard
         return defaults.bool(forKey: ThemeConstants.DARK_MODE)
     }
-    
-    
-    
-    
-   
 }

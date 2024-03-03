@@ -14,28 +14,27 @@ class RestApiMovieVM: ObservableObject {
     @Published var filteredMovieRest: MovieRest?
     @Published var details: Details?
     @Published var movieGenre: Genre?
-    
-    //    @Published var filteredMovieRest: MovieRest?
     @Published var movieByGenreRest: [MovieGenre : MovieRest] = [:]
-    
-    
     @Published private(set) var currentNetworkCallState: CurrentLoadingState?
     @Published var currentPage: Int = 1
     @Published var currentMovieCategoryEndpoint:  GroupedByCategoryMovieEnum?
     @Published var currentMovieGenreEndpoint: MovieGenre?
-    
     @Published var searchCriteriaDto: SearchCriteriaDto?
+    @Published var error: Error?
     
-    //    @Published var selectedLanguage: Languages = .en
+    
+    
     private let clientGenericApi = GenericApiImpl()
     
     func restSearchMovieApi(url: String) async {
         defer {currentNetworkCallState = .finished}
         
         do {
+            currentNetworkCallState = .loading
             self.filteredMovieRest = try await clientGenericApi.fetch(type: MovieRest.self, with: MutableURLRequest.baseMutableGetURLRequest(url: url))
         } catch {
-            print("ERROR: \(error)")
+            self.error = error
+            print("ERROR___>: \(error)")
         }
     }
     
@@ -43,9 +42,11 @@ class RestApiMovieVM: ObservableObject {
         defer {currentNetworkCallState = .finished}
         
         do {
+            currentNetworkCallState = .loading
             self.movieRest = try await clientGenericApi.fetch(type: MovieRest.self, with: MutableURLRequest.baseMutableGetURLRequest(url: url))
         } catch {
-            print("ERROR: \(error)")
+            self.error = error
+            print("ERROR___>: \(error)")
         }
     }
     
@@ -53,9 +54,11 @@ class RestApiMovieVM: ObservableObject {
         defer {currentNetworkCallState = .finished}
         
         do {
+            currentNetworkCallState = .loading
             self.movieRest = try await clientGenericApi.fetch(type: MovieRest.self, with: MutableURLRequest.baseMutableGetURLRequest(url: url))
         } catch {
-            print("ERROR: \(error)")
+            self.error = error
+            print("ERROR___>: \(error)")
         }
     }
     
@@ -63,166 +66,128 @@ class RestApiMovieVM: ObservableObject {
     
     func loadNextMoviesBySearchCriteria() async {
         defer {currentNetworkCallState = .finished}
+        
         var searchUrl: String?
         if(searchCriteriaDto != nil && filteredMovieRest != nil) {
             
             if (searchCriteriaDto!.searchStr != nil) {
-                searchUrl = MovieEndpoints.moviesByMovieName(searchCriterias: searchCriteriaDto!, page: UrlPage(page: filteredMovieRest!.page + 1), language: .en).urlRequest
+                searchUrl = MovieEndpointsEnum.moviesByMovieName(searchCriterias: searchCriteriaDto!, page: UrlPage(page: filteredMovieRest!.page + 1)).urlRequest
             } else {
-                searchUrl = MovieEndpoints.moviesBySearchCriteria(searchCriterias: searchCriteriaDto!, page: UrlPage(page: filteredMovieRest!.page + 1), language: .en).urlRequest
+                searchUrl = MovieEndpointsEnum.moviesBySearchCriteria(searchCriterias: searchCriteriaDto!, page: UrlPage(page: filteredMovieRest!.page + 1)).urlRequest
             }
         }
         
         if let searchUrl = searchUrl {
             do {
+                currentNetworkCallState = .loading
                 var nextMovieRest = try await clientGenericApi.fetch(type: MovieRest.self, with: MutableURLRequest.baseMutableGetURLRequest(url: searchUrl))
                 nextMovieRest.results.insert(contentsOf: filteredMovieRest!.results, at: 0)
                 self.filteredMovieRest = nextMovieRest
             } catch {
-                print("ERROR: \(error)")
+                self.error = error
+                print("ERROR___>: \(error)")
             }
         }
     }
     
     func loadNextMovieByGenreInGenreList(currentGenre: MovieGenre) async {
+        defer {currentNetworkCallState = .finished}
         do {
+            currentNetworkCallState = .loading
             if let currentMovie = self.movieByGenreRest[currentGenre] {
-                var moviesByGenre: MovieRest = try await clientGenericApi.fetch(type: MovieRest.self, with:  MutableURLRequest.baseMutableGetURLRequest(url: MovieEndpoints.discoverByGenre(genreId: currentGenre.id, page: UrlPage(page: currentMovie.page + 1), language: .en).urlRequest))
+                var moviesByGenre: MovieRest = try await clientGenericApi.fetch(type: MovieRest.self, with:  MutableURLRequest.baseMutableGetURLRequest(url: MovieEndpointsEnum.discoverByGenre(genreId: currentGenre.id, page: UrlPage(page: currentMovie.page + 1)).urlRequest))
                 
                 moviesByGenre.results.insert(contentsOf: currentMovie.results, at: 0)
                 self.movieByGenreRest.updateValue(moviesByGenre, forKey: currentGenre)
             }
             
         } catch {
-            print("ERROR: \(error)")
+            self.error = error
+            print("ERROR___>: \(error)")
         }
     }
     
     func loadNextMovieBySingleGenre() async {
+        defer {currentNetworkCallState = .finished}
+        
         do {
+            currentNetworkCallState = .loading
             if let currentMovieGenreEndpoint = self.currentMovieGenreEndpoint {
                 if let movieRest = movieRest {
-                    var nextMovieBySingleGenre = try await clientGenericApi.fetch(type: MovieRest.self, with: MutableURLRequest.baseMutableGetURLRequest(url:MovieEndpoints.discoverByGenre(genreId: currentMovieGenreEndpoint.id, page: UrlPage(page: movieRest.page + 1), language: .en).urlRequest))
+                    var nextMovieBySingleGenre = try await clientGenericApi.fetch(type: MovieRest.self, with: MutableURLRequest.baseMutableGetURLRequest(url:MovieEndpointsEnum.discoverByGenre(genreId: currentMovieGenreEndpoint.id, page: UrlPage(page: movieRest.page + 1)).urlRequest))
                     nextMovieBySingleGenre.results.insert(contentsOf: movieRest.results, at: 0)
                     self.movieRest = nextMovieBySingleGenre
                 }
             }
         } catch {
-            print("ERROR: \(error)")
+            self.error = error
+            print("ERROR___>: \(error)")
         }
     }
     
     func loadNextMovieByCurrentMovieCategoryEndpoint() async {
-        
-//        var lastMovieInCurrentMovieCategory: Result?
+
         defer {
-            
             currentNetworkCallState = .finished
-//            if let lastMovie = lastMovieInCurrentMovieCategory {
-//                print("(((((append last movie \(lastMovie.title))))))))))))))")
-//                movieRest?.results.append(lastMovie)
-//            }
-            
         }
-        
+         
         do {
-            currentNetworkCallState = .fetching
+            currentNetworkCallState = .loading
             if let currentMovieCategoryEndpoint = self.currentMovieCategoryEndpoint {
                 if let movieRest = movieRest {
-                    var currentMovieCategory = try await clientGenericApi.fetch(type: MovieRest.self, with: MutableURLRequest.baseMutableGetURLRequest(url: currentMovieCategoryEndpoint.paginatedPath(page: UrlPage(page: movieRest.page + 1), language: .en)))
-                    print(movieRest.page)
-//                    lastMovieInCurrentMovieCategory = currentMovieCategory.results.popLast()
+                    var currentMovieCategory = try await clientGenericApi.fetch(type: MovieRest.self, with: MutableURLRequest.baseMutableGetURLRequest(url: currentMovieCategoryEndpoint.paginatedPath(page: UrlPage(page: movieRest.page + 1))))
                     currentMovieCategory.results.insert(contentsOf: movieRest.results, at: 0)
                     self.movieRest = currentMovieCategory
                 }
             }
         } catch {
-            print("ERROR: \(error)")
+            self.error = error
+            print("ERROR___>: \(error)")
         }
     }
     
     func movieByGenreApi() {
-//        defer {currentNetworkCallState = .finished}
-//        currentNetworkCallState = .loading
+        defer {currentNetworkCallState = .finished}
         movieGenre?.genres.forEach { genre in
             Task {
                 do {
-                    let moviesByGenre: MovieRest = try await clientGenericApi.fetch(type: MovieRest.self, with:  MutableURLRequest.baseMutableGetURLRequest(url:MovieEndpoints.discoverByGenre(genreId: genre.id, page: UrlPage(page: 1), language: .en).urlRequest))
+                    currentNetworkCallState = .loading
+                    let moviesByGenre: MovieRest = try await clientGenericApi.fetch(type: MovieRest.self, with:  MutableURLRequest.baseMutableGetURLRequest(url:MovieEndpointsEnum.discoverByGenre(genreId: genre.id, page: UrlPage(page: 1)).urlRequest))
                     self.movieByGenreRest.updateValue(moviesByGenre, forKey: genre)
                 } catch {
-                    print("error: \(error)")
+                    self.error = error
+                    print("ERROR___>: \(error)")
                 }
             }
         }
     }
     
     func movieDetails(url: String) async {
-            do {
-                self.details = try await clientGenericApi.fetch(type: Details.self, with: MutableURLRequest.baseMutableGetURLRequest(url: url))
-            } catch {
-                print("ERROR: \(error)")
-            }
-    }
-    
-    
-    
-    func restMovieGenreListApi(urlRequest: String) async {
-//        defer {currentNetworkCallState = .finished}
-//        currentNetworkCallState = .loading
+        defer {currentNetworkCallState = .finished}
+        
         do {
-            self.movieGenre = try await clientGenericApi.fetch(type: Genre.self, with: MutableURLRequest.baseMutableGetURLRequest(url: urlRequest))
+            currentNetworkCallState = .loading
+            self.details = try await clientGenericApi.fetch(type: Details.self, with: MutableURLRequest.baseMutableGetURLRequest(url: url))
         } catch {
-            print("error: \(error)")
+            self.error = error
+            print("ERROR___>: \(error)")
         }
     }
     
-    
-    
-    
-    
-    
-    
-//    func filterByCriteria(searchCriteriaDto: SearchCriteriaDto) {
-//        var filteredResults: [Result] = []
-//
-//        if (movieRest != nil){
-//
-//                filteredResults = movieRest!.results
-//                
-//                if let searchStr = searchCriteriaDto.searchStr {
-//                        filteredResults = filteredResults.filter{$0.title != nil && $0.title!.contains(searchStr)}
-//                }
-//                
-//                if let releaseYear = searchCriteriaDto.releaseYear {
-//                    filteredResults.forEach { date in
-//                        print(date.releaseDate!)
-//                    }
-//                    filteredResults = filteredResults.filter{$0.releaseDate != nil && $0.releaseDate!.contains(String(releaseYear))}
-//                }
-//            
-//                if (searchCriteriaDto.selectedGenres.count > 0) {
-//                    filteredResults = filteredResults.filter{$0.genreIDS != nil && $0.genreIDS!.contains { id in
-//                        searchCriteriaDto.selectedGenres.map{$0.id}.contains(id)
-//                    }}
-//                }
-//            
-//            if let sortBy = searchCriteriaDto.sortBy {
-//                filteredResults = sortBy.sortByCriteria(results: filteredResults)
-//            }
-//            
-//            if (filteredResults.isEmpty) {
-//                filteredMovieRest = MovieRest(page: 1, results: [], totalPages: 1, totalResults: 1)
-//            } else {
-//                filteredMovieRest = MovieRest(page: 1, results: filteredResults, totalPages: 1, totalResults: 1)
-//            }
-//        }
-//
-//    }
+    func restMovieGenreListApi(urlRequest: String) async {
+        defer {currentNetworkCallState = .finished}
+        do {
+            currentNetworkCallState = .loading
+            self.movieGenre = try await clientGenericApi.fetch(type: Genre.self, with: MutableURLRequest.baseMutableGetURLRequest(url: urlRequest))
+        } catch {
+            self.error = error
+            print("ERROR___>: \(error)")
+        }
+    }
 }
 
 extension RestApiMovieVM {
     enum CurrentLoadingState {
-        case fetching
         case loading
         case finished
     }

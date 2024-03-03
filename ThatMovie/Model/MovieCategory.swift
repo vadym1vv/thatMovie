@@ -8,7 +8,7 @@
 import Foundation
 
 enum MovieCategory: CaseIterable {
-    case watched, planedToWatch, favourites, none
+    case watched, plannedToWatch, favourites, none
 }
 
 extension MovieCategory {
@@ -16,8 +16,8 @@ extension MovieCategory {
         switch self {
         case .watched:
             "Watched"
-        case .planedToWatch:
-            "Planed to watch"
+        case .plannedToWatch:
+            "Scheduled"
         case .favourites:
             "Favourites"
         case .none:
@@ -31,10 +31,26 @@ extension MovieCategory {
             return movieItems.filter({$0.personalDateOfViewing != nil})
         case .favourites:
             return movieItems.filter({$0.personalIsFavourite})
-        case .planedToWatch:
-            return movieItems.filter({$0.personalIsPlanedToWatch || $0.personalDateToWatch != nil})
+        case .plannedToWatch:
+            return movieItems.filter({$0.personalIsPlannedToWatch || $0.personalDateToWatch != nil})
         case .none:
             return movieItems
+        }
+    }
+    
+    func deleteMovieByCurrentCategory(movieItem: MovieItem) {
+        switch self {
+        case .watched:
+            movieItem.personalDateOfViewing = nil
+        case .plannedToWatch:
+            if(movieItem.personalDateToWatch != nil && movieItem.id != nil) {
+                NotificationVM().removePendingNotification(identifier: String(movieItem.id!))
+            }
+            movieItem.personalDateToWatch = nil
+            movieItem.personalIsPlannedToWatch = false
+        case .favourites:
+            movieItem.personalIsFavourite = false
+        case .none: break
         }
     }
 }

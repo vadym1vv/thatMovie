@@ -8,50 +8,44 @@
 import SwiftUI
 import SwiftData
 import YouTubePlayerKit
-
+import StoreKit
 
 
 struct ContentView: View {
     
+    @AppStorage("isMovieOptionsOn") private var isMovieOptionsOn: Bool = false
+    @AppStorage("contentViewCurrentDisplayMode") private var savedCurrentDisplayMode: String = "triple"
+    @AppStorage("contentViewDisplayTimes") private var contentViewDisplayTimes: Int = 20
+    @StateObject private var restApiMovieVm: RestApiMovieVM = RestApiMovieVM()
+    @EnvironmentObject private var router: Router
+    @Environment(\.colorScheme) var colorScheme: ColorScheme
+    @Environment(\.requestReview) private var requestReveiew
+    
     @State private var radialMenuIsHidden: Bool = true
     @State private var showSearchField: Bool = false
-    @State private var isSelectLanguageOn: Bool = false
     @State private var isDarkModeOn: Bool = false
     @State private var autoClose: Bool = false
     @State private var page: Int = 1
     @State private var displayAllGenres: Bool = false
     @State private var showAboutAppPopUp: Bool = false
-    
-    @AppStorage("isMovieOptionsOn") private var isMovieOptionsOn: Bool = false
-    @AppStorage("selectedLanguage") private var selectedLanguage: Language = .en
-    @AppStorage("contentViewCurrentDisplayMode") private var savedCurrentDisplayMode: String = "triple"
-    @StateObject private var restApiMovieVm: RestApiMovieVM = RestApiMovieVM()
-    @EnvironmentObject private var router: Router
-    @Environment(\.colorScheme) var colorScheme: ColorScheme
+    @State private var showErrorAlert: Bool = false
     
     private let notificationVM: NotificationVM = NotificationVM()
-    
     private var additionalOptionsPresent: Bool = false
-    //    private let pageLimit = 20
     
-    //    var currentDisplayMode: DisplayMode {
-    //        return DisplayMode.currentDisplayModyByString(str: savedCurrentDisplayMode)
-    //    }
-    
-    var currentDisplayMode: DisplayMode {
-        return DisplayMode.currentDisplayModyByString(str: savedCurrentDisplayMode)
+    var currentDisplayMode: DisplayModeEnum {
+        return DisplayModeEnum.currentDisplayModyByString(str: savedCurrentDisplayMode)
     }
-    //
     
     var body: some View {
         NavigationStack(path: $router.path) {
             ZStack {
                 ScrollView {
                     if showSearchField {
-                        SearchFieldView(restApiMovieVm: restApiMovieVm, showSearchField: $showSearchField, selectedLanguage: selectedLanguage)
+                        SearchFieldView(restApiMovieVm: restApiMovieVm, showSearchField: $showSearchField)
                             .padding()
                     } else {
-                        MovieSection(restApiMovieVm: restApiMovieVm, displayAllGenres: $displayAllGenres, page: $page, selectedLanguage: $selectedLanguage)
+                        MovieSection(restApiMovieVm: restApiMovieVm, displayAllGenres: $displayAllGenres, page: $page)
                             .padding()
                     }
                     if(self.displayAllGenres && restApiMovieVm.filteredMovieRest == nil) {
@@ -63,7 +57,6 @@ struct ContentView: View {
                                     .padding(.trailing , 13)
                                     .background(
                                         UnevenRoundedRectangle(cornerRadii: .init(topLeading: 10, bottomLeading: 0, bottomTrailing: 0, topTrailing: 25), style: .continuous)
-                                        //                                                            .frame(width: 40, height: 40)
                                             .foregroundStyle(Color("SecondaryBackground"))
                                     )
                                 
@@ -79,8 +72,6 @@ struct ContentView: View {
                                                         Task {
                                                             await restApiMovieVm.loadNextMovieByGenreInGenreList(currentGenre: movieGenre)
                                                         }
-                                                    } else {
-                                                        let _ = print("LOAding====>>>><<<<<<<+=============")
                                                     }
                                                 }
                                             }
@@ -93,8 +84,6 @@ struct ContentView: View {
                                 .background(Color("SecondaryBackground"))
                                 .padding(.bottom, 5)
                             }
-                            
-                            
                         }
                     } else {
                         LazyVGrid(columns: Array(repeating: .init(.flexible()), count: currentDisplayMode.cardGridColumns), alignment: .center) {
@@ -110,12 +99,9 @@ struct ContentView: View {
                                         }
                                         .onAppear {
                                             if (movie.id == restApiMovieVm.filteredMovieRest?.results.last!.id && restApiMovieVm.currentNetworkCallState == .finished) {
-                                                let _ = print("THIS IS THE LAST MOVIE)))00000----->>>")
                                                 Task {
                                                     await restApiMovieVm.loadNextMoviesBySearchCriteria()
                                                 }
-                                            } else {
-                                                let _ = print("LOAding search results====>>>><<<<<<<+=============")
                                             }
                                         }
                                     }
@@ -123,17 +109,10 @@ struct ContentView: View {
                             } else {
                                 if let movieRest = restApiMovieVm.movieRest {
                                     ForEach(movieRest.results) { movie in
-                                        //                                    let _ = print(restApiMovieVm.currentMovieCategoryEndpoint)
-                                        //                        HStack {
-                                        //                            Text(movie.title)
-                                        //                        }.frame(width: 250, height: 200)
-                                        //                            .border(.red)
-                                        //                Text(movie.title)
                                         NavigationLink(value: movie) {
                                             AsyncImageView(posterPath: movie.posterPath)
                                                 .onAppear {
-                                                    if (movie.id == restApiMovieVm.movieRest!.results.last!.id && restApiMovieVm.currentNetworkCallState == .finished) {
-                                                        //                                            let _ = print("THIS IS THE LAST MOVIE)))00000----->>>")
+                                                    if (movie.id == restApiMovieVm.movieRest?.results.last!.id && restApiMovieVm.currentNetworkCallState == .finished) {
                                                         if (restApiMovieVm.currentMovieGenreEndpoint != nil) {
                                                             Task {
                                                                 await restApiMovieVm.loadNextMovieBySingleGenre()
@@ -144,10 +123,7 @@ struct ContentView: View {
                                                             }
                                                         }
                                                         
-                                                    } else {
-                                                        //                                            let _ = print("LOAding search results====>>>><<<<<<<+=============")
-                                                    }
-                                                }
+                                                    }                                                 }
                                         }
                                         
                                     }
@@ -155,7 +131,6 @@ struct ContentView: View {
                             }
                         }
                     }
-                    
                 }
                 .padding([.leading, .trailing], 3)
             }
@@ -185,11 +160,11 @@ struct ContentView: View {
                     
                     RadialMenuButton(image: self.currentDisplayMode.displayModeIcon, size: 40, ignoreAutoclose: true, action: {
                         if(self.currentDisplayMode == .single) {
-                            self.savedCurrentDisplayMode = DisplayMode.double.rawValue
+                            self.savedCurrentDisplayMode = DisplayModeEnum.double.rawValue
                         } else if(self.currentDisplayMode == .double) {
-                            self.savedCurrentDisplayMode = DisplayMode.triple.rawValue
+                            self.savedCurrentDisplayMode = DisplayModeEnum.triple.rawValue
                         } else {
-                            self.savedCurrentDisplayMode = DisplayMode.single.rawValue
+                            self.savedCurrentDisplayMode = DisplayModeEnum.single.rawValue
                         }
                     }),
                     RadialMenuButton(image: "magnifyingglass", size: 40, action: {
@@ -204,9 +179,6 @@ struct ContentView: View {
                 .padding(.trailing, 6)
                 .zIndex(1)
             }
-            
-            
-            
             //MARK: - Navigation
             
             .navigationDestination(for: Result.self) { result in
@@ -215,40 +187,38 @@ struct ContentView: View {
             .navigationDestination(for: String.self) {route in
                 switch route {
                 case "userPage":
-                    UserPageView(restApiMovieVm: restApiMovieVm, showSearchField: $showSearchField,  selectedLanguage: selectedLanguage)
+                    UserPageView(restApiMovieVm: restApiMovieVm, showSearchField: $showSearchField)
                 default:
                     Text("")
                 }
-                
             }
             .navigationDestination(for: Int.self) { result in
                 MoviePageView(restApiMovieVm: restApiMovieVm, movieId: result)
             }
-            //            .navigationDestination(for: MovieItem.self) { result in
-            //                MoviePageView(restApiMovieVm: restApiMovieVm, movieId: result.id!)
-            //            }
         }
         .sheet(isPresented: $showAboutAppPopUp, content: {
             DeveloperAppInfoPopup()
         })
-        //        .accentColor
         .task {
-            //            if (selectedMovieGenreVm.selectedMovieGenre == nil) {
-            //                let _ = print("0000>>>>>>>>>!!!!!")
-            //                let _ = print(selectedMovieGenreVm.selectedMovieGenre)
             restApiMovieVm.currentMovieCategoryEndpoint = GroupedByCategoryMovieEnum.trending
-            await restApiMovieVm.restBaseMovieApi(url: GroupedByCategoryMovieEnum.trending.paginatedPath(page: UrlPage(page: 1), language: .en))
-            //            }
+            await restApiMovieVm.restBaseMovieApi(url: GroupedByCategoryMovieEnum.trending.paginatedPath(page: UrlPage(page: 1)))
         }
         .onAppear {
             setAppTheme()
+            contentViewDisplayTimes += 1
+            if contentViewDisplayTimes > 20 {
+                requestReveiew()
+                contentViewDisplayTimes = 0
+            }
         }
-        
-    }
-    
-    func handleNotificationTap() {
-        print("Notification tapped! Your function is called.")
-        // Add your function logic here
+        .onReceive(restApiMovieVm.$error, perform: { error in
+            if error != nil {
+                showErrorAlert.toggle()
+            }
+        })
+        .alert(isPresented: $showErrorAlert, content: {
+            Alert(title: Text("Error"), message: Text(restApiMovieVm.error?.localizedDescription ?? "") )
+        })
     }
     
     func setAppTheme() {
@@ -261,7 +231,6 @@ struct ContentView: View {
             isDarkModeOn = false
         }
         changeDarkMode(state: isDarkModeOn)
-        
     }
     
     func changeDarkMode(state: Bool) {
@@ -275,54 +244,3 @@ struct ContentView: View {
 //    ContentView()
 //}
 
-struct CustomButton: View {
-    var body: some View {
-        Button(action: {}, label: {
-            /*@START_MENU_TOKEN@*/Text("Button")/*@END_MENU_TOKEN@*/
-        })
-        .buttonStyle(.borderedProminent)
-        .tint(.red)
-    }
-}
-
-
-struct CustomButtonB: View {
-    var body: some View {
-        Button(action: /*@START_MENU_TOKEN@*/{}/*@END_MENU_TOKEN@*/, label: {
-            /*@START_MENU_TOKEN@*/Text("Button")/*@END_MENU_TOKEN@*/
-        })
-        .buttonStyle(.borderedProminent)
-        .tint(.blue)
-    }
-}
-
-struct ButtonMenu: View {
-    var body: some View {
-        Button(action: {
-            
-        }, label: {
-            VStack(spacing: 10){
-                Image(systemName: "star")
-                    .font(.title)
-                    .foregroundStyle(.blue)
-                Text("Favourite")
-                    .fontWeight(.bold)
-                    .foregroundStyle(.white)
-            }
-        })
-    }
-}
-
-struct LanguageButton: View {
-    var language: Language
-    @Binding var languageToSet: Language
-    @Binding var isSelectLanguageOn: Bool
-    
-    var body: some View {
-        Button(language.languageName.name) {
-            languageToSet = language
-            isSelectLanguageOn = false
-        }
-        .buttonStyle(.bordered)
-    }
-}

@@ -18,7 +18,7 @@ class UserPageViewModel: ObservableObject {
         filteredResults = results
     }
     
-    func sortedMovies(movieItems: [MovieItem], selectedSortOption: SortOption) -> [MovieItem] {
+    func sortedMovies(movieItems: [MovieItem], selectedSortOption: SortOptionEnum) -> [MovieItem] {
         return selectedSortOption.sortBy(movieItems: movieItems)
     }
 }

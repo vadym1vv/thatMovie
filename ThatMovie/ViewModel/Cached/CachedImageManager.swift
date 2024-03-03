@@ -20,7 +20,6 @@ final class CachedImageManager: ObservableObject {
         
         if let imageData = cache.object(forkey: imgUrl as NSString) {
             self.currentState = .success(data: imageData)
-//            print("Fetching image from the cache: \(imgUrl)")
             return
         }
         

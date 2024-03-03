@@ -12,16 +12,10 @@ struct WatchMenuView: View {
     
     @Query var allMovies: [MovieItem]
     @Environment(\.modelContext) var modelContext
-    var movieDataVM: MovieDataVM = MovieDataVM()
-    
-    
     @Binding var shwoWatchNotificationProperties: Bool
     
-    
-    //    var isPlanedToWatch: Bool?
+    var movieDataVM: MovieDataVM = MovieDataVM()
     var dateToWatch: Date?
-    //    var currentApiMovieDetails: Details?
-    
     var id: Int?
     var genres: [Int]?
     var title: String?
@@ -34,8 +28,8 @@ struct WatchMenuView: View {
     }
     
     private var currentMenuSystemImage: String {
-        if(currentMovieFromDb?.personalIsPlanedToWatch ?? false && currentMovieFromDb?.personalDateToWatch == nil) {
-            return NotificationTypeEnum.isPlanedToWatch.imageRepresentation
+        if(currentMovieFromDb?.personalIsPlannedToWatch ?? false && currentMovieFromDb?.personalDateToWatch == nil) {
+            return NotificationTypeEnum.isPlannedToWatch.imageRepresentation
         } else if(currentMovieFromDb?.personalDateToWatch != nil) {
             return NotificationTypeEnum.dateToWatch.imageRepresentation
         } else if (currentMovieFromDb?.personalDateOfViewing != nil) {
@@ -48,7 +42,7 @@ struct WatchMenuView: View {
     var body: some View {
         Menu {
             Button {
-                if let newMovieItem = movieDataVM.setPlanedToWatch(movieDb: currentMovieFromDb, id: id, genres: genres, title: title, posterPath: posterPath, releaseDate: releaseDate) {
+                if let newMovieItem = movieDataVM.setPlannedToWatch(movieDb: currentMovieFromDb, id: id, genres: genres, title: title, posterPath: posterPath, releaseDate: releaseDate) {
                     self.modelContext.insert(newMovieItem)
                 }
                 if let id = currentMovieFromDb?.id {
@@ -67,10 +61,10 @@ struct WatchMenuView: View {
             }
             
             if let currentMovieFromDb = currentMovieFromDb {
-                if (currentMovieFromDb.personalIsPlanedToWatch || currentMovieFromDb.personalDateToWatch != nil) {
+                if (currentMovieFromDb.personalIsPlannedToWatch || currentMovieFromDb.personalDateToWatch != nil) {
                     Button(role: .destructive) {
                         currentMovieFromDb.personalDateToWatch = nil
-                        currentMovieFromDb.personalIsPlanedToWatch = false
+                        currentMovieFromDb.personalIsPlannedToWatch = false
                     } label: {
                         Label("Cancel", systemImage: "trash")
                     }

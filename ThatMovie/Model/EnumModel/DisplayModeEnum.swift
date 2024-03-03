@@ -8,7 +8,7 @@
 import Foundation
 import SwiftUI
 
-enum DisplayMode: String {
+enum DisplayModeEnum: String {
     
     case single, double, triple, singleWithOptionsSquare
     
@@ -36,7 +36,7 @@ enum DisplayMode: String {
         }
     }
     
-    static func currentDisplayModyByString(str: String) -> DisplayMode {
+    static func currentDisplayModyByString(str: String) -> DisplayModeEnum {
         switch(str) {
         case "single":
             return .single
@@ -50,24 +50,14 @@ enum DisplayMode: String {
             return .triple
         }
     }
-    
-    
-//    func movieCardView(movie: MovieItem) -> some View{
-//        switch self {
-//        case .single, .double, .triple:
-//            return AnyView(MovieCardView(posterPath: movie.posterPath ?? ""))
-//        case .doubleWithOptionsSquare:
-//            return AnyView(ToWatchOptionsCardView(movieItem: movie))
-//        }
-//    }
-    
+
     @ViewBuilder
-    func movieCardView(movie: MovieItem, showUpdateDialog: Binding<Bool>, movieItemToUpdate: MovieItemToUpdateInfo, notificationVM: NotificationVM) -> some View{
+    func movieCardView(movie: MovieItem, showUpdateDialog: Binding<Bool>, movieItemToUpdate: MovieItemToUpdateInfo, notificationVM: NotificationVM, movieCategory: MovieCategory) -> some View{
         switch self {
         case .single, .double, .triple:
              AsyncImageView(posterPath: movie.posterPath)
         case .singleWithOptionsSquare:
-            MovieCardWatchOptionsView(movieItem: movie, movieItemToUpdate: movieItemToUpdate, showUpdateDialog: showUpdateDialog)
+            MovieCardWatchOptionsView(movieItemToUpdate: movieItemToUpdate, movieItem: movie, showUpdateDialog: showUpdateDialog, movieCategory: movieCategory)
         }
     }
     

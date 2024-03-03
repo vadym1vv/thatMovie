@@ -7,13 +7,13 @@
 
 import Foundation
 
-enum SortOption: String, CaseIterable {
+enum SortOptionEnum: String, CaseIterable {
     case title
     case releasedDate
     case addedDate
 }
 
-extension SortOption {
+extension SortOptionEnum {
     
     
     func sortBy(movieItems: [MovieItem]) -> [MovieItem] {

@@ -8,13 +8,13 @@
 import Foundation
 
 enum NotificationTypeEnum {
-    case dateToWatch, isPlanedToWatch, watched, non
+    case dateToWatch, isPlannedToWatch, watched, non
     
     var imageRepresentation: String {
         switch self {
         case .dateToWatch:
             return "bell"
-        case .isPlanedToWatch:
+        case .isPlannedToWatch:
             return "bell.slash"
         case .watched:
             return "eye"

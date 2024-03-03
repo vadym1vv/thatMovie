@@ -21,6 +21,6 @@ struct MutableURLRequest {
 extension MutableURLRequest {
     static private let headers = [
         "accept": "application/json",
-        "Authorization": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJiMjUzM2Y0YzExOGEzNGZmZjM1ZmVmZmUxOGFkYzU3ZSIsInN1YiI6IjY1M2Y3NzFkYmMyY2IzMDBjOTdmOWMyYSIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.jBaQlUcjSbvEOX8K56gDJHDOWIlpMh0hS2eeZ1_itMs"
+        "Authorization": "Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI4YzBlZTUwODNiYmQwNTY0NmNlNzk5NjYyNmNmOWYxOCIsInN1YiI6IjY1ZGMzZTBlYTM1YzhlMDE4NjE0OTRjZCIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.NMJc-bSpqvH4CnTfQ8T7JAPDYcqRDE3tsvCEYp0UJ68"
     ]
 }

@@ -98,7 +98,6 @@ struct SpokenLanguage: Codable {
 }
 
 struct VideosResults: Codable {
-    //    let iso639_1, iso3166_1, 
     let key: String?
     let name: String?
     let site: String?
@@ -109,8 +108,6 @@ struct VideosResults: Codable {
     let id: String?
     
     enum CodingKeys: String, CodingKey {
-        //        case iso639_1 = "iso_639_1"
-        //        case iso3166_1 = "iso_3166_1"
         case key
         case name, site, size, type, official
         case publishedAt = "published_at"

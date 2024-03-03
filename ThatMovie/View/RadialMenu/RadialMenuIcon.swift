@@ -24,7 +24,7 @@ struct RadialMenuIcon: View {
             .opacity(0.4)
         Circle()
             .fill(Color("SecondaryBackground")
-            .opacity(0.8))
+                .opacity(0.8))
             .frame(width: self.radialMenuIsHidden ?  0 : 420,
                    height: self.radialMenuIsHidden ? 0 : 420)
     }

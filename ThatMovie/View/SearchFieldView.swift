@@ -12,27 +12,16 @@ struct SearchFieldView: View {
     @ObservedObject var restApiMovieVm: RestApiMovieVM
     
     @State var showAdditionalSearchCriteria: Bool = false
+    @State var searchCriteriaDto: SearchCriteriaDto = SearchCriteriaDto()
     @Binding var showSearchField: Bool
     
-    //    @State var searchStr: String = ""
-    //    @State var releaseYear: Date?
-    //    @State var includeAdult: Bool?
-    //    @State var selectedGenres: [MovieGenre] = []
-    
-    @State var searchCriteriaDto: SearchCriteriaDto = SearchCriteriaDto()
-    
-    
-    
-    
-    var selectedLanguage: Language
     private let currentYear = Calendar(identifier: .gregorian).dateComponents([.year], from: .now).year!
     
     var body: some View {
         
         VStack {
             if(!showAdditionalSearchCriteria){
-            HStack {
-                
+                HStack {
                     TextField("Search", text: Binding(get: {
                         searchCriteriaDto.searchStr ?? ""
                     }, set: {
@@ -46,89 +35,55 @@ struct SearchFieldView: View {
                     }
                     .overlay(alignment: .trailing) {
                         if (!showAdditionalSearchCriteria){
-//                            ZStack {
-                                Button(action: {
-                                    restApiMovieVm.searchCriteriaDto = searchCriteriaDto
-                                    Task {
-                                        await restApiMovieVm.restSearchMovieApi(url:MovieEndpoints.moviesByMovieName(searchCriterias: searchCriteriaDto, page: UrlPage(page: 1), language: .en).urlRequest)
-                                    }
-                                }, label: {
-                                    //                            Image(systemName: "magnifyingglass")
-                                    //                                .foregroundStyle(.black)
-                                    Image.resizableSystemImage(systemName: "magnifyingglass")
-                                        .foregroundStyle(Color(UIColor.label))
-                                        .padding(7)
-                                })
-                                .background(.additionalBackground)
-                                .clipShape(Circle())
-//                            }
+                            Button(action: {
+                                restApiMovieVm.searchCriteriaDto = searchCriteriaDto
+                                Task {
+                                    await restApiMovieVm.restSearchMovieApi(url:MovieEndpointsEnum.moviesByMovieName(searchCriterias: searchCriteriaDto, page: UrlPage(page: 1)).urlRequest)
+                                }
+                            }, label: {
+                                Image.resizableSystemImage(systemName: "magnifyingglass")
+                                    .foregroundStyle(Color(UIColor.label))
+                                    .padding(7)
+                            })
+                            .background(.additionalBackground)
+                            .clipShape(Circle())
                         }
                     }
-                
-                Button(action: {
-                    withAnimation {
-                        self.showAdditionalSearchCriteria.toggle()
-                    }
                     
-                    if (self.showAdditionalSearchCriteria == false) {
-                        self.restApiMovieVm.filteredMovieRest = nil
-                    }
-                }, label: {
-                    Image.resizableSystemImage(systemName: "slider.horizontal.2.square.badge.arrow.down")
-                        .rotationEffect(.degrees(self.showAdditionalSearchCriteria ? 180 : 0))
-                        .foregroundStyle(Color(UIColor.label))
+                    Button(action: {
+                        withAnimation {
+                            self.showAdditionalSearchCriteria.toggle()
+                        }
+                        
+                        if (self.showAdditionalSearchCriteria == false) {
+                            self.restApiMovieVm.filteredMovieRest = nil
+                        }
+                    }, label: {
+                        Image.resizableSystemImage(systemName: "slider.horizontal.2.square.badge.arrow.down")
+                            .rotationEffect(.degrees(self.showAdditionalSearchCriteria ? 180 : 0))
+                            .foregroundStyle(Color(UIColor.label))
+                    })
                     
-                    
-                })
-                Button(action: {
-                    restApiMovieVm.currentMovieCategoryEndpoint = GroupedByCategoryMovieEnum.trending
-                    withAnimation {
-                        self.showSearchField.toggle()
-                    }
-                    if (self.showSearchField == false) {
-                        self.restApiMovieVm.filteredMovieRest = nil
-                    }
-                }, label: {
-                    Image.resizableSystemImage(systemName: "xmark.circle")
-                        .foregroundStyle(Color(UIColor.label))
-                    
-                })
+                    Button(action: {
+                        restApiMovieVm.currentMovieCategoryEndpoint = GroupedByCategoryMovieEnum.trending
+                        withAnimation {
+                            self.showSearchField.toggle()
+                        }
+                        if (self.showSearchField == false) {
+                            self.restApiMovieVm.filteredMovieRest = nil
+                        }
+                    }, label: {
+                        Image.resizableSystemImage(systemName: "xmark.circle")
+                            .foregroundStyle(Color(UIColor.label))
+                        
+                    })
+                }
+                .frame(height: 35)
             }
-            .frame(height: 35)
-            }
+            
             if showAdditionalSearchCriteria {
                 VStack {
-//                    HStack{
-//                        if(searchCriteriaDto.searchStr != nil && searchCriteriaDto.searchStr!.isEmpty == false) {
-//                            Text(searchCriteriaDto.searchStr!)
-//                            Spacer()
-//                            Button {
-//                                //                                requestByCriteriaIfNotNull()
-//                                if(searchCriteriaDto.searchStr == nil && (searchCriteriaDto.selectedGenres.count > 0 || /*searchCriteriaDto.includeAdult != nil ||*/ searchCriteriaDto.releaseYear != nil || searchCriteriaDto.sortBy != nil)) {
-//                                    Task {
-//                                        await restApiMovieVm.restBaseMovieApi(url:
-//                                                                                MovieEndpoints.moviesBySearchCriteria(searchCriterias: searchCriteriaDto, page: UrlPage(page: 1), language: .en).urlRequest)
-//                                    }
-//                                } else {
-//                                    
-//                                }
-//                            } label: {
-//                                Image(systemName: "eraser")
-//                            }
-//                            
-//                        }
-//                        
-//                    }
                     HStack {
-                        //                        DatePicker("Release year", selection: Binding (
-                        //                            get: {
-                        //                                searchCriteriaDto.releaseYear ?? Int()
-                        //                            },
-                        //                            set: {
-                        //                                searchCriteriaDto.releaseYear = $0
-                        //                            }
-                        //                        ), displayedComponents: .date)
-                        //                        .datePickerStyle(.compact)
                         Text("Release year")
                         Spacer()
                         Picker("", selection: Binding(get: {
@@ -148,20 +103,6 @@ struct SearchFieldView: View {
                         }
                         
                     }
-                    
-                    
-                    
-                    //                    HStack {
-                    //                        Toggle("Include adult", isOn: Binding (get: {
-                    //                            searchCriteriaDto.includeAdult ?? false
-                    //                        }, set: {
-                    //                            searchCriteriaDto.includeAdult = $0
-                    //                        }))
-                    //                        .toggleStyle(SwitchToggleStyle())
-                    //                        if (searchCriteriaDto.includeAdult != nil) {
-                    //                            ResetButton(toReset: $searchCriteriaDto.includeAdult)
-                    //                        }
-                    //                    }
                     
                     HStack {
                         Text("Sort by")
@@ -184,9 +125,6 @@ struct SearchFieldView: View {
                         }
                     }
                     
-                    
-                    
-                    //                    .datePickerStyle(Weel)
                     VStack {
                         HStack{
                             Text("Genres")
@@ -203,8 +141,6 @@ struct SearchFieldView: View {
                         ScrollView(.horizontal) {
                             HStack {
                                 ForEach(restApiMovieVm.movieGenre?.genres ?? []) { genre in
-                                    //                                    MovieSectionItemView(movieItemName: genre.name, isSelected: selectedGenres!.contains(where: {$0 == genre}))
-                                    
                                     MovieSectionItemView(movieItemName: genre.name, isSelected: searchCriteriaDto.selectedGenres.contains(where: {$0 == genre}))
                                         .onTapGesture {
                                             if (searchCriteriaDto.selectedGenres.contains(where: {$0 == genre})) {
@@ -218,25 +154,19 @@ struct SearchFieldView: View {
                         }
                         HStack{
                             Button {
-                                //                                if(searchCriteriaDto.searchStr != nil) {
-                                //                                    Task {
-                                //                                        await restApiMovieVm.restBaseMovieApi(url: ApiUrls.moviesByMovieName(searchCriterias: searchCriteriaDto, page: 1, language: .en))
-                                //                                    }
-                                //                                } else {
                                 restApiMovieVm.searchCriteriaDto = searchCriteriaDto
                                 Task {
                                     restApiMovieVm.filteredMovieRest = nil
-                                    await restApiMovieVm.restSearchMovieApi(url: MovieEndpoints.moviesBySearchCriteria(searchCriterias: searchCriteriaDto, page: UrlPage(page: 1), language: .en).urlRequest)
+                                    await restApiMovieVm.restSearchMovieApi(url: MovieEndpointsEnum.moviesBySearchCriteria(searchCriterias: searchCriteriaDto, page: UrlPage(page: 1)).urlRequest)
                                 }
-                                //                                }
                             } label: {
                                 Label("Discover", systemImage: "magnifyingglass")
                                     .frame(maxWidth: .infinity, maxHeight: .infinity)
                                     .foregroundStyle(Color(UIColor.label))
-                                    
+                                
                             }
                             .background(Color("SecondaryBackground").clipShape(RoundedRectangle(cornerRadius: 5)))
-
+                            
                             Button(action: {
                                 withAnimation {
                                     self.showAdditionalSearchCriteria.toggle()
@@ -265,39 +195,18 @@ struct SearchFieldView: View {
                                     .foregroundStyle(Color(UIColor.label))
                                 
                             })
-                            
-//                            Button {
-//                                restApiMovieVm.filterByCriteria(searchCriteriaDto: searchCriteriaDto)
-//                            } label: {
-//                                Label("Filter", systemImage: "magnifyingglass")
-//                                    .frame(maxWidth: 200)
-//                                
-//                            }
-//                            .padding(0)
-                            
                         }
                         .frame(height: 35)
                         .padding(10)
                     }
-                    
                 }
                 .padding(.top, 5)
                 .task {
-                    await restApiMovieVm.restMovieGenreListApi(urlRequest: GroupedByCategoryMovieEnum.genre.paginatedPath(page: UrlPage(page: 1), language: Language.en))
+                    await restApiMovieVm.restMovieGenreListApi(urlRequest: GroupedByCategoryMovieEnum.genre.paginatedPath(page: UrlPage(page: 1)))
                 }
             }
         }
     }
-    
-    //    func requestByCriteriaIfNotNull() {
-    //        if(searchCriteriaDto.searchStr == nil && (searchCriteriaDto.selectedGenres.count > 0 || searchCriteriaDto.includeAdult != nil || searchCriteriaDto.releaseYear != nil || searchCriteriaDto.sortBy != nil)) {
-    //            Task {
-    //                await restApiMovieVm.restBaseMovieApi(url: ApiUrls.moviesBySearchCriteria(searchCriterias: searchCriteriaDto, page: UrlPage(page: 1), language: .en))
-    //            }
-    //        } else {
-    //
-    //        }
-    //    }
 }
 
 struct ResetButton <T>: View {
@@ -314,5 +223,5 @@ struct ResetButton <T>: View {
 }
 
 #Preview {
-    SearchFieldView(restApiMovieVm: .init(), showSearchField: .constant(true), selectedLanguage: .en)
+    SearchFieldView(restApiMovieVm: .init(), showSearchField: .constant(true))
 }

@@ -14,9 +14,12 @@ struct DeveloperAppInfoPopup: View {
                 Section("About API provider") {
                     VStack {
                         Text("All data used in this app are provided to the user free of charge by TMDB. You can find more details by clicking on:")
-                        Link("TheMovieDb website", destination: URL(string: "https://themoviedb.org")!)
-                            .fontWeight(.heavy)
-                            .padding(3)
+                        Link(destination: URL(string: "https://themoviedb.org")!) {
+                            Image("tmdbLogo")
+                                .resizable()
+                                .scaledToFit()
+                        }
+                        .frame(width: 100, height: 100)
                     }
                 }
                 Section("About me(developer😅)") {

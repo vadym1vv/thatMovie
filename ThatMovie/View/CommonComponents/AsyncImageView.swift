@@ -11,21 +11,7 @@ struct AsyncImageView: View {
     var posterPath: String?
     var body: some View {
         if ((posterPath) != nil && !posterPath!.isEmpty) {
-//            AsyncImage(url: URL(string: "\(ApiUrls.baseImageUrl)\(posterPath!)")) { image in
-//                image
-//                    .resizable()
-//                    .scaledToFit()
-//            } placeholder: {
-//                ProgressView()
-//            }
-//            AsyncImage(url: URL(string: "\(ApiUrls.baseImageUrl)\(posterPath!)")!, placeholder: {
-//                ProgressView()
-//            }, image: { image in
-//                Image(uiImage: image)
-//                    .resizable()
-////                    .scaledToFit()
-//            }).aspectRatio(contentMode: .fit)
-            CachedImage(url: "\(ApiUrlsEnum.baseImageUrl)\(posterPath!)") { phase in
+            CachedImage(url: "\(StaticEndpoints.baseImageUrl)\(posterPath!)") { phase in
                 switch phase {
                 case .empty:
                     ProgressView()
@@ -33,8 +19,7 @@ struct AsyncImageView: View {
                     image
                         .resizable()
                         .aspectRatio(contentMode: .fill)
-                case .failure(let error):
-                    let _ = print(error)
+                case .failure:
                     ProgressView()
                 @unknown default:
                     ProgressView()

@@ -18,17 +18,9 @@ class NotificationVM {
             } else if let error = error {
                 print(error.localizedDescription)
             }
-        }
-        
-        //        UNUserNotificationCenter.current().removePendingNotificationRequests(withIdentifiers: <#T##[String]#>)
-        
-        
+        }    
     }
-    
-    func printSomthing() {
-        print("print on notificaiton trap__________")
-    }
-    
+
     func sendNotification(identifier: String, date: Date, type: String, timeInterval: Double = 10, title: String, body: String, allowSound: Bool) {
         ascPermission()
         var trigger: UNNotificationTrigger?
@@ -42,11 +34,10 @@ class NotificationVM {
         let content = UNMutableNotificationContent()
         content.title = title
         content.body = body
-//        content.accessibilityCustomActions = [() -> print("asf")]
         if (allowSound) {
             content.sound = UNNotificationSound.default
         }
-
+   
         let request = UNNotificationRequest(identifier: identifier, content: content, trigger: trigger)
         UNUserNotificationCenter.current().add(request)
     }
@@ -81,11 +72,7 @@ class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCenterDele
         UNUserNotificationCenter.current().delegate = self
         return true
     }
-    
-    
 
-    // Implement UNUserNotificationCenterDelegate methods as needed
-    
     func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse, withCompletionHandler completionHandler: @escaping () -> Void) {        
         router.reset()
         router.path.append(Int(response.notification.request.identifier)!)

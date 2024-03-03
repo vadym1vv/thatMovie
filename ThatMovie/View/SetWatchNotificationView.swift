@@ -9,7 +9,6 @@ import SwiftUI
 import SwiftData
 
 struct SetWatchNotificationView: View {
-    //    @Binding var showUpdateDialog: Bool
     @Query private var allMovies: [MovieItem]
     @Environment(\.dismiss) var dismiss
     @Environment(\.modelContext) var modelContext
@@ -46,64 +45,23 @@ struct SetWatchNotificationView: View {
                         .tint(Color(UIColor.label))
                     
                     VStack {
-//                        HStack {
-//                            Button {
-//                                
-//                            } label: {
-//                                Text("this evening")
-//                                    .foregroundStyle(Color(.lightGray))
-//                            }
-//                            .buttonStyle(.borderedProminent)
-//                            .tint(.primaryBackground)
-//                            
-//                            Button {
-//                                
-//                            } label: {
-//                                Text("Tomorrow")
-//                                    .foregroundStyle(Color(.lightGray))
-//                            }
-//                            .buttonStyle(.borderedProminent)
-//                            .tint(.primaryBackground)
-//                            
-//                            Button {
-//                                
-//                            } label: {
-//                                Text("next month")
-//                                    .foregroundStyle(Color(.lightGray))
-//                            }
-//                            .buttonStyle(.borderedProminent)
-//                            .tint(.primaryBackground)
-//                            
-//                        }
-//                        Text("Or")
-                        //                            DatePicker("", selection: $dateToWatch, in: Date()...)
-                        
-                       
-                            DatePicker("", selection: Binding(get: {
-                                dateToWatch ?? currentDbMovie?.personalDateToWatch ?? .now
-                            }, set: {
-                                self.dateToWatch = $0
-                            }), in: Date()...)
-                            .tint(Color(UIColor.label))
-//                            .frame(maxWidth: .init())
-                        
-                        
+                        DatePicker("", selection: Binding(get: {
+                            dateToWatch ?? currentDbMovie?.personalDateToWatch ?? .now
+                        }, set: {
+                            self.dateToWatch = $0
+                        }), in: Date()...)
+                        .tint(Color(UIColor.label))
                     }
                 }
                 
                 HStack {
-                    
                     Button {
-                       
-                            if let dateToWatch = dateToWatch {
-                                if let newMovieItem = self.movieDataVM.setDateToWatch(movieDb: currentDbMovie, newDateToWatch: dateToWatch, id: id, genres: genres, title: title, posterPath: posterPath, releaseDate: releaseDate) {
-                                    self.modelContext.insert(newMovieItem)
-                                }
-                                notificationVM.sendNotification(identifier: String(id!) , date: self.dateToWatch!, type: "date", title: "Movie time", body: self.title ?? currentDbMovie?.title ?? "U set movie reminder for tuday🍿", allowSound: allowNotificationWithSound)
+                        if let dateToWatch = dateToWatch {
+                            if let newMovieItem = self.movieDataVM.setDateToWatch(movieDb: currentDbMovie, newDateToWatch: dateToWatch, id: id, genres: genres, title: title, posterPath: posterPath, releaseDate: releaseDate) {
+                                self.modelContext.insert(newMovieItem)
                             }
-                            
-                            
-                        
+                            notificationVM.sendNotification(identifier: String(id ?? -1) , date: dateToWatch, type: "date", title: "Movie time", body: self.title ?? currentDbMovie?.title ?? "U set movie reminder for tuday🍿", allowSound: allowNotificationWithSound)
+                        }
                         self.dismiss()
                     } label: {
                         Text("Save")
@@ -114,8 +72,6 @@ struct SetWatchNotificationView: View {
                     .disabled(dateToWatch == nil)
                     
                     Button(role: .destructive) {
-                        //                        self.customNotificationTitle = nil
-                        //                        self.isSilentNotification = false
                         self.dismiss()
                     } label: {
                         Text("Cancel")
@@ -131,7 +87,6 @@ struct SetWatchNotificationView: View {
         
     }
 }
-
 
 //#Preview {
 //    SetWatchNotificationView(allMovies: <#T##[MovieItem]#>, dismiss: <#T##arg#>, modelContext: <#T##arg#>, notificationVM: <#T##NotificationVM#>)

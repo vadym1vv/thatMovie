@@ -11,13 +11,12 @@ import SwiftData
 struct RemindeToWatchView: View {
     
     @Query(filter: #Predicate<MovieItem> { movie in
-        movie.personalDateToWatch != nil && !movie.personalIsPlanedToWatch
+        movie.personalDateToWatch != nil && !movie.personalIsPlannedToWatch
     }) var watchedMovies: [MovieItem]
     
     @AppStorage("allowAutoRewatchListNotifications") var allowAutoRewatchListNotifications: Bool = false
     @AppStorage("allowAutoRewatchListNotificationsWithSound") var allowAutoRewatchListNotificationsWithSound: Bool = false
     @Environment(\.dismiss) private var dismiss
-    
     
     @State private var remindeToWatchAfter: Int = 1
     @State private var displayInfoSetingsWatchedListNotifications: Bool = false
@@ -28,7 +27,7 @@ struct RemindeToWatchView: View {
             List {
                 VStack {
                     Button {
-                            displayInfoSetingsWatchedListNotifications.toggle()
+                        displayInfoSetingsWatchedListNotifications.toggle()
                     } label: {
                         HStack {
                             Text("Info")
@@ -56,25 +55,12 @@ struct RemindeToWatchView: View {
                         }
                         Text(remindeToWatchAfter == 1 ? "year" : "years")
                     }
-
+                    
                 }
                 
                 Section {
                     HStack {
-//                        Button {
-//                            notivicationVM.setNotificationForAllWatchedMovies(movieItem: watchedMovies, yearsFromNow: remindeToWatchAfter, title: "A bit of movie nostalgia?")
-//                            self.dismiss()
-//                        } label: {
-//                            Text("Save")
-//                                .frame(maxWidth: .infinity)
-//                        }
-//                        .tint(.secondaryBackground)
-//                        .foregroundStyle(Color(UIColor.label).opacity(allowAutoRewatchListNotifications ? 1 : 0.5))
-//                        .disabled(!allowAutoRewatchListNotifications)
-                        
                         Button {
-                            //                        self.customNotificationTitle = nil
-                            //                        self.isSilentNotification = false
                             self.dismiss()
                         } label: {
                             Text("Cancel")

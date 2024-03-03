@@ -7,104 +7,32 @@
 
 import SwiftUI
 import SwiftData
-import TipKit
-import YouTubePlayerKit
-//enum CurrentPageCategory {
-//    case favourites, planedToWatch, none
-//
-////        var currentPageView: some View {
-////            switch self {
-////            case .favourites(let movieItem):
-////                <#code#>
-////            case .planedToWatch(let movieItem):
-////                <#code#>
-////            }
-////        }
-//
-//
-//
-//
-////    func filterBy(movieItems: [MovieItem]) -> [
-//
-////    func filterBy(movieItems: [MovieItem]) -> [MovieItem] {
-////        switch self {
-////        case .title:
-////            <#code#>
-////        case .releasedDate:
-////            <#code#>
-////        case .addedDate:
-////            <#code#>
-////        }
-////    }
-//
-//    func filterByPageCategory(movieItems: [MovieItem]) -> [MovieItem] {
-//        switch self {
-//        case .favourites:
-//            return movieItems.filter({$0.personalIsFavourite})
-//        case .planedToWatch:
-//            return movieItems.filter({$0.personalIsPlanedToWatch})
-//        case .none:
-//            return movieItems
-//        }
-//    }
-//}
-
 
 struct UserPageView: View {
     
     @Query private var allMovies: [MovieItem]
     @Environment(\.dismiss) var dismiss
-    
     @ObservedObject var restApiMovieVm: RestApiMovieVM
     @StateObject private var userPageViewModel: UserPageViewModel = UserPageViewModel()
-    
-    
+    @AppStorage("userPageCurrentDisplayMode") var savedCurrentDisplayMode: String = "singleWithOptionsSquare"
     
     @State private var searchQuery: String = ""
-    @State private var selectedSortOption: SortOption = .title
-    @State private var movieCategory: MovieCategory = .planedToWatch
-    //    @State private var currentPageCategory: CurrentPageCategory = .planedToWatch
+    @State private var selectedSortOption: SortOptionEnum = .title
+    @State private var movieCategory: MovieCategory = .plannedToWatch
     @State private var showUpdateDialog: Bool = false
     @State private var dropSearchPageCategory: Bool = false
     @StateObject var movieItemToUpdate: MovieItemToUpdateInfo = MovieItemToUpdateInfo()
-//    @State private var showNotificationSheet: Bool = false
     @State private var notificationDescription: String?
-    
-//    @State private var silentNotificationForReWatchNotifications: Bool = false
-//    @State private var allowAutoRewatchListNotifications: Bool = false
-    @State private var silentNotificationForPlanedToWatchNotification: Bool = false
-    
-    
-    
-    //    @AppStorage("cardGridColumns") var savedDardGridColumns: Int = 1
-    //    @AppStorage("currentDisplayMode") var savedCurrentDisplayMode: DisplayMode = .singleWithOptionsSquare
-    
-    //    @State private var cardGridColumns: Int = 1
-    //    @State private var currentDisplayMode: DisplayMode = .singleWithOptionsSquare
-    
-    
-    @AppStorage("userPageCurrentDisplayMode") var savedCurrentDisplayMode: String = "singleWithOptionsSquare"
-    
     @State private var radialMenuIsHidden: Bool = true
     @Binding var showSearchField: Bool
     
-    
     private let notificationVM: NotificationVM = NotificationVM()
-    
-    
-    var rewatchNotificationTip = RewatchNotificationTip()
-    //    let notificationVM = NotificationVM()
-    
-    
-    let selectedLanguage: Language
-    
-    var filteredItems: [MovieItem] {
+    var filteredByCategoryMovies: [MovieItem] {
         let sortedBy = selectedSortOption.sortBy(movieItems: allMovies)
         return movieCategory.filterByPageCategory(movieItems: sortedBy)
     }
-    
-    var currentDisplayMode: DisplayMode {
-        return DisplayMode.currentDisplayModyByString(str: savedCurrentDisplayMode)
+    var currentDisplayMode: DisplayModeEnum {
+        return DisplayModeEnum.currentDisplayModyByString(str: savedCurrentDisplayMode)
     }
     
     var body: some View {
@@ -114,7 +42,7 @@ struct UserPageView: View {
                     .font(.title)
             }
             .padding()
-            if true {
+            if (showSearchField) {
                 VStack {
                     HStack {
                         TextField("Search", text: $searchQuery)
@@ -126,9 +54,8 @@ struct UserPageView: View {
                             }
                             .overlay(alignment: .trailing) {
                                 Button(action: {
-                                    userPageViewModel.filterBy(movieItems: dropSearchPageCategory ? allMovies : filteredItems, searchQuery: searchQuery)
+                                    userPageViewModel.filterBy(movieItems: dropSearchPageCategory ? allMovies : filteredByCategoryMovies, searchQuery: searchQuery)
                                 }, label: {
-                                    
                                     Image.resizableSystemImage(systemName: "magnifyingglass")
                                         .padding(7)
                                 })
@@ -154,7 +81,7 @@ struct UserPageView: View {
                         HStack {
                             Text("Sort by:")
                             Picker("", selection: $selectedSortOption) {
-                                ForEach(SortOption.allCases,
+                                ForEach(SortOptionEnum.allCases,
                                         id: \.rawValue) { option in
                                     Text(option.description)
                                         .tag(option)
@@ -168,23 +95,13 @@ struct UserPageView: View {
                 .padding(10)
             }
             LazyVGrid(columns: Array(repeating: .init(.flexible()), count: currentDisplayMode.cardGridColumns), alignment: .center) {
-                
-                if (allMovies.isEmpty || (userPageViewModel.filteredResults != nil && userPageViewModel.filteredResults!.isEmpty)) {
-                    Text("Nothing to display")
-                } else {
-                    
-                    ForEach(userPageViewModel.filteredResults != nil ? userPageViewModel.filteredResults! : filteredItems) { movie in
-                        //                        if let id = movie.id {
-                        //                        let _ = print(movie.id)
-                        NavigationLink {
-                            MoviePageView(restApiMovieVm: restApiMovieVm, movieId: movie.id!)
-                        } label: {
-                            currentDisplayMode.movieCardView(movie: movie, showUpdateDialog: $showUpdateDialog, movieItemToUpdate: movieItemToUpdate, notificationVM: notificationVM)
-                            //                            MovieCardView(posterPath: movie.posterPath ?? "")
-                            //                            Text("asf")
-                        }
-                        //                        }
+                ForEach(userPageViewModel.filteredResults != nil ? userPageViewModel.filteredResults! : filteredByCategoryMovies) { movie in
+                    NavigationLink {
+                        MoviePageView(restApiMovieVm: restApiMovieVm, movieId: movie.id ?? -1)
+                    } label: {
+                        currentDisplayMode.movieCardView(movie: movie, showUpdateDialog: $showUpdateDialog, movieItemToUpdate: movieItemToUpdate, notificationVM: notificationVM, movieCategory: movieCategory)
                     }
+                    
                 }
             }
         }
@@ -203,32 +120,29 @@ struct UserPageView: View {
                 }
             }, label: {
                 ZStack{
-                    
                     RadialMenuIcon(radialMenuIsHidden: $radialMenuIsHidden)
-                    //                            .background(Color("SecondaryBackground"))
                 }
             })
             .tint(Color("DeleteColor"))
             .frame(width: 60, height: 60)
             .radialMenu(isHidden: $radialMenuIsHidden, anchorPosition: .bottomRight, distance: 170, autoClose: true, buttons: [
-//                RadialMenuButton(image: showNotificationSheet ? "bell.circle" : "bell", size: 40, action: {
-//                    self.showNotificationSheet.toggle()
-//                }),
+                //                RadialMenuButton(image: showNotificationSheet ? "bell.circle" : "bell", size: 40, action: {
+                //                    self.showNotificationSheet.toggle()
+                //                }),
                 RadialMenuButton(image: self.currentDisplayMode.displayModeIcon, size: 40, action: {
                     if(self.currentDisplayMode == .single) {
-                        self.savedCurrentDisplayMode = DisplayMode.double.rawValue
+                        self.savedCurrentDisplayMode = DisplayModeEnum.double.rawValue
                     } else if(self.currentDisplayMode == .double) {
-                        self.savedCurrentDisplayMode = DisplayMode.triple.rawValue
+                        self.savedCurrentDisplayMode = DisplayModeEnum.triple.rawValue
                     } else if(self.currentDisplayMode == .triple) {
-                        self.savedCurrentDisplayMode = DisplayMode.singleWithOptionsSquare.rawValue
+                        self.savedCurrentDisplayMode = DisplayModeEnum.singleWithOptionsSquare.rawValue
                     } else {
-                        self.savedCurrentDisplayMode = DisplayMode.single.rawValue
+                        self.savedCurrentDisplayMode = DisplayModeEnum.single.rawValue
                     }
                 }),
                 RadialMenuButton(image: "magnifyingglass", size: 40, action: {
                     withAnimation {
                         self.showSearchField.toggle()
-                        self.radialMenuIsHidden.toggle()
                     }
                 }),
                 RadialMenuButton(image: "star.fill", size: 40, action: {
@@ -238,7 +152,7 @@ struct UserPageView: View {
                     self.movieCategory = .watched
                 }),
                 RadialMenuButton(image: "calendar.badge.clock", size: 40, action: {
-                    self.movieCategory = .planedToWatch
+                    self.movieCategory = .plannedToWatch
                 })
             ])
             .padding(.trailing, 6)
@@ -251,15 +165,31 @@ struct UserPageView: View {
                 .presentationDetents([.medium])
             
         })
-//        .sheet(isPresented: $showNotificationSheet, content: {
-//            RemindeToWatchView()
-//        })
+        .overlay(alignment: .center) {
+            
+            
+            
+            if (!searchQuery.isEmpty && userPageViewModel.filteredResults != nil && userPageViewModel.filteredResults!.isEmpty) {
+                
+                Text("Nothing was found" )
+            } else if(filteredByCategoryMovies.isEmpty) {
+                Text("Nothing to display")
+            }
+            
+            
+            
+            
+            //                if (allMovies.isEmpty || (userPageViewModel.filteredResults != nil && userPageViewModel.filteredResults!.isEmpty)) {
+            //                VStack {
+            //                    Text("Nothing was found")
+            //                }
+            //            }
+            //            if (userPageViewModel.filteredResults != nil && !userPageViewModel.filteredResults!.isEmpty || !filteredByCategoryMovies.isEmpty)  {
+            //            }
+        }
     }
 }
 
-
-
-
 #Preview {
-    UserPageView(restApiMovieVm: .init(), showSearchField: .constant(false), selectedLanguage: .en)
+    UserPageView(restApiMovieVm: .init(), showSearchField: .constant(false))
 }

@@ -19,11 +19,11 @@ final class MovieItem {
     var personalDateOfViewing: Date?
     var personalDateToWatch: Date?
     var personalLastWatchedDate: Date?
-    var personalIsPlanedToWatch: Bool = false
+    var personalIsPlannedToWatch: Bool = false
     var personalAddedDate: Date?
     var personalIsFavourite: Bool = false
     
-    init(id: Int? = nil, genreIDS: [Int]? = nil, title: String? = nil, posterPath: String? = nil, releaseDate: Date? = nil, personalRating: Int? = nil, personalDateOfViewing: Date? = nil, personalDateToWatch: Date? = nil, personalLastWatchedDate: Date? = nil, personalIsPlanedToWatch: Bool = false, personaladdedDate: Date? = nil, personalIsFavourite: Bool = false) {
+    init(id: Int? = nil, genreIDS: [Int]? = nil, title: String? = nil, posterPath: String? = nil, releaseDate: Date? = nil, personalRating: Int? = nil, personalDateOfViewing: Date? = nil, personalDateToWatch: Date? = nil, personalLastWatchedDate: Date? = nil, personalIsPlannedToWatch: Bool = false, personaladdedDate: Date? = nil, personalIsFavourite: Bool = false) {
         self.id = id
         self.genreIDS = genreIDS
         self.title = title
@@ -33,7 +33,7 @@ final class MovieItem {
         self.personalDateOfViewing = personalDateOfViewing
         self.personalDateToWatch = personalDateToWatch
         self.personalLastWatchedDate = personalLastWatchedDate
-        self.personalIsPlanedToWatch = personalIsPlanedToWatch
+        self.personalIsPlannedToWatch = personalIsPlannedToWatch
         self.personalAddedDate = personaladdedDate
         self.personalIsFavourite = personalIsFavourite
     }
