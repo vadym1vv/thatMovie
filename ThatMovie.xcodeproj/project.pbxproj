@@ -44,6 +44,8 @@
 		939F49322B31EFD800118715 /* MovieCardWatchOptionsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 939F49312B31EFD800118715 /* MovieCardWatchOptionsView.swift */; };
 		93A2A2132AFA373C00BFAF6B /* GenericApiProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93A2A2122AFA373C00BFAF6B /* GenericApiProtocol.swift */; };
 		93A2A2162AFA422400BFAF6B /* GenericApiImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93A2A2152AFA422400BFAF6B /* GenericApiImpl.swift */; };
+		93A66CA22C74E1C30028ADCB /* SwappableCardComponentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93A66CA12C74E1C30028ADCB /* SwappableCardComponentView.swift */; };
+		93A66CA42C74E4B60028ADCB /* SimpleMovieCardComponentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93A66CA32C74E4B60028ADCB /* SimpleMovieCardComponentView.swift */; };
 		93AAD9352B84B3CE00D23DFD /* DeveloperAppInfoPopup.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93AAD9342B84B3CE00D23DFD /* DeveloperAppInfoPopup.swift */; };
 		93AC06782B2A062A00D1B06E /* UserPageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93AC06772B2A062A00D1B06E /* UserPageView.swift */; };
 		93AC067C2B2A08A600D1B06E /* Router.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93AC067B2B2A08A600D1B06E /* Router.swift */; };
@@ -100,6 +102,8 @@
 		939F49312B31EFD800118715 /* MovieCardWatchOptionsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MovieCardWatchOptionsView.swift; sourceTree = "<group>"; };
 		93A2A2122AFA373C00BFAF6B /* GenericApiProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GenericApiProtocol.swift; sourceTree = "<group>"; };
 		93A2A2152AFA422400BFAF6B /* GenericApiImpl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GenericApiImpl.swift; sourceTree = "<group>"; };
+		93A66CA12C74E1C30028ADCB /* SwappableCardComponentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwappableCardComponentView.swift; sourceTree = "<group>"; };
+		93A66CA32C74E4B60028ADCB /* SimpleMovieCardComponentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SimpleMovieCardComponentView.swift; sourceTree = "<group>"; };
 		93AAD9342B84B3CE00D23DFD /* DeveloperAppInfoPopup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeveloperAppInfoPopup.swift; sourceTree = "<group>"; };
 		93AC06772B2A062A00D1B06E /* UserPageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserPageView.swift; sourceTree = "<group>"; };
 		93AC067B2B2A08A600D1B06E /* Router.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Router.swift; sourceTree = "<group>"; };
@@ -310,6 +314,8 @@
 				93F5E4732B246D2200EAB73A /* CommonStyles */,
 				93185CB32B3DCCD100AC4905 /* WatchMenuView.swift */,
 				93D5E9DB2B446C4A00965C8F /* AsyncImageView.swift */,
+				93A66CA12C74E1C30028ADCB /* SwappableCardComponentView.swift */,
+				93A66CA32C74E4B60028ADCB /* SimpleMovieCardComponentView.swift */,
 			);
 			path = CommonComponents;
 			sourceTree = "<group>";
@@ -432,12 +438,14 @@
 				93120A232ADABEE300F876F1 /* MovieItem.swift in Sources */,
 				93FFE6A92B30868300056E89 /* UserPageViewModel.swift in Sources */,
 				93BA7A542B397E3D0060C05C /* MovieDataVM.swift in Sources */,
+				93A66CA42C74E4B60028ADCB /* SimpleMovieCardComponentView.swift in Sources */,
 				938B3CA52B4D43CC00D5FA90 /* CachedImage.swift in Sources */,
 				93120A362ADB009700F876F1 /* MoviePageView.swift in Sources */,
 				9386DDE32B68FB3D00A3D402 /* StaticEndpoints.swift in Sources */,
 				93A2A2132AFA373C00BFAF6B /* GenericApiProtocol.swift in Sources */,
 				938A5B712B1B8B95004B947B /* UrlPage.swift in Sources */,
 				93BC826E2B88A5FF001BA3E7 /* GroupedByCategoryMovieEnum.swift in Sources */,
+				93A66CA22C74E1C30028ADCB /* SwappableCardComponentView.swift in Sources */,
 				938B3C9F2B4D3F5A00D5FA90 /* ImageRetriever.swift in Sources */,
 				939929442B74B246008CC643 /* ThemeVM.swift in Sources */,
 				93BA720E2B133CA3006A7B83 /* MovieSectionItemView.swift in Sources */,

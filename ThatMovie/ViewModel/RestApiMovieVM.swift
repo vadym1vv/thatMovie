@@ -22,6 +22,9 @@ class RestApiMovieVM: ObservableObject {
     @Published var searchCriteriaDto: SearchCriteriaDto?
     @Published var error: Error?
     
+    @Published var currentMovieCardIndex: Int = 0
+    @Published var lastMovieCardIndex: Int = 0
+    
     
     
     private let clientGenericApi = GenericApiImpl()

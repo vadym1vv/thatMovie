@@ -34,21 +34,24 @@ struct ContentView: View {
     private var additionalOptionsPresent: Bool = false
     
     var currentDisplayMode: DisplayModeEnum {
-        return DisplayModeEnum.currentDisplayModyByString(str: savedCurrentDisplayMode)
+        return DisplayModeEnum.currentDisplayModByString(str: savedCurrentDisplayMode)
     }
     
     var body: some View {
         NavigationStack(path: $router.path) {
-            ZStack {
-                ScrollView {
-                    if showSearchField {
-                        SearchFieldView(restApiMovieVm: restApiMovieVm, showSearchField: $showSearchField)
-                            .padding()
-                    } else {
-                        MovieSection(restApiMovieVm: restApiMovieVm, displayAllGenres: $displayAllGenres, page: $page)
-                            .padding()
-                    }
-                    if(self.displayAllGenres && restApiMovieVm.filteredMovieRest == nil) {
+            ZStack(alignment: .top) {
+                if showSearchField {
+                    SearchFieldView(restApiMovieVm: restApiMovieVm, showSearchField: $showSearchField)
+                        .padding()
+                } else {
+                    MovieSection(restApiMovieVm: restApiMovieVm, displayAllGenres: $displayAllGenres, page: $page)
+                        .padding()
+                }
+                
+                //                ScrollView {
+                //                    VStack(spacing: 0) {
+                if(self.displayAllGenres && restApiMovieVm.filteredMovieRest == nil) {
+                    ScrollView {
                         ForEach(restApiMovieVm.movieByGenreRest.sorted(by: {$0.key.name > $1.key.name}), id: \.key) { movieGenre, movies in
                             VStack(alignment: .leading, spacing: 0) {
                                 Text(movieGenre.name)
@@ -85,10 +88,11 @@ struct ContentView: View {
                                 .padding(.bottom, 5)
                             }
                         }
-                    } else {
-                        LazyVGrid(columns: Array(repeating: .init(.flexible()), count: currentDisplayMode.cardGridColumns), alignment: .center) {
-                            
-                            if(restApiMovieVm.filteredMovieRest != nil) {
+                    }
+                } else {
+                    if(restApiMovieVm.filteredMovieRest != nil) {
+                        ScrollView {
+                            LazyVGrid(columns: Array(repeating: .init(.flexible()), count: currentDisplayMode.cardGridColumns), alignment: .center, spacing: 0) {
                                 if(restApiMovieVm.filteredMovieRest!.results.isEmpty) {
                                     Text("Search list is empty")
                                         .font(.largeTitle)
@@ -106,33 +110,30 @@ struct ContentView: View {
                                         }
                                     }
                                 }
-                            } else {
-                                if let movieRest = restApiMovieVm.movieRest {
-                                    ForEach(movieRest.results) { movie in
-                                        NavigationLink(value: movie) {
-                                            AsyncImageView(posterPath: movie.posterPath)
-                                                .onAppear {
-                                                    if (movie.id == restApiMovieVm.movieRest?.results.last!.id && restApiMovieVm.currentNetworkCallState == .finished) {
-                                                        if (restApiMovieVm.currentMovieGenreEndpoint != nil) {
-                                                            Task {
-                                                                await restApiMovieVm.loadNextMovieBySingleGenre()
-                                                            }
-                                                        } else {
-                                                            Task {
-                                                                await restApiMovieVm.loadNextMovieByCurrentMovieCategoryEndpoint()
-                                                            }
-                                                        }
-                                                        
-                                                    }                                                 }
-                                        }
-                                        
-                                    }
+                            }
+                        }
+                    } else {
+                        if(currentDisplayMode == .singleSwappable) {
+                            ScrollView {
+                                LazyVGrid(columns: Array(repeating: .init(.flexible()), count: currentDisplayMode.cardGridColumns), alignment: .center, spacing: currentDisplayMode.scrollSpacing) {
+                                    SwappableCardComponentView(restApiMovieVm: restApiMovieVm)
                                 }
                             }
+                            .padding([.leading, .trailing], 3)
+                            .ignoresSafeArea()
+//                            .scrollTargetLayout()
+//                            .scrollTargetBehavior( .paging)
+//                            .scrollBounceBehavior(.basedOnSize)
+                        } else {
+                            ScrollView {
+                                LazyVGrid(columns: Array(repeating: .init(.flexible()), count: currentDisplayMode.cardGridColumns), alignment: .center, spacing: currentDisplayMode.scrollSpacing) {
+                                    SimpleMovieCardComponentView(restApiMovieVm: restApiMovieVm)
+                                }
+                            }
+                            .padding([.leading, .trailing], 3)
                         }
                     }
                 }
-                .padding([.leading, .trailing], 3)
             }
             .background(Color("PrimaryBackground").ignoresSafeArea())
             .overlay(alignment: .bottomTrailing) {
@@ -160,9 +161,11 @@ struct ContentView: View {
                     
                     RadialMenuButton(image: self.currentDisplayMode.displayModeIcon, size: 40, ignoreAutoclose: true, action: {
                         if(self.currentDisplayMode == .single) {
-                            self.savedCurrentDisplayMode = DisplayModeEnum.double.rawValue
-                        } else if(self.currentDisplayMode == .double) {
+                            self.savedCurrentDisplayMode = DisplayModeEnum.singleSwappable.rawValue
+                        } else if(self.currentDisplayMode == .singleSwappable) {
                             self.savedCurrentDisplayMode = DisplayModeEnum.triple.rawValue
+                        }  else if(self.currentDisplayMode == .triple) {
+                            self.savedCurrentDisplayMode = DisplayModeEnum.double.rawValue
                         } else {
                             self.savedCurrentDisplayMode = DisplayModeEnum.single.rawValue
                         }

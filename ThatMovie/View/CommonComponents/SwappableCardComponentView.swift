@@ -18,8 +18,9 @@ struct SwappableCardComponentView: View {
         
         if let movieRest = restApiMovieVm.movieRest {
             //                VStack (spacing: 20){
-            ForEach(movieRest.results) { movie in
-//                NavigationLink(value: movie) {
+            ZStack {
+                ForEach(movieRest.results) { movie in
+                    //                NavigationLink(value: movie) {
                     AsyncImageView(posterPath: movie.posterPath)
                         .offset(offset)
                         .scaleEffect(getScaleAmount())
@@ -27,6 +28,7 @@ struct SwappableCardComponentView: View {
                         .gesture(
                             DragGesture()
                                 .onChanged { value in
+                                    print(value.translation)
                                     withAnimation(.spring()) {
                                         offset = value.translation
                                     }
@@ -48,18 +50,12 @@ struct SwappableCardComponentView: View {
                                         await restApiMovieVm.loadNextMovieByCurrentMovieCategoryEndpoint()
                                     }
                                 }
-                                
                             }
                         }
-                                                    .frame(height: UIScreen.main.bounds.height - 50)
-                        
-                    //                                .frame(width: 200, height: 200)
-                                                    
-//                }
-                .containerRelativeFrame(.vertical, alignment: .center)
-                
+                        .frame(height: UIScreen.main.bounds.height - 150)
+                        .containerRelativeFrame(.vertical, alignment: .center)
+                }
             }
-            //                }
         }
     }
     

@@ -32,7 +32,7 @@ struct UserPageView: View {
         return movieCategory.filterByPageCategory(movieItems: sortedBy)
     }
     var currentDisplayMode: DisplayModeEnum {
-        return DisplayModeEnum.currentDisplayModyByString(str: savedCurrentDisplayMode)
+        return DisplayModeEnum.currentDisplayModByString(str: savedCurrentDisplayMode)
     }
     
     var body: some View {
