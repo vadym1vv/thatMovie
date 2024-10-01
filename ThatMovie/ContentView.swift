@@ -114,13 +114,13 @@ struct ContentView: View {
                         }
                     } else {
                         if(currentDisplayMode == .singleSwappable) {
-                            ScrollView {
-                                LazyVGrid(columns: Array(repeating: .init(.flexible()), count: currentDisplayMode.cardGridColumns), alignment: .center, spacing: currentDisplayMode.scrollSpacing) {
+//                            ScrollView {
+//                                LazyVGrid(columns: Array(repeating: .init(.flexible()), count: currentDisplayMode.cardGridColumns), alignment: .center, spacing: currentDisplayMode.scrollSpacing) {
                                     SwappableCardComponentView(restApiMovieVm: restApiMovieVm)
-                                }
-                            }
-                            .padding([.leading, .trailing], 3)
-                            .ignoresSafeArea()
+//                                }
+//                            }
+//                            .padding([.leading, .trailing], 3)
+//                            .ignoresSafeArea()
 //                            .scrollTargetLayout()
 //                            .scrollTargetBehavior( .paging)
 //                            .scrollBounceBehavior(.basedOnSize)
@@ -246,4 +246,6 @@ struct ContentView: View {
 //#Preview {
 //    ContentView()
 //}
+
+
 
