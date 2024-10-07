@@ -18,7 +18,10 @@ struct SwappableCardComponentView: View {
     @Environment(\.modelContext) var modelContext
     
     @State var offset: CGSize = .zero
+    @State var upDownOffset: CGPoint = .zero
     @State var showAllVideos: Bool = false
+    @State private var currentCardIndex: Int = 0
+    @State private var transitionDir: Edge = .bottom
     
     var movieDataVM: MovieDataVM = MovieDataVM()
     var filteredResults: [VideosResults] {
@@ -46,6 +49,94 @@ struct SwappableCardComponentView: View {
     }
     
     
+    fileprivate func MovieCardView(_ movie: Result, _ index: Int, movieRest: [Result]/*, transitionDirection: Edge*/) -> some View {
+        
+         //                        NavigationLink(value: movie) {
+        AsyncImageView(posterPath: movie.posterPath)
+        //                                            Image(systemName: "star")
+            .offset(offset)
+            .scaleEffect(getScaleAmount())
+            .rotationEffect(Angle(degrees: getRotationAmount()))
+            .gesture(
+                DragGesture()
+                    .onChanged { value in
+                        withAnimation(.spring()) {
+                            offset = value.translation
+                        }
+                        if(upDownOffset == .zero) {
+                            upDownOffset = value.startLocation
+                        }
+                        
+                    }
+                    .onEnded { value in
+                        
+                        if(value.startLocation.y > value.location.y) {
+                            print("dragDown")
+                            if(currentCardIndex > 0) {
+                                transitionDir = .bottom
+                                withAnimation(.easeIn(duration: 0.5)) {
+                                    currentCardIndex -= 1
+                                    
+                                }
+                                
+                                withAnimation(.easeInOut(duration: 3)) {
+                                    offset.height = UIScreen.main.bounds.height
+                                }
+                                
+                            }
+                        } else {
+                            print("dragUp")
+                            
+                            if(movieRest.count - 1 > index) {
+                                transitionDir = .top
+                                withAnimation(.easeIn(duration: 0.5)) {
+                                    
+                                    currentCardIndex += 1
+                                }
+                                withAnimation(.easeInOut(duration: 3)) {
+                                    offset.height = -UIScreen.main.bounds.height
+                                }
+                            }
+                        }
+                        
+                        if(value.translation.width > 0) {
+                            print("favourites")
+                            //                                                if let newMovie = movieDataVM.setFavouriteById(movieDb: currentMovieFromDb, id: restApiMovieVm.details?.id, title: restApiMovieVm.details?.title, posterPath: restApiMovieVm.details?.posterPath, releaseDate: restApiMovieVm.details?.releaseDate?.formatToDate)
+                            //                                                {
+                            //                                                    modelContext.insert(newMovie)
+                            //                                                }
+                        } else {
+                            print("watchLater")
+                            //                                                if let newMovieItem = movieDataVM.setPlannedToWatch(movieDb: currentMovieFromDb, id: movie.id, genres: restApiMovieVm.details?.genres.map({$0.id}), title: movie.title, posterPath: restApiMovieVm.details?.posterPath, releaseDate: restApiMovieVm.details?.releaseDate?.formatToDate) {
+                            //                                                    self.modelContext.insert(newMovieItem)
+                            //                                                }
+                            //                                                if let id = currentMovieFromDb?.id {
+                            //                                                    notificationVM.removePendingNotification(identifier: String(id))
+                            //                                                }
+                        }
+                        withAnimation(.spring()) {
+                            offset = .zero
+                        }
+                    }
+            )
+            .onAppear {
+                if (movie.id == movieRest.last!.id && restApiMovieVm.currentNetworkCallState == .finished) {
+                    if (restApiMovieVm.currentMovieGenreEndpoint != nil) {
+                        Task {
+                            await restApiMovieVm.loadNextMovieBySingleGenre()
+                        }
+                    } else {
+                        Task {
+                            await restApiMovieVm.loadNextMovieByCurrentMovieCategoryEndpoint()
+                        }
+                    }
+                }
+            }
+            .ignoresSafeArea()
+            .frame(height: UIScreen.main.bounds.height)
+            .transition(.move(edge: transitionDir))
+    }
+    
     var body: some View {
         
         if let movieRest = restApiMovieVm.movieRest {
@@ -53,62 +144,25 @@ struct SwappableCardComponentView: View {
             //            ZStack {
 //            if(!showAllVideos) {
 //                ScrollViewReader { proxy in
-                ScrollView {
-                    ForEach(Array(movieRest.results.enumerated()), id: \.offset) { index, movie in
-                        NavigationLink(value: movie) {
-                            AsyncImageView(posterPath: movie.posterPath)
-                                .offset(offset)
-                                .scaleEffect(getScaleAmount())
-                                .rotationEffect(Angle(degrees: getRotationAmount()))
-                                .gesture(
-                                    DragGesture()
-                                        .onChanged { value in
-                                            //                                    print(value.translation)
-                                            withAnimation(.spring()) {
-                                                offset = value.translation
-                                            }
-                                        }
-                                        .onEnded { value in
-                                            if(value.translation.width > 0) {
-                                                print("favourites")
-                                                if let newMovie = movieDataVM.setFavouriteById(movieDb: currentMovieFromDb, id: restApiMovieVm.details?.id, title: restApiMovieVm.details?.title, posterPath: restApiMovieVm.details?.posterPath, releaseDate: restApiMovieVm.details?.releaseDate?.formatToDate)
-                                                {
-                                                    modelContext.insert(newMovie)
-                                                }
-                                            } else {
-                                                print("watchLater")
-                                                if let newMovieItem = movieDataVM.setPlannedToWatch(movieDb: currentMovieFromDb, id: movie.id, genres: restApiMovieVm.details?.genres.map({$0.id}), title: movie.title, posterPath: restApiMovieVm.details?.posterPath, releaseDate: restApiMovieVm.details?.releaseDate?.formatToDate) {
-                                                    self.modelContext.insert(newMovieItem)
-                                                }
-                                                if let id = currentMovieFromDb?.id {
-                                                    notificationVM.removePendingNotification(identifier: String(id))
-                                                }
-                                            }
-                                            withAnimation(.spring()) {
-                                                offset = .zero
-                                            }
-                                        }
-                                )
-                                .onAppear {
-                                    if (movie.id == movieRest.results.last!.id && restApiMovieVm.currentNetworkCallState == .finished) {
-                                        if (restApiMovieVm.currentMovieGenreEndpoint != nil) {
-//                                            Task {
-//                                                await restApiMovieVm.loadNextMovieBySingleGenre()
-//                                            }
-                                        } else {
-                                            Task {
-                                                await restApiMovieVm.loadNextMovieByCurrentMovieCategoryEndpoint()
-                                            }
-                                        }
-                                    }
-                                }
-                                .ignoresSafeArea()
-                                .frame(height: UIScreen.main.bounds.height)
-//                                .containerRelativeFrame(.vertical, alignment: .center)
+//                ScrollView {
+                    ZStack {
+                        ForEach(Array(movieRest.results.enumerated()), id: \.offset) { index, movie in
+//                            if(index < currentCardIndex + 2 && index > currentCardIndex - 2) {
+//                                MovieCardView(movie, index, movieRest: movieRest.results, transitionDirection: .top)
+//                            }
+                            if (index == currentCardIndex) {
+                                MovieCardView(movie, index, movieRest: movieRest.results)
+//                                    .zIndex(.infinity)
+                                                                
+                                //                                .containerRelativeFrame(.vertical, alignment: .center)
+    //                        }
+                            }
                             
+                                
+    //
                         }
                     }
-                }
+//                }
 //            } else {
 //                ScrollView {
 //                    VStack(alignment: .center) {
