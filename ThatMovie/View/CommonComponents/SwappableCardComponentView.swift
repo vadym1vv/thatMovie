@@ -217,54 +217,59 @@ struct SwappableCardComponentView: View {
             .frame(height: UIScreen.main.bounds.height)
             .transition(.move(edge: transitionDir))
             .overlay(alignment: .top) {
-                HStack {
-//                    
-                    ZStack(alignment: .topLeading) {
-                        if(selectedWatchLaterProgress > 0) {
-                            if (currentMovieFromDb?.personalDateToWatch != nil) {
-                                FadeIconComponent(iconName: "icons8-short-film-100", color: .yellow, isSelected: false)
-                                    .offset(y: -selectedWatchLaterProgress)
-                                    .padding(.top, getSafeArea().top)
-                            }
-                            if(currentMovieFromDb?.personalIsPlannedToWatch ?? false && currentMovieFromDb?.personalDateToWatch == nil) {
-                                if (currentMovieFromDb?.personalIsPlannedToWatch ?? false && currentMovieFromDb?.personalDateToWatch == nil) {
-                                    FadeIconComponent(iconName: "icons8-to-do-100-2", color: .yellow, opacity: selectedWatchLaterProgress * 100 / 100, isSelected: false)
+                ZStack(alignment: .top) {
+//
+                    HStack {
+                        ZStack(alignment: .topLeading) {
+                            if(selectedWatchLaterProgress > 0) {
+                                if (currentMovieFromDb?.personalDateToWatch != nil) {
+                                    FadeIconComponent(iconName: "icons8-short-film-100", color: .yellow, isSelected: false)
                                         .offset(y: -selectedWatchLaterProgress)
                                         .padding(.top, getSafeArea().top)
                                 }
-                            } else {
-                                FadeIconComponent(iconName: "icons8-to-do-100-2", color: .yellow, opacity: selectedWatchLaterProgress / 100, width: 300 - (selectedWatchLaterProgress * 300 / 100), height: 300 - (selectedWatchLaterProgress * 300 / 100), isSelected: false)
+                                if(currentMovieFromDb?.personalIsPlannedToWatch ?? false && currentMovieFromDb?.personalDateToWatch == nil) {
+                                    if (currentMovieFromDb?.personalIsPlannedToWatch ?? false && currentMovieFromDb?.personalDateToWatch == nil) {
+                                        FadeIconComponent(iconName: "icons8-to-do-100-2", color: .yellow, opacity: selectedWatchLaterProgress * 100 / 100, isSelected: false)
+                                            .offset(y: -selectedWatchLaterProgress)
+                                            .padding(.top, getSafeArea().top)
+                                    }
+                                } else {
+                                    FadeIconComponent(iconName: "icons8-to-do-100-2", color: .yellow, opacity: selectedWatchLaterProgress / 100, width: 300 - (selectedWatchLaterProgress * 300 / 100), height: 300 - (selectedWatchLaterProgress * 300 / 100), isSelected: false)
+                                        .padding(.top, getSafeArea().top)
+                                    
+                                }
+                            } else if (currentMovieFromDb != nil && currentMovieFromDb!.personalDateToWatch != nil) {
+                                FadeIconComponent(iconName: "icons8-short-film-100", color: .yellow, isSelected: false)
                                     .padding(.top, getSafeArea().top)
-                                
+                            } else if (currentMovieFromDb?.personalIsPlannedToWatch ?? false && currentMovieFromDb?.personalDateToWatch == nil) {
+                                FadeIconComponent(iconName: "icons8-to-do-100-2", color: .yellow, isSelected: false)
+                                    .padding(.top, getSafeArea().top)
                             }
-                        } else if (currentMovieFromDb != nil && currentMovieFromDb!.personalDateToWatch != nil) {
-                            FadeIconComponent(iconName: "icons8-short-film-100", color: .yellow, isSelected: false)
-                                .padding(.top, getSafeArea().top)
-                        } else if (currentMovieFromDb?.personalIsPlannedToWatch ?? false && currentMovieFromDb?.personalDateToWatch == nil) {
-                            FadeIconComponent(iconName: "icons8-to-do-100-2", color: .yellow, isSelected: false)
-                                .padding(.top, getSafeArea().top)
                         }
-                        
+                        Spacer()
                     }
                     
                         Spacer()
                     
-                    if(selectFavoriteProgress > 0) {
-                        if(currentMovieFromDb != nil && currentMovieFromDb!.personalIsFavourite) {
+                    HStack {
+                        Spacer()
+                        if(selectFavoriteProgress > 0) {
+                            if(currentMovieFromDb != nil && currentMovieFromDb!.personalIsFavourite) {
 
-                            if (currentMovieFromDb != nil && currentMovieFromDb!.personalIsFavourite) {
-                                FadeIconComponent(iconName: "icons8-bookmark", color: .yellow, opacity: selectFavoriteProgress * 100 / 100, isSelected: false)
-                                    .offset(y: -selectFavoriteProgress)
+                                if (currentMovieFromDb != nil && currentMovieFromDb!.personalIsFavourite) {
+                                    FadeIconComponent(iconName: "icons8-bookmark", color: .yellow, opacity: selectFavoriteProgress * 100 / 100, isSelected: false)
+                                        .offset(y: -selectFavoriteProgress)
+                                        .padding(.top, getSafeArea().top)
+                                }
+                            } else {
+                                FadeIconComponent(iconName: "icons8-bookmark", color: .yellow, opacity: selectFavoriteProgress / 100, width: 300 - (selectFavoriteProgress * 300 / 100), height: 300 - (selectFavoriteProgress * 300 / 100), isSelected: false)
                                     .padding(.top, getSafeArea().top)
+                                
                             }
-                        } else {
-                            FadeIconComponent(iconName: "icons8-bookmark", color: .yellow, opacity: selectFavoriteProgress / 100, width: 300 - (selectFavoriteProgress * 300 / 100), height: 300 - (selectFavoriteProgress * 300 / 100), isSelected: false)
+                        } else if (currentMovieFromDb != nil && currentMovieFromDb!.personalIsFavourite) {
+                            FadeIconComponent(iconName: "icons8-bookmark", color: .yellow, isSelected: false)
                                 .padding(.top, getSafeArea().top)
-                            
                         }
-                    } else if (currentMovieFromDb != nil && currentMovieFromDb!.personalIsFavourite) {
-                        FadeIconComponent(iconName: "icons8-bookmark", color: .yellow, isSelected: false)
-                            .padding(.top, getSafeArea().top)
                     }
                 }
                 .frame(width: UIScreen.main.bounds.width)
