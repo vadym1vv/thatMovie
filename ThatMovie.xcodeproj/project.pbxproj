@@ -55,6 +55,8 @@
 		93BC826E2B88A5FF001BA3E7 /* GroupedByCategoryMovieEnum.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93BC826D2B88A5FF001BA3E7 /* GroupedByCategoryMovieEnum.swift */; };
 		93CBDE012B3596540022DDD8 /* NotificationVM.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93CBDE002B3596540022DDD8 /* NotificationVM.swift */; };
 		93D5E9DC2B446C4A00965C8F /* AsyncImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93D5E9DB2B446C4A00965C8F /* AsyncImageView.swift */; };
+		93DABCD12CD517A800B0A99D /* LayoutExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93DABCD02CD517A800B0A99D /* LayoutExtension.swift */; };
+		93DABCD42CD51D2700B0A99D /* FadeIconComponent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93DABCD32CD51D2700B0A99D /* FadeIconComponent.swift */; };
 		93E1206C2B19C560006B818C /* SearchCriteriaEnum.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93E1206B2B19C560006B818C /* SearchCriteriaEnum.swift */; };
 		93E1206E2B19CD53006B818C /* SortByCriteriaEnum.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93E1206D2B19CD53006B818C /* SortByCriteriaEnum.swift */; };
 		93E722F52B6F97170077D9AE /* RadialMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93E722F42B6F97170077D9AE /* RadialMenu.swift */; };
@@ -113,6 +115,8 @@
 		93BC826D2B88A5FF001BA3E7 /* GroupedByCategoryMovieEnum.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupedByCategoryMovieEnum.swift; sourceTree = "<group>"; };
 		93CBDE002B3596540022DDD8 /* NotificationVM.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationVM.swift; sourceTree = "<group>"; };
 		93D5E9DB2B446C4A00965C8F /* AsyncImageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AsyncImageView.swift; sourceTree = "<group>"; };
+		93DABCD02CD517A800B0A99D /* LayoutExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LayoutExtension.swift; sourceTree = "<group>"; };
+		93DABCD32CD51D2700B0A99D /* FadeIconComponent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FadeIconComponent.swift; sourceTree = "<group>"; };
 		93E1206B2B19C560006B818C /* SearchCriteriaEnum.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchCriteriaEnum.swift; sourceTree = "<group>"; };
 		93E1206D2B19CD53006B818C /* SortByCriteriaEnum.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SortByCriteriaEnum.swift; sourceTree = "<group>"; };
 		93E722F42B6F97170077D9AE /* RadialMenu.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RadialMenu.swift; sourceTree = "<group>"; };
@@ -188,6 +192,7 @@
 		93120A1D2ADABEE300F876F1 /* ThatMovie */ = {
 			isa = PBXGroup;
 			children = (
+				93DABCCF2CD4E3D600B0A99D /* Services */,
 				93551B622B03A8990095EE84 /* Extensions */,
 				930AF2982AF6781200E6F1E4 /* Api */,
 				93120A302ADB002300F876F1 /* View */,
@@ -214,6 +219,7 @@
 		93120A302ADB002300F876F1 /* View */ = {
 			isa = PBXGroup;
 			children = (
+				93DABCD22CD51CBC00B0A99D /* Component */,
 				93E722F12B6F96800077D9AE /* RadialMenu */,
 				93AC06792B2A069100D1B06E /* CommonComponents */,
 				93120A352ADB009700F876F1 /* MoviePageView.swift */,
@@ -318,6 +324,22 @@
 				93A66CA32C74E4B60028ADCB /* SimpleMovieCardComponentView.swift */,
 			);
 			path = CommonComponents;
+			sourceTree = "<group>";
+		};
+		93DABCCF2CD4E3D600B0A99D /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				93DABCD02CD517A800B0A99D /* LayoutExtension.swift */,
+			);
+			path = Services;
+			sourceTree = "<group>";
+		};
+		93DABCD22CD51CBC00B0A99D /* Component */ = {
+			isa = PBXGroup;
+			children = (
+				93DABCD32CD51D2700B0A99D /* FadeIconComponent.swift */,
+			);
+			path = Component;
 			sourceTree = "<group>";
 		};
 		93E722F12B6F96800077D9AE /* RadialMenu */ = {
@@ -431,6 +453,7 @@
 				938B3CA32B4D436B00D5FA90 /* CachedImageManager.swift in Sources */,
 				93E722F52B6F97170077D9AE /* RadialMenu.swift in Sources */,
 				93E958202B81FCB2001D8678 /* RemindeToWatchView.swift in Sources */,
+				93DABCD12CD517A800B0A99D /* LayoutExtension.swift in Sources */,
 				93185CB42B3DCCD100AC4905 /* WatchMenuView.swift in Sources */,
 				93AC06812B2BE07800D1B06E /* Details.swift in Sources */,
 				930AF29C2AF67B8700E6F1E4 /* MovieRest.swift in Sources */,
@@ -454,6 +477,7 @@
 				93551B662B03AEAF0095EE84 /* SearchFieldView.swift in Sources */,
 				93E1206E2B19CD53006B818C /* SortByCriteriaEnum.swift in Sources */,
 				93E1206C2B19C560006B818C /* SearchCriteriaEnum.swift in Sources */,
+				93DABCD42CD51D2700B0A99D /* FadeIconComponent.swift in Sources */,
 				9386DDE12B68F2BF00A3D402 /* MutableURLRequest.swift in Sources */,
 				93D5E9DC2B446C4A00965C8F /* AsyncImageView.swift in Sources */,
 				93A2A2162AFA422400BFAF6B /* GenericApiImpl.swift in Sources */,

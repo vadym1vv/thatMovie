@@ -125,7 +125,7 @@ struct ContentView: View {
 //                            .scrollTargetBehavior( .paging)
 //                            .scrollBounceBehavior(.basedOnSize)
                         } else {
-                            ScrollView {
+                            ScrollView { 
                                 LazyVGrid(columns: Array(repeating: .init(.flexible()), count: currentDisplayMode.cardGridColumns), alignment: .center, spacing: currentDisplayMode.scrollSpacing) {
                                     SimpleMovieCardComponentView(restApiMovieVm: restApiMovieVm)
                                 }
@@ -182,6 +182,13 @@ struct ContentView: View {
                 .padding(.trailing, 6)
                 .zIndex(1)
             }
+            .onAppear(perform: {
+#if DEBUG
+                let paths = NSSearchPathForDirectoriesInDomains(FileManager.SearchPathDirectory.documentDirectory, FileManager.SearchPathDomainMask.userDomainMask, true)
+                print(paths[0])
+#endif
+            })
+        
             //MARK: - Navigation
             
             .navigationDestination(for: Result.self) { result in
