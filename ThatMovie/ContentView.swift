@@ -67,16 +67,36 @@ struct ContentView: View {
                                     ScrollView(.horizontal) {
                                         LazyHStack {
                                             ForEach(movies.results) { movie in
-                                                NavigationLink(value: movie) {
-                                                    AsyncImageView(posterPath: movie.posterPath)
-                                                }
-                                                .onAppear {
-                                                    if (movie.id == movies.results.last!.id && restApiMovieVm.currentNetworkCallState == .finished) {
-                                                        Task {
-                                                            await restApiMovieVm.loadNextMovieByGenreInGenreList(currentGenre: movieGenre)
-                                                        }
+//                                                NavigationLink(value: movie) {
+//                                                    AsyncImageView(posterPath: movie.posterPath)
+//                                                }
+//                                                .onAppear {
+//                                                    if (movie.id == movies.results.last!.id && restApiMovieVm.currentNetworkCallState == .finished) {
+//                                                        Task {
+//                                                            await restApiMovieVm.loadNextMovieByGenreInGenreList(currentGenre: movieGenre)
+//                                                        }
+//                                                    }
+//                                                }
+                                                
+                                                
+                                                AsyncImageView(posterPath: movie.posterPath)
+                                                    .onTapGesture {
+                                                        router.path.append(movie)
                                                     }
-                                                }
+                                                    .onLongPressGesture(minimumDuration: 0.2, maximumDistance: 0.4) {
+                                                        print("long press")
+                                                    }
+                                                    
+                                                
+//                                                Button {
+//                                                    router.path.append(movie)
+//                                                } label: {
+//                                                    AsyncImageView(posterPath: movie.posterPath)
+//                                                }
+//                                                .onLongPressGesture {
+//                                                    print("asfasf asf asfa sf as")
+//                                                }
+
                                             }
                                             .padding([.bottom, .top], 10)
                                         }
@@ -116,7 +136,10 @@ struct ContentView: View {
                         if(currentDisplayMode == .singleSwappable) {
 //                            ScrollView {
 //                                LazyVGrid(columns: Array(repeating: .init(.flexible()), count: currentDisplayMode.cardGridColumns), alignment: .center, spacing: currentDisplayMode.scrollSpacing) {
-                                    SwappableCardComponentView(restApiMovieVm: restApiMovieVm)
+                            
+                            SwappableCardComponentView(restApiMovieVm: restApiMovieVm)
+                                .frame(width: UIScreen.main.bounds.width)
+                            
 //                                }
 //                            }
 //                            .padding([.leading, .trailing], 3)
@@ -127,7 +150,7 @@ struct ContentView: View {
                         } else {
                             ScrollView { 
                                 LazyVGrid(columns: Array(repeating: .init(.flexible()), count: currentDisplayMode.cardGridColumns), alignment: .center, spacing: currentDisplayMode.scrollSpacing) {
-                                    SimpleMovieCardComponentView(restApiMovieVm: restApiMovieVm)
+                                    SimpleMovieCardComponentView(restApiMovieVm: restApiMovieVm, currentDisplayMode: currentDisplayMode)
                                 }
                             }
                             .padding([.leading, .trailing], 3)
@@ -180,6 +203,7 @@ struct ContentView: View {
                     })
                 ])
                 .padding(.trailing, 6)
+                .padding(.bottom, currentDisplayMode == .singleSwappable ? 40 : 0)
                 .zIndex(1)
             }
             .onAppear(perform: {

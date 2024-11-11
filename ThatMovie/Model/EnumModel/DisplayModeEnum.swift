@@ -39,13 +39,24 @@ enum DisplayModeEnum: String {
     }
     
     var scrollSpacing: CGFloat {
-            switch self {
-            case .singleSwappable:
-                return 0
-            default:
-                return 10
-            }
+        switch self {
+        case .singleSwappable:
+            return 0
+        default:
+            return 10
         }
+    }
+    
+    var relativeColumnWidth: CGFloat {
+        switch self {
+        case .single, .singleSwappable, .singleWithOptionsSquare:
+            GlobalConstant.screenWidth
+        case .double:
+            GlobalConstant.singleColumnRelativeToTwo
+        case .triple:
+            GlobalConstant.singleColumnRelativeToThree
+        }
+    }
     
     static func currentDisplayModByString(str: String) -> DisplayModeEnum {
         switch(str) {
@@ -63,12 +74,12 @@ enum DisplayModeEnum: String {
             return .triple
         }
     }
-
+    
     @ViewBuilder
     func movieCardView(movie: MovieItem, showUpdateDialog: Binding<Bool>, movieItemToUpdate: MovieItemToUpdateInfo, notificationVM: NotificationVM, movieCategory: MovieCategory) -> some View{
         switch self {
         case .single, .singleSwappable, .double, .triple:
-             AsyncImageView(posterPath: movie.posterPath)
+            AsyncImageView(posterPath: movie.posterPath)
         case .singleWithOptionsSquare:
             MovieCardWatchOptionsView(movieItemToUpdate: movieItemToUpdate, movieItem: movie, showUpdateDialog: showUpdateDialog, movieCategory: movieCategory)
         }
