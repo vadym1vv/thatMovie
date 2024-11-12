@@ -24,6 +24,7 @@ struct ContentView: View {
     @State private var radialMenuIsHidden: Bool = true
     @State private var showSearchField: Bool = false
     @State private var isDarkModeOn: Bool = false
+    @State private var showWatchNotificationProperties: Bool = false
     @State private var autoClose: Bool = false
     @State private var page: Int = 1
     @State private var displayAllGenres: Bool = false
@@ -148,9 +149,9 @@ struct ContentView: View {
 //                            .scrollTargetBehavior( .paging)
 //                            .scrollBounceBehavior(.basedOnSize)
                         } else {
-                            ScrollView { 
+                            ScrollView { 
                                 LazyVGrid(columns: Array(repeating: .init(.flexible()), count: currentDisplayMode.cardGridColumns), alignment: .center, spacing: currentDisplayMode.scrollSpacing) {
-                                    SimpleMovieCardComponentView(restApiMovieVm: restApiMovieVm, currentDisplayMode: currentDisplayMode)
+                                    SimpleMovieCardComponentView(restApiMovieVm: restApiMovieVm, shwoWatchNotificationProperties: $showWatchNotificationProperties, currentDisplayMode: currentDisplayMode)
                                 }
                             }
                             .padding([.leading, .trailing], 3)
@@ -232,6 +233,11 @@ struct ContentView: View {
         }
         .sheet(isPresented: $showAboutAppPopUp, content: {
             DeveloperAppInfoPopup()
+        })
+        .sheet(isPresented: $showWatchNotificationProperties, content: {
+            SetWatchNotificationView(id: restApiMovieVm.details?.id, title: restApiMovieVm.details?.title, posterPath: restApiMovieVm.details?.posterPath, releaseDate: restApiMovieVm.details?.releaseDate?.formatToDate)
+                .presentationDetents([.medium])
+            
         })
         .task {
             restApiMovieVm.currentMovieCategoryEndpoint = GroupedByCategoryMovieEnum.trending

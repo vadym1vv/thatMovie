@@ -6,18 +6,26 @@
 //
 
 import SwiftUI
+import SwiftData
+
 
 struct SimpleMovieCardComponentView: View {
     
+    @Query private var dbMovies: [MovieItem]
     @EnvironmentObject private var router: Router
     
     @ObservedObject  var restApiMovieVm: RestApiMovieVM
-    
+    @Environment(\.modelContext) var modelContext
+    var movieDataVM: MovieDataVM = MovieDataVM()
 //    @State private var longPressTimer: Timer? = nil
+    @Binding var shwoWatchNotificationProperties: Bool
+    
     @State private var longPressSelectedCard: Int? = nil
+    @State private var transitionFinished: Bool = false
     
     var currentDisplayMode: DisplayModeEnum
     private let singleRelativeColumn: CGFloat = UIScreen.main.bounds.width
+    private let notificationVM = NotificationVM()
     
     var body: some View {
         
@@ -32,6 +40,25 @@ struct SimpleMovieCardComponentView: View {
 //                Image(systemName: "star.fill")
 //                    .offset(x: currentDisplayMode.relativeColumnWidth / 4)
 //            }
+        
+//        var currentMovieFromDb: MovieItem? {
+//            if let currentRestMovie {
+//                return dbMovies.first(where: {$0.id == currentRestMovie.id})
+//            }
+//            return nil
+//        }
+        
+        var currentMovieFromDb: MovieItem? {
+            dbMovies.first(where: {$0.id == restApiMovieVm.details?.id})
+        }
+        
+        var currentRestMovie: Result? {
+            if let longPressSelectedCard, let movies = restApiMovieVm.movieRest {
+                return movies.results[longPressSelectedCard]
+            }
+            return nil
+        }
+        
         
         
         if let movieRest = restApiMovieVm.movieRest {
@@ -70,29 +97,98 @@ struct SimpleMovieCardComponentView: View {
                         }
                     }
                     .onTapGesture {
-                        longPressSelectedCard = nil
-                        router.path.append(movie)
+//                        if(longPressSelectedCard == nil){
+                            longPressSelectedCard = nil
+                            router.path.append(movie)
+//                        }
                     }
                     .onLongPressGesture(minimumDuration: 1, maximumDistance: 2) {
+                        
+                        Task {
+                            await restApiMovieVm.movieDetails(url: MovieEndpointsEnum.movieDetails(movieId: movie.id).urlRequest)
+                        }
+                        
                         longPressSelectedCard = index
+                        transitionFinished = true
+//                        restApiMovieVm.details = movie.de
                     } onPressingChanged: { changed in
-                        if(changed) {
-                            withAnimation(.easeOut(duration: 2.0)) {
-                                longPressSelectedCard = index
-                            }
-                        } else {
-                            withAnimation(.easeIn) {
-                                longPressSelectedCard = nil
+                        if(longPressSelectedCard == nil) {
+                            if(changed) {
+                                withAnimation(.easeOut(duration: 2.0)) {
+                                    longPressSelectedCard = index
+                                    transitionFinished = true
+                                }
+                                
+                            } else {
+    //                            withAnimation(.easeIn) {
+                                    
+    //                            }
+                                
+    //                            withAnimation {
+                                    longPressSelectedCard = nil
+                                    transitionFinished = false
+    //                            }
+                                
                             }
                         }
                     }
                     .overlay(alignment: .topLeading) {
-                        Image(systemName: "star.fill")
-                            .offset(y: currentDisplayMode.relativeColumnWidth / 3)
-                        Image(systemName: "star.fill")
-                            .offset(x: currentDisplayMode.relativeColumnWidth / 4, y: currentDisplayMode.relativeColumnWidth / 4)
-                        Image(systemName: "star.fill")
-                            .offset(x: currentDisplayMode.relativeColumnWidth / 3)
+                        if(longPressSelectedCard == index && transitionFinished) {
+//                            Button {
+////                                if let newMovie = movieDataVM.setFavouriteById(movieDb: currentMovieFromDb, id: restApiMovieVm.details?.id, title: restApiMovieVm.details?.title, posterPath: restApiMovieVm.details?.posterPath, releaseDate: restApiMovieVm.details?.releaseDate?.formatToDate)
+////                                {
+////                                    modelContext.insert(newMovie)
+////                                }
+//                                print("asfasfasfasf")
+//                            } label: {
+//                                Image(systemName: (currentMovieFromDb != nil && currentMovieFromDb!.personalIsFavourite) ? "star.fill" : "star")
+//                                    .offset(y: currentDisplayMode.relativeColumnWidth / 3)
+//                                    .transition(.move(edge: .top))
+//                            }
+                            
+                            let _ = print(currentMovieFromDb != nil && currentMovieFromDb!.personalIsFavourite)
+                            Image(systemName: (currentMovieFromDb != nil && currentMovieFromDb!.personalIsFavourite) ? "star.fill" : "star")
+                                .offset(y: currentDisplayMode.relativeColumnWidth / 3)
+                                .transition(.move(edge: .top))
+                                .onTapGesture {
+                                    
+                                    
+                                    
+                                    if let newMovie = movieDataVM.setFavouriteById(movieDb: currentMovieFromDb, id: restApiMovieVm.details?.id, title: restApiMovieVm.details?.title, posterPath: restApiMovieVm.details?.posterPath, releaseDate: restApiMovieVm.details?.releaseDate?.formatToDate)
+                                        {
+                                            modelContext.insert(newMovie)
+                                        }
+                                    print("Tap action")
+                                }
+
+//                            Image(systemName: "star.fill")
+//                                .offset(y: currentDisplayMode.relativeColumnWidth / 3)
+//                                .transition(.move(edge: .top))
+                            Image(systemName: currentMovieFromDb?.personalIsPlannedToWatch ?? false && currentMovieFromDb?.personalDateToWatch == nil ? "bell" : "bell.slash")
+                                .offset(x: currentDisplayMode.relativeColumnWidth / 4, y: currentDisplayMode.relativeColumnWidth / 4)
+//                                .transition(.topLeadingToBottomTrailing)
+                                .transition(.move(edge: .top).combined(with: .move(edge: .leading)))
+                                .animation(.easeInOut, value: longPressSelectedCard)
+                                .onTapGesture {
+                                    if(currentMovieFromDb?.personalIsPlannedToWatch ?? false && currentMovieFromDb?.personalDateToWatch == nil) {
+                                        currentMovieFromDb?.personalIsPlannedToWatch = false
+                                    } else {
+                                        if let newMovieItem = movieDataVM.setPlannedToWatch(movieDb: currentMovieFromDb, id: restApiMovieVm.details?.id, genres: restApiMovieVm.details?.genres.map({$0.id}), title: "restApiMovieVm.details?.title", posterPath: "restApiMovieVm.details?.posterPath", releaseDate: restApiMovieVm.details?.releaseDate?.formatToDate) {
+                                            self.modelContext.insert(newMovieItem)
+                                        }
+                                        if let id = currentMovieFromDb?.id {
+                                            notificationVM.removePendingNotification(identifier: String(id))
+                                        }
+                                    }
+                                    
+                                }
+                            Image(systemName: "star.fill")
+                                .offset(x: currentDisplayMode.relativeColumnWidth / 3)
+                                .transition(.move(edge: .leading))
+                                .onTapGesture {
+                                    self.shwoWatchNotificationProperties.toggle()
+                                }
+                        }
                     }
 
 //                    .onLongPressGesture(minimumDuration: 0.2, maximumDistance: 0.4) {
@@ -107,5 +203,15 @@ struct SimpleMovieCardComponentView: View {
 }
 
 #Preview {
-    SimpleMovieCardComponentView(restApiMovieVm: .init(), currentDisplayMode: .double)
+    SimpleMovieCardComponentView(restApiMovieVm: .init(), shwoWatchNotificationProperties: .constant(false), currentDisplayMode: .double)
 }
+
+
+//extension AnyTransition {
+//    static var topLeadingToBottomTrailing: AnyTransition {
+//        AnyTransition.asymmetric(
+//            insertion:
+//            ))
+//        )
+//    }
+//}
