@@ -263,49 +263,49 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "6D3BD9E1-1428-4C78-AB94-B4D8CF26A8AF"
+            uuid = "3DC83B27-473B-4AF2-9763-445159D5DB29"
             shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "ThatMovie/View/CommonComponents/SwappableCardComponentView.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "94"
-            endingLineNumber = "94"
-            landmarkName = "body"
-            landmarkType = "24">
+            startingLineNumber = "91"
+            endingLineNumber = "91"
+            landmarkName = "MovieCardView(_:_:movieRest:)"
+            landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "1B8A0D0C-A090-4993-89F5-7E0A35F44F25"
+            uuid = "D8B2196A-25F9-4A90-9F91-D5D059B0C5E9"
             shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "ThatMovie/View/CommonComponents/SwappableCardComponentView.swift"
+            filePath = "ThatMovie/ViewModel/MovieDataVM.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "96"
-            endingLineNumber = "96"
-            landmarkName = "body"
-            landmarkType = "24">
+            startingLineNumber = "47"
+            endingLineNumber = "47"
+            landmarkName = "setDateToWatch(movieDb:newDateToWatch:id:genres:title:posterPath:releaseDate:)"
+            landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "B30A3EEE-BE78-4050-A2C9-88181B6BB263"
+            uuid = "CECBCA73-B4DD-44FF-B80B-A3B27300B533"
             shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "ThatMovie/View/CommonComponents/SwappableCardComponentView.swift"
+            filePath = "ThatMovie/ViewModel/MovieDataVM.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "100"
-            endingLineNumber = "100"
-            landmarkName = "body"
-            landmarkType = "24">
+            startingLineNumber = "53"
+            endingLineNumber = "53"
+            landmarkName = "setDateToWatch(movieDb:newDateToWatch:id:genres:title:posterPath:releaseDate:)"
+            landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
    </Breakpoints>

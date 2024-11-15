@@ -9,7 +9,7 @@ import Foundation
 import SwiftData
 
 @Model
-final class MovieItem {
+final class MovieItem: Equatable, Identifiable {
     var id: Int?
     var genreIDS: [Int]?
     var title: String?

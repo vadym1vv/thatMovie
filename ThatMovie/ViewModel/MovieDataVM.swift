@@ -31,6 +31,7 @@ struct MovieDataVM {
     
     func setPlannedToWatch(movieDb: MovieItem?, id: Int?, genres: [Int]?, title: String?, posterPath: String?, releaseDate: Date? ) -> MovieItem? {
         if let movie = movieDb {
+            print("Planned to watch")
             movie.personalIsPlannedToWatch = true
             movie.personalDateToWatch = nil
             return nil
@@ -41,8 +42,11 @@ struct MovieDataVM {
     
     
     func setDateToWatch(movieDb: MovieItem?, newDateToWatch: Date, id: Int?, genres: [Int]?, title: String?, posterPath: String?, releaseDate: Date?) -> MovieItem? {
+        print("movie from db movie")
+        print(movieDb?.title)
         if let movie = movieDb {
             movie.personalDateToWatch = newDateToWatch
+            
             return nil
         }
         
