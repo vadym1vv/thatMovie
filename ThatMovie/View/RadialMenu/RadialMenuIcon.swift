@@ -11,9 +11,11 @@ struct RadialMenuIcon: View {
     
     @Binding var radialMenuIsHidden: Bool
     
+    var buttonImage: String = "arrow.up.left.circle"
+    
     var body: some View {
         
-        Image(systemName: "arrow.up.left.circle")
+        Image(systemName: buttonImage)
             .resizable()
             .scaledToFit()
             .rotationEffect(.degrees(self.radialMenuIsHidden ? 0 : 180))

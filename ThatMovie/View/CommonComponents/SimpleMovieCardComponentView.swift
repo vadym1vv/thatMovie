@@ -19,6 +19,7 @@ struct SimpleMovieCardComponentView: View {
     var movieDataVM: MovieDataVM = MovieDataVM()
 //    @State private var longPressTimer: Timer? = nil
     @Binding var shwoWatchNotificationProperties: Bool
+    @Binding var showScrollToTopOption: Bool
     
     @State private var longPressSelectedCard: Int? = nil
     @State private var transitionFinished: Bool = false
@@ -134,18 +135,6 @@ struct SimpleMovieCardComponentView: View {
                     }
                     .overlay(alignment: .topLeading) {
                         if(longPressSelectedCard == index && transitionFinished) {
-//                            Button {
-////                                if let newMovie = movieDataVM.setFavouriteById(movieDb: currentMovieFromDb, id: restApiMovieVm.details?.id, title: restApiMovieVm.details?.title, posterPath: restApiMovieVm.details?.posterPath, releaseDate: restApiMovieVm.details?.releaseDate?.formatToDate)
-////                                {
-////                                    modelContext.insert(newMovie)
-////                                }
-//                                print("asfasfasfasf")
-//                            } label: {
-//                                Image(systemName: (currentMovieFromDb != nil && currentMovieFromDb!.personalIsFavourite) ? "star.fill" : "star")
-//                                    .offset(y: currentDisplayMode.relativeColumnWidth / 3)
-//                                    .transition(.move(edge: .top))
-//                            }
-                            
                             let _ = print(currentMovieFromDb != nil && currentMovieFromDb!.personalIsFavourite)
                             Image(systemName: (currentMovieFromDb != nil && currentMovieFromDb!.personalIsFavourite) ? "star.fill" : "star")
                                 .offset(y: currentDisplayMode.relativeColumnWidth / 3)
@@ -190,6 +179,14 @@ struct SimpleMovieCardComponentView: View {
                                 }
                         }
                     }
+                    .id(index)
+                    .onAppear {
+                        if(!showScrollToTopOption && index > 30) {
+                            withAnimation {
+                                showScrollToTopOption = true
+                            }
+                        }
+                    }
 
 //                    .onLongPressGesture(minimumDuration: 0.2, maximumDistance: 0.4) {
 //                        print("long press")
@@ -203,7 +200,7 @@ struct SimpleMovieCardComponentView: View {
 }
 
 #Preview {
-    SimpleMovieCardComponentView(restApiMovieVm: .init(), shwoWatchNotificationProperties: .constant(false), currentDisplayMode: .double)
+    SimpleMovieCardComponentView(restApiMovieVm: .init(), shwoWatchNotificationProperties: .constant(false), showScrollToTopOption: .constant(false), currentDisplayMode: .double)
 }
 
 

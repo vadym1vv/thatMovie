@@ -21,6 +21,10 @@ struct ContentView: View {
     @Environment(\.colorScheme) var colorScheme: ColorScheme
     @Environment(\.requestReview) private var requestReveiew
     
+    @Environment(\.modelContext) var modelContext
+    
+    @Query private var dbMovies: [MovieItem]
+    
     @State private var radialMenuIsHidden: Bool = true
     @State private var showSearchField: Bool = false
     @State private var isDarkModeOn: Bool = false
@@ -30,29 +34,41 @@ struct ContentView: View {
     @State private var displayAllGenres: Bool = false
     @State private var showAboutAppPopUp: Bool = false
     @State private var showErrorAlert: Bool = false
+    @State private var longPressSelectedCard: Int? = nil
+    @State private var transitionFinished: Bool = false
+    @State private var scrollToTop: Bool = false
+    @State private var showScrollToTopOption: Bool = false
     
     private let notificationVM: NotificationVM = NotificationVM()
     private var additionalOptionsPresent: Bool = false
+    
+    var movieDataVM: MovieDataVM = MovieDataVM()
     
     var currentDisplayMode: DisplayModeEnum {
         return DisplayModeEnum.currentDisplayModByString(str: savedCurrentDisplayMode)
     }
     
+    var currentMovieFromDb: MovieItem? {
+        dbMovies.first(where: {$0.id == restApiMovieVm.details?.id})
+    }
+    
+    var currentRestMovie: Result? {
+        if let longPressSelectedCard, let movies = restApiMovieVm.movieRest {
+            return movies.results[longPressSelectedCard]
+        }
+        return nil
+    }
+    
     var body: some View {
         NavigationStack(path: $router.path) {
             ZStack(alignment: .top) {
-                if showSearchField {
-                    SearchFieldView(restApiMovieVm: restApiMovieVm, showSearchField: $showSearchField)
-                        .padding()
-                } else {
-                    MovieSection(restApiMovieVm: restApiMovieVm, displayAllGenres: $displayAllGenres, page: $page)
-                        .padding()
-                }
+                
                 
                 //                ScrollView {
                 //                    VStack(spacing: 0) {
                 if(self.displayAllGenres && restApiMovieVm.filteredMovieRest == nil) {
                     ScrollView {
+                        
                         ForEach(restApiMovieVm.movieByGenreRest.sorted(by: {$0.key.name > $1.key.name}), id: \.key) { movieGenre, movies in
                             VStack(alignment: .leading, spacing: 0) {
                                 Text(movieGenre.name)
@@ -112,25 +128,133 @@ struct ContentView: View {
                     }
                 } else {
                     if(restApiMovieVm.filteredMovieRest != nil) {
-                        ScrollView {
-                            LazyVGrid(columns: Array(repeating: .init(.flexible()), count: currentDisplayMode.cardGridColumns), alignment: .center, spacing: 0) {
-                                if(restApiMovieVm.filteredMovieRest!.results.isEmpty) {
-                                    Text("Search list is empty")
-                                        .font(.largeTitle)
+                        
+                        ScrollViewReader { scrollView in
+                            ScrollView {
+                                if showSearchField {
+                                    SearchFieldView(restApiMovieVm: restApiMovieVm, showSearchField: $showSearchField)
+                                        .padding()
                                 } else {
-                                    ForEach(restApiMovieVm.filteredMovieRest!.results) { movie in
-                                        NavigationLink(value: movie) {
+                                    MovieSection(restApiMovieVm: restApiMovieVm, displayAllGenres: $displayAllGenres, page: $page)
+                                        .padding()
+                                }
+                                LazyVGrid(columns: Array(repeating: .init(.flexible()), count: currentDisplayMode.cardGridColumns), alignment: .center, spacing: 0) {
+                                    if(restApiMovieVm.filteredMovieRest!.results.isEmpty) {
+                                        Text("Search list is empty")
+                                            .font(.largeTitle)
+                                    } else {
+                                        ForEach(Array(restApiMovieVm.filteredMovieRest!.results.enumerated()), id: \.element) { index, movie in
+    //                                        NavigationLink(value: movie) {
+    //                                            AsyncImageView(posterPath: movie.posterPath)
+    //                                        }
+                                            
                                             AsyncImageView(posterPath: movie.posterPath)
-                                        }
-                                        .onAppear {
-                                            if (movie.id == restApiMovieVm.filteredMovieRest?.results.last!.id && restApiMovieVm.currentNetworkCallState == .finished) {
-                                                Task {
-                                                    await restApiMovieVm.loadNextMoviesBySearchCriteria()
+                                                .opacity(longPressSelectedCard == index ? 0.5 : 1)
+
+                                            .onAppear {
+                                                if (movie.id == restApiMovieVm.filteredMovieRest?.results.last!.id && restApiMovieVm.currentNetworkCallState == .finished) {
+                                                    Task {
+                                                        await restApiMovieVm.loadNextMoviesBySearchCriteria()
+                                                    }
                                                 }
                                             }
+                                            .onTapGesture {
+                        //                        if(longPressSelectedCard == nil){
+                                                    longPressSelectedCard = nil
+                                                    router.path.append(movie)
+                        //                        }
+                                            }
+                                            .onLongPressGesture(minimumDuration: 1, maximumDistance: 2) {
+                                                
+                                                Task {
+                                                    await restApiMovieVm.movieDetails(url: MovieEndpointsEnum.movieDetails(movieId: movie.id).urlRequest)
+                                                }
+                                                
+                                                longPressSelectedCard = index
+                                                transitionFinished = true
+                        //                        restApiMovieVm.details = movie.de
+                                            } onPressingChanged: { changed in
+                                                if(longPressSelectedCard == nil) {
+                                                    if(changed) {
+                                                        withAnimation(.easeOut(duration: 2.0)) {
+                                                            longPressSelectedCard = index
+                                                            transitionFinished = true
+                                                        }
+                                                        
+                                                    } else {
+                            //                            withAnimation(.easeIn) {
+                                                            
+                            //                            }
+                                                        
+                            //                            withAnimation {
+                                                            longPressSelectedCard = nil
+                                                            transitionFinished = false
+                            //                            }
+                                                        
+                                                    }
+                                                }
+                                            }
+                                            .overlay(alignment: .topLeading) {
+                                                if(longPressSelectedCard == index && transitionFinished) {
+                                                    let _ = print(currentMovieFromDb != nil && currentMovieFromDb!.personalIsFavourite)
+                                                    Image(systemName: (currentMovieFromDb != nil && currentMovieFromDb!.personalIsFavourite) ? "star.fill" : "star")
+                                                        .offset(y: currentDisplayMode.relativeColumnWidth / 3)
+                                                        .transition(.move(edge: .top))
+                                                        .onTapGesture {
+                                                            
+                                                            
+                                                            
+                                                            if let newMovie = movieDataVM.setFavouriteById(movieDb: currentMovieFromDb, id: restApiMovieVm.details?.id, title: restApiMovieVm.details?.title, posterPath: restApiMovieVm.details?.posterPath, releaseDate: restApiMovieVm.details?.releaseDate?.formatToDate)
+                                                                {
+                                                                    modelContext.insert(newMovie)
+                                                                }
+                                                            print("Tap action")
+                                                        }
+
+                                                    Image(systemName: "star.fill")
+                                                        .offset(y: currentDisplayMode.relativeColumnWidth / 3)
+                                                        .transition(.move(edge: .top))
+                                                    Image(systemName: currentMovieFromDb?.personalIsPlannedToWatch ?? false && currentMovieFromDb?.personalDateToWatch == nil ? "bell" : "bell.slash")
+                                                        .offset(x: currentDisplayMode.relativeColumnWidth / 4, y: currentDisplayMode.relativeColumnWidth / 4)
+                        //                                .transition(.topLeadingToBottomTrailing)
+                                                        .transition(.move(edge: .top).combined(with: .move(edge: .leading)))
+                                                        .animation(.easeInOut, value: longPressSelectedCard)
+                                                        .onTapGesture {
+                                                            if(currentMovieFromDb?.personalIsPlannedToWatch ?? false && currentMovieFromDb?.personalDateToWatch == nil) {
+                                                                currentMovieFromDb?.personalIsPlannedToWatch = false
+                                                            } else {
+                                                                if let newMovieItem = movieDataVM.setPlannedToWatch(movieDb: currentMovieFromDb, id: restApiMovieVm.details?.id, genres: restApiMovieVm.details?.genres.map({$0.id}), title: "restApiMovieVm.details?.title", posterPath: "restApiMovieVm.details?.posterPath", releaseDate: restApiMovieVm.details?.releaseDate?.formatToDate) {
+                                                                    self.modelContext.insert(newMovieItem)
+                                                                }
+                                                                if let id = currentMovieFromDb?.id {
+                                                                    notificationVM.removePendingNotification(identifier: String(id))
+                                                                }
+                                                            }
+                                                            
+                                                        }
+                                                    Image(systemName: "star.fill")
+                                                        .offset(x: currentDisplayMode.relativeColumnWidth / 3)
+                                                        .transition(.move(edge: .leading))
+                                                        .onTapGesture {
+                                                            showWatchNotificationProperties.toggle()
+                                                        }
+                                                }
+                                            }
+                                            .id(index)
+                                            .onAppear {
+                                                if(!showScrollToTopOption && index > 30) {
+                                                    withAnimation {
+                                                        showScrollToTopOption = true
+                                                    }
+                                                }
+                                            }
+                                            
                                         }
                                     }
                                 }
+                            }
+                            .onChange(of: scrollToTop) {
+                                scrollView.scrollTo(0, anchor: .top)
                             }
                         }
                     } else {
@@ -148,64 +272,107 @@ struct ContentView: View {
 //                            .scrollTargetLayout()
 //                            .scrollTargetBehavior( .paging)
 //                            .scrollBounceBehavior(.basedOnSize)
-                        } else {
-                            ScrollView { 
-                                LazyVGrid(columns: Array(repeating: .init(.flexible()), count: currentDisplayMode.cardGridColumns), alignment: .center, spacing: currentDisplayMode.scrollSpacing) {
-                                    SimpleMovieCardComponentView(restApiMovieVm: restApiMovieVm, shwoWatchNotificationProperties: $showWatchNotificationProperties, currentDisplayMode: currentDisplayMode)
+                        } else if(currentDisplayMode == .singleColumnVideo) {
+                            ScrollViewReader { scrollView in
+                                ScrollView {
+                                    LazyVGrid(columns: Array(repeating: .init(.flexible()), count: currentDisplayMode.cardGridColumns), alignment: .center, spacing: currentDisplayMode.scrollSpacing) {
+                                        
+                                    }
                                 }
                             }
-                            .padding([.leading, .trailing], 3)
+                        } else {
+                            ScrollViewReader { scrollView in
+                                ScrollView {
+                                    if showSearchField {
+                                        SearchFieldView(restApiMovieVm: restApiMovieVm, showSearchField: $showSearchField)
+                                            .padding()
+                                    } else {
+                                        MovieSection(restApiMovieVm: restApiMovieVm, displayAllGenres: $displayAllGenres, page: $page)
+                                            .padding()
+                                    }
+                                    LazyVGrid(columns: Array(repeating: .init(.flexible()), count: currentDisplayMode.cardGridColumns), alignment: .center, spacing: currentDisplayMode.scrollSpacing) {
+                                        SimpleMovieCardComponentView(restApiMovieVm: restApiMovieVm, shwoWatchNotificationProperties: $showWatchNotificationProperties, showScrollToTopOption: $showScrollToTopOption, currentDisplayMode: currentDisplayMode)
+                                    }
+                                }
+                                .padding([.leading, .trailing], 3)
+                                .onChange(of: scrollToTop) {
+                                    scrollView.scrollTo(0, anchor: .top)
+                                }
+                            }
                         }
                     }
                 }
             }
             .background(Color("PrimaryBackground").ignoresSafeArea())
             .overlay(alignment: .bottomTrailing) {
-                Button(action: {
-                    withAnimation {
-                        self.radialMenuIsHidden.toggle()
+                
+                VStack {
+                    if(showScrollToTopOption) {
+                        Button(action: {
+                            withAnimation {
+                                scrollToTop.toggle()
+                                showScrollToTopOption = false
+                            }
+                        }, label: {
+                            ZStack{
+                                RadialMenuIcon(radialMenuIsHidden: .constant(true), buttonImage: "arrow.up.circle")
+                            }
+                            .transition(.slide)
+                        })
+                        .tint(.red)
+                        .frame(width: 60, height: 60)
                     }
-                }, label: {
-                    ZStack{
-                        RadialMenuIcon(radialMenuIsHidden: $radialMenuIsHidden)
-                    }
-                })
-                .tint(.red)
-                .frame(width: 60, height: 60)
-                .radialMenu(isHidden: $radialMenuIsHidden, anchorPosition: .bottomRight, distance: 170, autoClose: true, buttons: [
-                    RadialMenuButton(image: "person.crop.square.fill.and.at.rectangle", size: 40, action: {
-                        self.showAboutAppPopUp.toggle()
-                    }),
-                    RadialMenuButton(image: self.isDarkModeOn ? "moon" : "sun.min", size: 40, action: {
-                        withAnimation {
-                            self.isDarkModeOn.toggle()
-                            changeDarkMode(state: isDarkModeOn)
-                        }
-                    }),
                     
-                    RadialMenuButton(image: self.currentDisplayMode.displayModeIcon, size: 40, ignoreAutoclose: true, action: {
-                        if(self.currentDisplayMode == .single) {
-                            self.savedCurrentDisplayMode = DisplayModeEnum.singleSwappable.rawValue
-                        } else if(self.currentDisplayMode == .singleSwappable) {
-                            self.savedCurrentDisplayMode = DisplayModeEnum.triple.rawValue
-                        }  else if(self.currentDisplayMode == .triple) {
-                            self.savedCurrentDisplayMode = DisplayModeEnum.double.rawValue
-                        } else {
-                            self.savedCurrentDisplayMode = DisplayModeEnum.single.rawValue
-                        }
-                    }),
-                    RadialMenuButton(image: "magnifyingglass", size: 40, action: {
+                    
+                    
+                    Button(action: {
                         withAnimation {
-                            self.showSearchField.toggle()
+                            self.radialMenuIsHidden.toggle()
                         }
-                    }),
-                    RadialMenuButton(image: "person.circle", size: 40, action: {
-                        router.path.append("userPage")
+                    }, label: {
+                        ZStack{
+                            RadialMenuIcon(radialMenuIsHidden: $radialMenuIsHidden)
+                        }
                     })
-                ])
-                .padding(.trailing, 6)
-                .padding(.bottom, currentDisplayMode == .singleSwappable ? 40 : 0)
-                .zIndex(1)
+                    .tint(.red)
+                    .frame(width: 60, height: 60)
+                    .radialMenu(isHidden: $radialMenuIsHidden, anchorPosition: .bottomRight, distance: 170, autoClose: true, buttons: [
+                        RadialMenuButton(image: "person.crop.square.fill.and.at.rectangle", size: 40, action: {
+                            self.showAboutAppPopUp.toggle()
+                        }),
+                        RadialMenuButton(image: self.isDarkModeOn ? "moon" : "sun.min", size: 40, action: {
+                            withAnimation {
+                                self.isDarkModeOn.toggle()
+                                changeDarkMode(state: isDarkModeOn)
+                            }
+                        }),
+                        
+                        RadialMenuButton(image: self.currentDisplayMode.displayModeIcon, size: 40, ignoreAutoclose: true, action: {
+                            if(self.currentDisplayMode == .singleColumnVideo) {
+                                self.savedCurrentDisplayMode = DisplayModeEnum.singleSwappable.rawValue
+                            } else if(self.currentDisplayMode == .singleSwappable) {
+                                self.savedCurrentDisplayMode = DisplayModeEnum.triple.rawValue
+                            }  else if(self.currentDisplayMode == .triple) {
+                                self.savedCurrentDisplayMode = DisplayModeEnum.double.rawValue
+                            } else if (self.currentDisplayMode == .double) {
+                                self.savedCurrentDisplayMode = DisplayModeEnum.single.rawValue
+                            } else {
+                                self.savedCurrentDisplayMode = DisplayModeEnum.singleColumnVideo.rawValue
+                            }
+                        }),
+                        RadialMenuButton(image: "magnifyingglass", size: 40, action: {
+                            withAnimation {
+                                self.showSearchField.toggle()
+                            }
+                        }),
+                        RadialMenuButton(image: "person.circle", size: 40, action: {
+                            router.path.append("userPage")
+                        })
+                    ])
+                    .padding(.trailing, 6)
+                    .padding(.bottom, currentDisplayMode == .singleSwappable ? 40 : 0)
+                    .zIndex(1)
+                }
             }
             .onAppear(perform: {
 #if DEBUG
